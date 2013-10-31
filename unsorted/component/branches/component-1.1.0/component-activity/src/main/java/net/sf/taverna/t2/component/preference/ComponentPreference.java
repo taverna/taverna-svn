@@ -3,7 +3,9 @@
  */
 package net.sf.taverna.t2.component.preference;
 
+import static net.sf.taverna.t2.component.preference.ComponentDefaults.getDefaultProperties;
 import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateRegistry;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,8 +14,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -29,10 +30,7 @@ import org.apache.log4j.Logger;
  * 
  */
 public class ComponentPreference {
-	private static final String LOCAL_NAME = "local registry";
-	private static final String MYEXPERIMENT_NAME = "myExperiment";
-	private static final String MYEXPERIMENT_SITE = "http://www.myexperiment.org";
-	private final Logger logger = Logger.getLogger(ComponentPreference.class);
+	private final Logger logger = getLogger(ComponentPreference.class);
 
 	private static ComponentPreference instance = null;
 
@@ -47,16 +45,16 @@ public class ComponentPreference {
 
 	private ComponentPreference() {
 		File configFile = getConfigFile();
-		this.properties = new Properties();
+		properties = new Properties();
 		if (configFile.exists()) {
 			try {
-				final FileReader reader = new FileReader(configFile);
-				this.properties.load(reader);
+				FileReader reader = new FileReader(configFile);
+				properties.load(reader);
 				reader.close();
 			} catch (final FileNotFoundException e) {
-				this.logger.error(e);
+				logger.error(e);
 			} catch (final IOException e) {
-				this.logger.error(e);
+				logger.error(e);
 			}
 		} else {
 			fillDefaultProperties();
@@ -78,21 +76,8 @@ public class ComponentPreference {
 			}
 	}
 
-	public Map<String,String> getDefaultProperties() {
-		// Capacity = 2; we know that this is going to have 2 entries
-		Map<String,String> defaults = new LinkedHashMap<String, String>(2);
-		defaults.put(LOCAL_NAME, calculateComponentsDirectoryPath());
-		defaults.put(MYEXPERIMENT_NAME, MYEXPERIMENT_SITE);
-		return defaults;
-	}
-
 	private void fillDefaultProperties() {
 		properties.putAll(getDefaultProperties());
-	}
-
-	public String calculateComponentsDirectoryPath() {
-		return new File(ApplicationRuntime.getInstance()
-				.getApplicationHomeDir(), "components").toURI().toASCIIString();
 	}
 
 	private File getConfigFile() {
@@ -104,19 +89,19 @@ public class ComponentPreference {
 	}
 
 	public void store() {
-		this.properties.clear();
-		for (String key : registryMap.keySet())
-			this.properties.put(key, registryMap.get(key).getRegistryBase()
-					.toString());
+		properties.clear();
+		for (Entry<String, Registry> entry : registryMap.entrySet())
+			properties.put(entry.getKey(), entry.getValue()
+					.getRegistryBaseString());
 
 		try {
-			final FileOutputStream out = new FileOutputStream(getConfigFile());
-			this.properties.store(out, "");
+			FileOutputStream out = new FileOutputStream(getConfigFile());
+			properties.store(out, "");
 			out.close();
-		} catch (final FileNotFoundException e) {
-			this.logger.error(e);
-		} catch (final IOException e) {
-			this.logger.error(e);
+		} catch (FileNotFoundException e) {
+			logger.error(e);
+		} catch (IOException e) {
+			logger.error(e);
 		}
 	}
 
@@ -136,14 +121,15 @@ public class ComponentPreference {
 	}
 
 	public String getRegistryName(URL registryBase) {
-		String result = registryBase.toString();
-		for (String name : registryMap.keySet())
-			if (registryMap.get(name).getRegistryBaseString()
-					.equals(registryBase.toString())) {
-				result = name;
-				break;
-			}
-		return result;
+		// Trim trailing '/' characters to ensure match.
+		String base = registryBase.toString();
+		while (base.endsWith("/"))
+			base = base.substring(0, base.length() - 1);
+
+		for (Entry<String, Registry> entry : registryMap.entrySet())
+			if (entry.getValue().getRegistryBaseString().equals(base))
+				return entry.getKey();
+		return base;
 	}
 
 	public void setRegistryMap(SortedMap<String, Registry> registries) {

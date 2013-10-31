@@ -3,6 +3,8 @@
  */
 package net.sf.taverna.t2.component.ui.preference;
 
+import static net.sf.taverna.t2.component.preference.ComponentDefaults.getDefaultProperties;
+
 import java.util.Map;
 
 import javax.swing.JPanel;
@@ -25,12 +27,12 @@ public class ComponentPreferenceUIFactory extends AbstractConfigurable
 
 	public ComponentPreferenceUIFactory() {
 		super();
-		this.configPanel = new ComponentPreferencePanel();
+		configPanel = new ComponentPreferencePanel();
 	}
 
 	@Override
 	public boolean canHandle(String uuid) {
-		return (uuid.equals(pref.getUUID()));
+		return uuid.equals(pref.getUUID());
 	}
 
 	@Override
@@ -50,7 +52,7 @@ public class ComponentPreferenceUIFactory extends AbstractConfigurable
 
 	@Override
 	public Map<String, String> getDefaultPropertyMap() {
-		return pref.getDefaultProperties();
+		return getDefaultProperties();
 	}
 
 	@Override

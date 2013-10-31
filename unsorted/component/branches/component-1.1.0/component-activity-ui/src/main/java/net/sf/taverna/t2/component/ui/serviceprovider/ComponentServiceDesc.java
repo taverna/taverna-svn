@@ -1,5 +1,8 @@
 package net.sf.taverna.t2.component.ui.serviceprovider;
 
+import static java.util.Arrays.asList;
+import static org.apache.log4j.Logger.getLogger;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,7 +22,7 @@ public class ComponentServiceDesc extends
 	private static ComponentPreference preference = ComponentPreference
 			.getInstance();
 	@SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(ComponentServiceDesc.class);
+	private static Logger logger = getLogger(ComponentServiceDesc.class);
 
 	private Version.ID identification;
 
@@ -72,7 +75,7 @@ public class ComponentServiceDesc extends
 	@Override
 	public List<String> getPath() {
 		// For deeper paths you may return several strings
-		return Arrays.asList("Components",
+		return asList("Components",
 				preference.getRegistryName(identification.getRegistryBase()),
 				identification.getFamilyName());
 	}
@@ -80,11 +83,10 @@ public class ComponentServiceDesc extends
 	/**
 	 * Return a list of data values uniquely identifying this service
 	 * description (to avoid duplicates). Include only primary key like fields,
-	 * ie. ignore descriptions, icons, etc.
+	 * i.e. ignore descriptions, icons, etc.
 	 */
 	@Override
 	protected List<? extends Object> getIdentifyingData() {
-		// FIXME: Use your fields instead of example fields
 		return Arrays.<Object> asList(identification.getRegistryBase(),
 				identification.getFamilyName(),
 				identification.getComponentName());
