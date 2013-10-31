@@ -39,13 +39,8 @@ class Client {
 	public boolean verify() {
 		try {
 			String url = url("/component-profiles.xml");
-			logger.info(String
-					.format("verification-HEAD of %s == %b", url,
-							(myE_Client.doMyExperimentHEAD(url)
-									.getResponseCode() == HTTP_OK)));
-
-			logger.info("verification-GET of " + url);
-			return myE_Client.doMyExperimentGET(url).getResponseCode() == HTTP_OK;
+			logger.info("HEAD for " + url);
+			return myE_Client.doMyExperimentHEAD(url).getResponseCode() == HTTP_OK;
 		} catch (Exception e) {
 			logger.info("failed to connect to " + registryBase);
 			return false;
