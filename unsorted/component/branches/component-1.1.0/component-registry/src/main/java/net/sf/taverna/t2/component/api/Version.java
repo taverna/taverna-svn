@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.component.api;
 
+import java.io.Serializable;
 import java.net.URL;
 
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -14,7 +15,7 @@ public interface Version {
 
 	Component getComponent();
 
-	interface ID {
+	interface ID extends Serializable {
 
 		String getFamilyName();
 

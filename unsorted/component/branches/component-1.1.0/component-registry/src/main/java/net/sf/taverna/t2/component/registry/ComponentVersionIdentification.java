@@ -16,6 +16,7 @@ import net.sf.taverna.t2.component.api.Version.ID;
  */
 public class ComponentVersionIdentification implements
 		net.sf.taverna.t2.component.api.Version.ID {
+	private static final long serialVersionUID = 1768548650702925916L;
 	private URL registryBase;
 	private String familyName;
 	private String componentName;

@@ -25,6 +25,7 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static javax.xml.bind.DatatypeConverter.parseBase64Binary;
@@ -331,10 +332,35 @@ public class MyExperimentClient {
 		 */
 		HttpURLConnection conn = connect(strURL);
 		if (!isLoggedIn())
-			logger.info("is NOT logged in");
+			logger.warn("not logged in");
 
 		// check server's response
-		return doMyExperimentReceiveServerResponse(conn, strURL, true);
+		return doMyExperimentReceiveServerResponse(conn, strURL, true, false);
+	}
+
+	/**
+	 * Generic method to execute GET requests to myExperiment server.
+	 * 
+	 * @param strURL
+	 *            The URL on myExperiment to issue GET request to.
+	 * @return An object containing XML Document with server's response body and
+	 *         a response code. Response body XML document might be null if
+	 *         there was an error or the user wasn't authorised to perform a
+	 *         certain action. Response code will always be set.
+	 * @throws Exception
+	 */
+	public ServerResponse doMyExperimentHEAD(String strURL) throws Exception {
+		/*
+		 * open server connection using provided URL (with no modifications to
+		 * it)
+		 */
+		HttpURLConnection conn = connect(strURL);
+		conn.setRequestMethod("HEAD");
+		if (!isLoggedIn())
+			logger.warn("not logged in");
+
+		// check server's response
+		return doMyExperimentReceiveServerResponse(conn, strURL, false, true);
 	}
 
 	/**
@@ -375,7 +401,7 @@ public class MyExperimentClient {
 		out.close();
 
 		// check server's response
-		return doMyExperimentReceiveServerResponse(conn, url, false);
+		return doMyExperimentReceiveServerResponse(conn, url, false, false);
 	}
 
 	/**
@@ -402,7 +428,7 @@ public class MyExperimentClient {
 		conn.setRequestMethod("DELETE");
 
 		// check server's response
-		return doMyExperimentReceiveServerResponse(conn, url, true);
+		return doMyExperimentReceiveServerResponse(conn, url, true, false);
 	}
 
 	private static Document getDocumentFromStream(InputStream inputStream)
@@ -434,7 +460,7 @@ public class MyExperimentClient {
 	 *         certain action. Response code will always be set.
 	 */
 	private ServerResponse doMyExperimentReceiveServerResponse(
-			HttpURLConnection conn, String strURL, boolean bIsGETRequest)
+			HttpURLConnection conn, String strURL, boolean isGETrequest, boolean isHEADrequest)
 			throws Exception {
 		switch (conn.getResponseCode()) {
 		case HTTP_OK:
@@ -442,6 +468,8 @@ public class MyExperimentClient {
 			 * data retrieval was successful - parse the response XML and return
 			 * it along with response code
 			 */
+			if (isHEADrequest)
+				return new ServerResponse(conn.getResponseCode(), null);
 			return new ServerResponse(conn.getResponseCode(),
 					getDocumentFromStream(conn.getInputStream()));
 
@@ -460,11 +488,14 @@ public class MyExperimentClient {
 			// this content is not authorised for current user
 			return new ServerResponse(conn.getResponseCode(), null);
 
+		case HTTP_NOT_FOUND:
+			if (isHEADrequest)
+				return new ServerResponse(conn.getResponseCode(), null);
 		default:
 			// unexpected response code - raise an exception
 			throw new IOException(format(
 					"Received unexpected HTTP response code (%d) while %s %s",
-					conn.getResponseCode(), (bIsGETRequest ? "fetching data at"
+					conn.getResponseCode(), (isGETrequest ? "fetching data at"
 							: "posting data to"), strURL));
 		}
 	}
@@ -683,7 +714,7 @@ public class MyExperimentClient {
 		out.write(strPOSTContent);
 		out.close();
 
-		return doMyExperimentReceiveServerResponse(conn, strURL, false);
+		return doMyExperimentReceiveServerResponse(conn, strURL, false, false);
 	}
 
 	public static class ServerResponse {

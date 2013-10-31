@@ -343,11 +343,11 @@ public class MyExperimentClient {
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     conn.setRequestProperty("User-Agent", PLUGIN_USER_AGENT);
     if (LOGGED_IN) {
-    	logger.info("It is logged in");
+    	logger.debug("It is logged in");
       // if the user has "logged in", also add authentication details
       conn.setRequestProperty("Authorization", "Basic " + AUTH_STRING);
     } else {
-       	logger.info("It is not logged in");
+       	logger.warn("It is not logged in");
            	
     }
 

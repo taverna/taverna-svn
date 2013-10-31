@@ -38,15 +38,21 @@ class Client {
 
 	public boolean verify() {
 		try {
-			return myE_Client.doMyExperimentGET(
-					registryBase + "/component-profiles.xml").getResponseCode() == HTTP_OK;
+			String url = url("/component-profiles.xml");
+			logger.info(String
+					.format("verification-HEAD of %s == %b", url,
+							(myE_Client.doMyExperimentHEAD(url)
+									.getResponseCode() == HTTP_OK)));
+
+			logger.info("verification-GET of " + url);
+			return myE_Client.doMyExperimentGET(url).getResponseCode() == HTTP_OK;
 		} catch (Exception e) {
 			logger.info("failed to connect to " + registryBase);
 			return false;
 		}
 	}
 
-	private String url(String uri, String[] arguments)
+	private String url(String uri, String... arguments)
 			throws MalformedURLException, UnsupportedEncodingException {
 		StringBuilder uriBuilder = new StringBuilder(uri);
 		for (String queryElement : arguments) {
@@ -78,6 +84,7 @@ class Client {
 		String url = null;
 		try {
 			url = url(uri, query);
+			logger.info("GET of " + url);
 			ServerResponse response = myE_Client.doMyExperimentGET(url);
 			if (response.getResponseCode() != HTTP_OK)
 				throw new RegistryException("Unable to perform request "
@@ -119,6 +126,7 @@ class Client {
 		String url = null;
 		try {
 			url = url(uri, query);
+			logger.info("POST to " + url);
 			StringWriter sw = new StringWriter();
 			jaxbContext.createMarshaller().marshal(elem, sw);
 			ServerResponse response = myE_Client.doMyExperimentPOST(url,
@@ -163,6 +171,7 @@ class Client {
 		String url = null;
 		try {
 			url = url(uri, query);
+			logger.info("PUT to " + url);
 			StringWriter sw = new StringWriter();
 			jaxbContext.createMarshaller().marshal(elem, sw);
 			ServerResponse response = myE_Client.doMyExperimentPUT(url,
@@ -200,6 +209,7 @@ class Client {
 		ServerResponse response;
 		try {
 			url = url(uri, query);
+			logger.info("DELETE of " + url);
 			response = myE_Client.doMyExperimentDELETE(url);
 		} catch (MalformedURLException e) {
 			throw new RegistryException("Problem constructing resource URL:"

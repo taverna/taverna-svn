@@ -333,6 +333,8 @@ class NewComponentRegistry extends ComponentRegistry {
 	}
 
 	static class VersionId extends ComponentVersionIdentification {
+		private static final long serialVersionUID = -7743495565477613860L;
+
 		VersionId(NewComponent component, Integer version) {
 			super(component.registry.getRegistryBase(), component.family
 					.getName(), component.getName(), version);
