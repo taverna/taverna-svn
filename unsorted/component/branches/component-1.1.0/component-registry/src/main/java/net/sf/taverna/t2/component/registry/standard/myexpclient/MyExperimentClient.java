@@ -39,8 +39,11 @@ import static net.sf.taverna.t2.component.registry.standard.myexpclient.User.bui
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChild;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getTavernaHomeDir;
+import static org.apache.commons.io.IOUtils.copy;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -97,6 +100,9 @@ public class MyExperimentClient {
 
 	private static final String DIR_NAME = (separatorChar == '\\' ? ".Taverna2 Component Plugin"
 			: ".taverna2ComponentPlugin");
+	public static final boolean FORCE_OUTPUT_OF_MESSAGES = true;// FIXME Remove
+																// before
+																// release
 
 	// SETTINGS
 	/** myExperiment base URL to use */
@@ -394,10 +400,8 @@ public class MyExperimentClient {
 		conn.setRequestProperty("Content-Type", "application/xml");
 
 		// prepare and PUT/POST XML data
-		String strPOSTContent = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
-				+ xmlDataBody;
 		OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-		out.write(strPOSTContent);
+		out.write(xmlDataBody);
 		out.close();
 
 		// check server's response
@@ -431,12 +435,24 @@ public class MyExperimentClient {
 		return doMyExperimentReceiveServerResponse(conn, url, true, false);
 	}
 
+	@SuppressWarnings("unused")
 	private static Document getDocumentFromStream(InputStream inputStream)
 			throws SAXException, IOException, ParserConfigurationException {
+		Logger logger = Logger.getLogger(MyExperimentClient.class);
+		Document doc;
 		InputStream is = new BufferedInputStream(inputStream);
-		Document doc = DocumentBuilderFactory.newInstance()
-				.newDocumentBuilder().parse(is);
-		is.close();
+		if (!logger.isDebugEnabled() && !FORCE_OUTPUT_OF_MESSAGES) {
+			doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+					.parse(is);
+			is.close();
+		} else {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			copy(is, baos);
+			is.close();
+			logger.info("response message follows\n" + baos.toString("UTF-8"));
+			doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+					.parse(new ByteArrayInputStream(baos.toByteArray()));
+		}
 		return doc;
 	}
 
@@ -460,8 +476,8 @@ public class MyExperimentClient {
 	 *         certain action. Response code will always be set.
 	 */
 	private ServerResponse doMyExperimentReceiveServerResponse(
-			HttpURLConnection conn, String strURL, boolean isGETrequest, boolean isHEADrequest)
-			throws Exception {
+			HttpURLConnection conn, String strURL, boolean isGETrequest,
+			boolean isHEADrequest) throws Exception {
 		switch (conn.getResponseCode()) {
 		case HTTP_OK:
 			/*
@@ -708,10 +724,8 @@ public class MyExperimentClient {
 		conn.setDoOutput(true);
 		conn.setRequestProperty("Content-Type", "application/xml");
 
-		String strPOSTContent = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
-				+ strXMLDataBody;
 		OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-		out.write(strPOSTContent);
+		out.write(strXMLDataBody);
 		out.close();
 
 		return doMyExperimentReceiveServerResponse(conn, strURL, false, false);

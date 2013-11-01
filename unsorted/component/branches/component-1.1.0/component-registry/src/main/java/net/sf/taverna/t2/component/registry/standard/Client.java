@@ -1,7 +1,7 @@
 package net.sf.taverna.t2.component.registry.standard;
 
 import static java.net.HttpURLConnection.HTTP_OK;
-import static javax.xml.bind.Marshaller.JAXB_FRAGMENT;
+import static net.sf.taverna.t2.component.registry.standard.myexpclient.MyExperimentClient.FORCE_OUTPUT_OF_MESSAGES;
 
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -26,7 +26,6 @@ class Client {
 	private final MyExperimentClient myE_Client;
 	private final URL registryBase;
 	private final JAXBContext jaxbContext;
-	private final boolean forceOut = true;// FIXME Remove before release
 
 	Client(JAXBContext context, Logger logger, URL repository) throws Exception {
 		this.logger = logger;
@@ -63,9 +62,8 @@ class Client {
 	}
 
 	private Marshaller getMarshaller() throws JAXBException {
-		Marshaller m = jaxbContext.createMarshaller();
-		m.setProperty(JAXB_FRAGMENT, true);
-		return m;
+		return jaxbContext.createMarshaller();
+		//marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
 	}
 
 	/**
@@ -133,7 +131,7 @@ class Client {
 			logger.info("POST to " + url);
 			StringWriter sw = new StringWriter();
 			getMarshaller().marshal(elem, sw);
-			if (logger.isDebugEnabled() || forceOut)
+			if (logger.isDebugEnabled() || FORCE_OUTPUT_OF_MESSAGES)
 				logger.info("About to post XML document:\n" + sw);
 			ServerResponse response = myE_Client.doMyExperimentPOST(url,
 					sw.toString());
@@ -180,7 +178,7 @@ class Client {
 			logger.info("PUT to " + url);
 			StringWriter sw = new StringWriter();
 			getMarshaller().marshal(elem, sw);
-			if (logger.isDebugEnabled() || forceOut)
+			if (logger.isDebugEnabled() || FORCE_OUTPUT_OF_MESSAGES)
 				logger.info("About to post XML document:\n" + sw);
 			ServerResponse response = myE_Client.doMyExperimentPUT(url,
 					sw.toString());
@@ -231,6 +229,5 @@ class Client {
 			throw new RegistryException(
 					"Unable to perform request: result code "
 							+ response.getResponseCode());
-		return;
 	}
 }
