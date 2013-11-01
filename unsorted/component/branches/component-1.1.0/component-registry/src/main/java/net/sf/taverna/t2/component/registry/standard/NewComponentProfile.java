@@ -1,6 +1,10 @@
 package net.sf.taverna.t2.component.registry.standard;
 
 import static net.sf.taverna.t2.component.registry.standard.Utils.getElementString;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
 import uk.org.taverna.component.api.ComponentProfileDescription;
@@ -20,9 +24,16 @@ class NewComponentProfile extends ComponentProfile {
 	private String location;
 	private final String uri;
 
+	private static URL contentUrl(ComponentProfileType cpt) throws RegistryException {
+		try {
+			return new URL(cpt.getContentUri());
+		} catch (MalformedURLException e) {
+			throw new RegistryException("unexpected bad URL", e);
+		}
+	}
 	NewComponentProfile(NewComponentRegistry registry,
 			ComponentProfileType profile) throws RegistryException {
-		super(registry, profile.getContentUri());
+		super(registry, contentUrl(profile));
 		this.registry = registry;
 		uri = profile.getUri();
 		id = profile.getId();
