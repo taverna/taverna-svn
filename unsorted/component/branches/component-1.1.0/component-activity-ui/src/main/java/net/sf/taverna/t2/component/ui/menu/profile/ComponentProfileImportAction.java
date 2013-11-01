@@ -3,6 +3,9 @@
  */
 package net.sf.taverna.t2.component.ui.menu.profile;
 
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.WEST;
+import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
 import static javax.swing.JOptionPane.OK_OPTION;
@@ -25,6 +28,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.apache.log4j.Logger;
+
 import net.sf.taverna.t2.component.api.License;
 import net.sf.taverna.t2.component.api.Profile;
 import net.sf.taverna.t2.component.api.Registry;
@@ -42,6 +47,8 @@ import net.sf.taverna.t2.lang.ui.DeselectingButton;
  */
 public class ComponentProfileImportAction extends AbstractAction {
 	private static final long serialVersionUID = -3796754761286943970L;
+	private static final Logger log = Logger
+			.getLogger(ComponentProfileImportAction.class);
 	private static final String IMPORT_PROFILE = "Import profile...";
 	private static final JFileChooser chooser = new JFileChooser();
 
@@ -51,7 +58,6 @@ public class ComponentProfileImportAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-
 		JPanel overallPanel = new JPanel();
 		overallPanel.setLayout(new GridBagLayout());
 
@@ -62,8 +68,8 @@ public class ComponentProfileImportAction extends AbstractAction {
 		gbc.insets = new Insets(0, 5, 0, 5);
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.BOTH;
+		gbc.anchor = WEST;
+		gbc.fill = BOTH;
 		gbc.gridwidth = 2;
 		gbc.weightx = 1;
 		overallPanel.add(registryPanel, gbc);
@@ -89,10 +95,9 @@ public class ComponentProfileImportAction extends AbstractAction {
 						"XML files", "xml");
 				chooser.setFileFilter(filter);
 				int returnVal = chooser.showOpenDialog(null);
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
+				if (returnVal == APPROVE_OPTION)
 					profileLocation.setText(chooser.getSelectedFile().toURI()
 							.toString());
-				}
 			}
 		});
 		overallPanel.add(browseButton, gbc);
@@ -113,12 +118,11 @@ public class ComponentProfileImportAction extends AbstractAction {
 
 		int answer = showConfirmDialog(null, overallPanel,
 				"Import Component Profile", OK_CANCEL_OPTION);
-		if (answer == OK_OPTION) {
+		if (answer == OK_OPTION)
 			doImport(registryPanel.getChosenRegistry(),
 					profileLocation.getText(),
 					permissionPanel.getChosenPermission(),
 					licensePanel.getChosenLicense());
-		}
 	}
 
 	private void doImport(Registry chosenRegistry, String profileLocation,
@@ -131,25 +135,20 @@ public class ComponentProfileImportAction extends AbstractAction {
 			}
 			Profile newProfile = makeProfile(new URL(profileLocation));
 			String newName = newProfile.getName();
-			boolean alreadyUsed = false;
-			for (Profile p : chosenRegistry.getComponentProfiles()) {
+			for (Profile p : chosenRegistry.getComponentProfiles())
 				if (p.getName().equals(newName)) {
-					alreadyUsed = true;
-					break;
+					showMessageDialog(null, newName + " is already used",
+							"Duplicate profile name", ERROR_MESSAGE);
+					return;
 				}
-			}
-			if (alreadyUsed) {
-				showMessageDialog(null, newName + " is already used",
-						"Duplicate profile name", ERROR_MESSAGE);
-			} else {
-				chosenRegistry.addComponentProfile(newProfile, license,
-						permission);
-			}
+			chosenRegistry.addComponentProfile(newProfile, license, permission);
 		} catch (MalformedURLException e) {
 			showMessageDialog(null, profileLocation + " is not a valid URL",
 					"Invalid URL", ERROR_MESSAGE);
 		} catch (RegistryException e) {
-			showMessageDialog(null, "Unable to save profile",
+			log.error("import profile failed", e);
+			showMessageDialog(null,
+					"Unable to save profile: " + e.getMessage(),
 					"Registry Exception", ERROR_MESSAGE);
 		}
 	}

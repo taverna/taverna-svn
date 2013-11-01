@@ -18,6 +18,8 @@ import javax.swing.AbstractAction;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
+import org.apache.log4j.Logger;
+
 import net.sf.taverna.t2.component.api.License;
 import net.sf.taverna.t2.component.api.Profile;
 import net.sf.taverna.t2.component.api.Registry;
@@ -34,11 +36,8 @@ import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon;
  * 
  */
 public class ComponentProfileCopyAction extends AbstractAction {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 6332253931049645259L;
+	private static final Logger log = Logger.getLogger(ComponentProfileCopyAction.class);
 	private static final String COPY_PROFILE = "Copy profile...";
 
 	public ComponentProfileCopyAction() {
@@ -96,15 +95,15 @@ public class ComponentProfileCopyAction extends AbstractAction {
 		int answer = showConfirmDialog(null, overallPanel,
 				"Copy Component Profile", OK_CANCEL_OPTION);
 		try {
-			if (answer == OK_OPTION) {
+			if (answer == OK_OPTION) 
 				doCopy(sourceRegistryPanel.getChosenRegistry(),
 						profilePanel.getChosenProfile(),
 						targetRegistryPanel.getChosenRegistry(),
 						permissionPanel.getChosenPermission(),
 						licensePanel.getChosenLicense());
-			}
 		} catch (RegistryException e) {
-			showMessageDialog(null, "Unable to save profile",
+			log.error("failed to copy profile", e);
+			showMessageDialog(null, "Unable to save profile: " + e.getMessage(),
 					"Registry Exception", ERROR_MESSAGE);
 		}
 	}

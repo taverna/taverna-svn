@@ -47,7 +47,7 @@ public class ComponentFamilyDeleteAction extends AbstractAction {
 	private static final String CONFIRM_TITLE = "Delete Component Family Confirmation";
 	private static final String DELETE_FAMILY_LABEL = "Delete family...";
 	private static final String ERROR_TITLE = "Component Family Deletion Error";
-	private static final String FAILED_MSG = "Unable to delete %s";
+	private static final String FAILED_MSG = "Unable to delete %s: %s";
 	private static final String FAMILY_FAIL_TITLE = "Component Family Problem";
 	private static final String OPEN_MSG = "Components in the family are open";
 	private static final String PICK_FAMILY_TITLE = "Delete Component Family";
@@ -100,31 +100,31 @@ public class ComponentFamilyDeleteAction extends AbstractAction {
 			showMessageDialog(null, WHAT_REGISTRY_MSG, REGISTRY_FAIL_TITLE,
 					ERROR_MESSAGE);
 			return;
-		}
-		if (chosenFamily == null) {
+		} else if (chosenFamily == null) {
 			showMessageDialog(null, WHAT_FAMILY_MSG, FAMILY_FAIL_TITLE,
 					ERROR_MESSAGE);
 			return;
-		}
-		if (familyIsInUse(chosenRegistry, chosenFamily)) {
+		} else if (familyIsInUse(chosenRegistry, chosenFamily)) {
 			showMessageDialog(null, OPEN_MSG, FAMILY_FAIL_TITLE, ERROR_MESSAGE);
 			return;
 		}
-		int confirmation = showConfirmDialog(null,
+
+		if (showConfirmDialog(null,
 				format(CONFIRM_MSG, chosenFamily.getName()), CONFIRM_TITLE,
-				YES_NO_OPTION);
+				YES_NO_OPTION) != YES_OPTION)
+			return;
+
 		try {
-			if (confirmation == YES_OPTION) {
-				chosenRegistry.removeComponentFamily(chosenFamily);
-				ComponentServiceProviderConfig config = new ComponentServiceProviderConfig();
-				config.setFamilyName(chosenFamily.getName());
-				config.setRegistryBase(chosenRegistry.getRegistryBase());
-				removeComponentServiceProvider(config);
-			}
+			chosenRegistry.removeComponentFamily(chosenFamily);
+			ComponentServiceProviderConfig config = new ComponentServiceProviderConfig();
+			config.setFamilyName(chosenFamily.getName());
+			config.setRegistryBase(chosenRegistry.getRegistryBase());
+			removeComponentServiceProvider(config);
 		} catch (RegistryException e) {
-			showMessageDialog(null, format(FAILED_MSG, chosenFamily.getName()),
-					ERROR_TITLE, ERROR_MESSAGE);
 			logger.error(e);
+			showMessageDialog(null,
+					format(FAILED_MSG, chosenFamily.getName(), e.getMessage()),
+					ERROR_TITLE, ERROR_MESSAGE);
 		} catch (ConfigurationException e) {
 			logger.error(e);
 		}

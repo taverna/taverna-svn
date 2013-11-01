@@ -42,7 +42,7 @@ public class ComponentDeleteAction extends AbstractAction {
 	private static final String CONFIRM_TITLE = "Delete Component Confirmation";
 	private static final String DELETE_COMPONENT_LABEL = "Delete component...";
 	private static final String DELETE_FAILED_TITLE = "Component Deletion Error";
-	private static final String FAILED_MSG = "Unable to delete %s\n%s";
+	private static final String FAILED_MSG = "Unable to delete %s: %s";
 	private static final String OPEN_COMPONENT_MSG = "The component is open";
 	private static final String TITLE = "Component choice";
 	private static final String WHAT_COMPONENT_MSG = "Unable to determine component";
@@ -69,29 +69,30 @@ public class ComponentDeleteAction extends AbstractAction {
 			showMessageDialog(null, WHAT_COMPONENT_MSG,
 					COMPONENT_PROBLEM_TITLE, ERROR_MESSAGE);
 			return;
-		}
-		if (componentIsInUse(chosenRegistry, chosenFamily, chosenComponent)) {
+		} else if (componentIsInUse(chosenRegistry, chosenFamily,
+				chosenComponent)) {
 			showMessageDialog(null, OPEN_COMPONENT_MSG,
 					COMPONENT_PROBLEM_TITLE, ERROR_MESSAGE);
 			return;
 		}
-		int confirmation = showConfirmDialog(null,
+
+		if (showConfirmDialog(null,
 				format(CONFIRM_MSG, chosenComponent.getName()), CONFIRM_TITLE,
-				YES_NO_OPTION);
+				YES_NO_OPTION) != YES_OPTION)
+			return;
+
 		try {
-			if (confirmation == YES_OPTION) {
-				chosenFamily.removeComponent(chosenComponent);
-				ComponentServiceProviderConfig config = new ComponentServiceProviderConfig();
-				config.setFamilyName(chosenFamily.getName());
-				config.setRegistryBase(chosenRegistry.getRegistryBase());
-				refreshComponentServiceProvider(config);
-			}
+			chosenFamily.removeComponent(chosenComponent);
+			ComponentServiceProviderConfig config = new ComponentServiceProviderConfig();
+			config.setFamilyName(chosenFamily.getName());
+			config.setRegistryBase(chosenRegistry.getRegistryBase());
+			refreshComponentServiceProvider(config);
 		} catch (RegistryException e) {
+			logger.error(e);
 			showMessageDialog(
 					null,
 					format(FAILED_MSG, chosenComponent.getName(),
 							e.getMessage()), DELETE_FAILED_TITLE, ERROR_MESSAGE);
-			logger.error(e);
 		} catch (ConfigurationException e) {
 			logger.error(e);
 		}

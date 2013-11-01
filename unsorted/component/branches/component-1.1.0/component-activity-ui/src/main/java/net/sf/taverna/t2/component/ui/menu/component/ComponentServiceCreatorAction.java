@@ -9,7 +9,10 @@ import static javax.swing.JOptionPane.OK_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateComponent;
+import static net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon.getIcon;
+import static net.sf.taverna.t2.component.ui.util.Utils.refreshComponentServiceProvider;
 import static net.sf.taverna.t2.workflowmodel.utils.Tools.uniqueProcessorName;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -26,9 +29,7 @@ import net.sf.taverna.t2.component.api.ComponentFileType;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.ui.panel.RegisteryAndFamilyChooserComponentEntryPanel;
-import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceProviderConfig;
-import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
@@ -64,8 +65,7 @@ import org.jdom.JDOMException;
  */
 public class ComponentServiceCreatorAction extends AbstractAction {
 	private static final long serialVersionUID = -2611514696254112190L;
-	private static Logger logger = Logger
-			.getLogger(ComponentServiceCreatorAction.class);
+	private static Logger logger = getLogger(ComponentServiceCreatorAction.class);
 
 	private final Processor p;
 
@@ -74,7 +74,7 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 	private static Edits edits = em.getEdits();
 
 	public ComponentServiceCreatorAction(final Processor p) {
-		super("Create component...", ComponentServiceIcon.getIcon());
+		super("Create component...", getIcon());
 		this.p = p;
 	}
 
@@ -96,7 +96,6 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 
 		Element processorElement;
 		try {
-
 			if (a instanceof NestedDataflow) {
 				d = ((NestedDataflow) a).getNestedDataflow();
 			} else {
@@ -169,11 +168,9 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 			currentWorkflowEditList.add(edits.getAddActivityEdit(p, ca));
 			em.doDataflowEdit(current,
 					new CompoundEdit(currentWorkflowEditList));
-
 		} catch (Exception e1) {
 			logger.error(e1);
 		}
-
 	}
 
 	public static ComponentActivityConfigurationBean saveWorkflowAsComponent(
@@ -188,7 +185,7 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 		ComponentServiceProviderConfig config = new ComponentServiceProviderConfig();
 		config.setFamilyName(ident.getFamilyName());
 		config.setRegistryBase(ident.getRegistryBase());
-		Utils.refreshComponentServiceProvider(config);
+		refreshComponentServiceProvider(config);
 		return new ComponentActivityConfigurationBean(ident);
 	}
 
@@ -197,9 +194,8 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 		panel.setComponentName(defaultName);
 		int result = showConfirmDialog(null, panel, "Component location",
 				OK_CANCEL_OPTION);
-		if (result != OK_OPTION) {
+		if (result != OK_OPTION)
 			return null;
-		}
 
 		Version.ID ident = panel.getComponentVersionIdentification();
 		if (ident == null) {
@@ -218,9 +214,10 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 				return null;
 			}
 		} catch (RegistryException e) {
-			showMessageDialog(null, "Problem searching registry",
-					"Component creation problem", ERROR_MESSAGE);
 			logger.error(e);
+			showMessageDialog(null,
+					"Problem searching registry: " + e.getMessage(),
+					"Component creation problem", ERROR_MESSAGE);
 			return null;
 		}
 		return ident;
@@ -235,12 +232,11 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 		requiredSubworkflows = new HashMap<String, Element>();
 		rememberSubworkflows(p);
 		return result;
-
 	}
 
 	private static void rememberSubworkflows(final Processor p)
 			throws SerializationException {
-		for (final Activity<?> a : p.getActivityList()) {
+		for (final Activity<?> a : p.getActivityList())
 			if (a instanceof NestedDataflow) {
 				NestedDataflow da = (NestedDataflow) a;
 				Dataflow df = da.getNestedDataflow();
@@ -248,12 +244,10 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 					requiredSubworkflows.put(df.getIdentifier(),
 							DataflowXMLSerializer.getInstance()
 									.serializeDataflow(df));
-					for (Processor sp : df.getProcessors()) {
+					for (Processor sp : df.getProcessors())
 						rememberSubworkflows(sp);
-					}
 				}
 			}
-		}
 	}
 
 	public static Processor pasteProcessor(final Element e, final Dataflow d)

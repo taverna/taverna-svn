@@ -3,12 +3,15 @@
  */
 package net.sf.taverna.t2.component.ui.menu;
 
+import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.SOUTH;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
 import static javax.swing.JOptionPane.OK_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static net.sf.taverna.t2.component.ComponentActivityConfigurationBean.ignorableNames;
+import static net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon.getIcon;
 import static net.sf.taverna.t2.workflowmodel.utils.Tools.getActivityInputPort;
 import static net.sf.taverna.t2.workflowmodel.utils.Tools.getActivityOutputPort;
 
@@ -29,7 +32,6 @@ import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.ui.panel.ComponentChooserPanel;
-import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workflowmodel.CompoundEdit;
@@ -60,7 +62,7 @@ public class ReplaceByComponentAction extends AbstractAction {
 	private static Edits edits = em.getEdits();
 
 	public ReplaceByComponentAction() {
-		super("Replace by component...", ComponentServiceIcon.getIcon());
+		super("Replace by component...", getIcon());
 	}
 
 	private Processor selection;
@@ -69,10 +71,10 @@ public class ReplaceByComponentAction extends AbstractAction {
 	public void actionPerformed(ActionEvent e) {
 		JPanel overallPanel = new JPanel(new BorderLayout());
 		ComponentChooserPanel panel = new ComponentChooserPanel();
-		overallPanel.add(panel, BorderLayout.CENTER);
+		overallPanel.add(panel, CENTER);
 		JCheckBox replaceAllCheckBox = new JCheckBox(
 				"Replace all matching services");
-		overallPanel.add(replaceAllCheckBox, BorderLayout.SOUTH);
+		overallPanel.add(replaceAllCheckBox, SOUTH);
 		int answer = showConfirmDialog(null, overallPanel, "Component choice",
 				OK_CANCEL_OPTION);
 		if (answer == OK_OPTION)
@@ -99,12 +101,14 @@ public class ReplaceByComponentAction extends AbstractAction {
 
 				replaceAllMatchingActivities(activityClass, cacb, configString,
 						fileManager.getCurrentDataflow());
-			} else {
+			} else
 				replaceActivity(cacb, selection,
 						fileManager.getCurrentDataflow());
-			}
-		} catch (ActivityConfigurationException e1) {
-			showMessageDialog(null, e1.getMessage(), "Component Problem",
+		} catch (ActivityConfigurationException e) {
+			showMessageDialog(
+					null,
+					"Failed to replace nested workflow with component: "
+							+ e.getMessage(), "Component Problem",
 					ERROR_MESSAGE);
 		}
 	}
@@ -138,9 +142,9 @@ public class ReplaceByComponentAction extends AbstractAction {
 		ComponentActivity replacementActivity = new ComponentActivity();
 		try {
 			replacementActivity.configure(cacb);
-		} catch (ActivityConfigurationException e1) {
+		} catch (ActivityConfigurationException e) {
 			throw new ActivityConfigurationException(
-					"Unable to configure component");
+					"Unable to configure component", e);
 		}
 		if (originalActivity.getInputPorts().size() != replacementActivity
 				.getInputPorts().size())
@@ -199,9 +203,9 @@ public class ReplaceByComponentAction extends AbstractAction {
 				originalActivity));
 		try {
 			em.doDataflowEdit(d, new CompoundEdit(currentWorkflowEditList));
-		} catch (EditException e1) {
+		} catch (EditException e) {
 			throw new ActivityConfigurationException(
-					"Unable to replace with component");
+					"Unable to replace with component", e);
 		}
 	}
 

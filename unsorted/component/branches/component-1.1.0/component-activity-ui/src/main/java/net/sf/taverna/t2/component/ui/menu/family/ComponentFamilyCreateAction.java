@@ -3,11 +3,14 @@
  */
 package net.sf.taverna.t2.component.ui.menu.family;
 
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.WEST;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
 import static javax.swing.JOptionPane.OK_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -40,10 +43,7 @@ import org.apache.log4j.Logger;
  */
 public class ComponentFamilyCreateAction extends AbstractAction {
 	private static final long serialVersionUID = -7780471499146286881L;
-
-	private static Logger logger = Logger
-			.getLogger(ComponentFamilyCreateAction.class);
-
+	private static final Logger logger = getLogger(ComponentFamilyCreateAction.class);
 	private static final String CREATE_FAMILY = "Create family...";
 
 	private JPanel overallPanel;
@@ -65,8 +65,8 @@ public class ComponentFamilyCreateAction extends AbstractAction {
 		gbc.insets.left = 5;
 		gbc.insets.right = 5;
 		gbc.gridx = 0;
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.BOTH;
+		gbc.anchor = WEST;
+		gbc.fill = BOTH;
 		gbc.gridwidth = 2;
 		gbc.weightx = 1;
 		gbc.gridy++;
@@ -117,14 +117,12 @@ public class ComponentFamilyCreateAction extends AbstractAction {
 
 		int answer = showConfirmDialog(null, overallPanel,
 				"Create Component Family", OK_CANCEL_OPTION);
-		if (answer == OK_OPTION) {
+		if (answer == OK_OPTION)
 			doCreate(registryPanel.getChosenRegistry(),
 					profilePanel.getChosenProfile(), familyNameField.getText(),
 					familyDescription.getText(),
 					permissionPanel.getChosenPermission(),
 					licensePanel.getChosenLicense());
-		}
-
 	}
 
 	private void doCreate(Registry chosenRegistry, Profile chosenProfile,
@@ -134,13 +132,11 @@ public class ComponentFamilyCreateAction extends AbstractAction {
 			showMessageDialog(null, "Unable to determine registry",
 					"Component Registry Problem", ERROR_MESSAGE);
 			return;
-		}
-		if (chosenProfile == null) {
+		} else if (chosenProfile == null) {
 			showMessageDialog(null, "Unable to determine profile",
 					"Component Profile Problem", ERROR_MESSAGE);
 			return;
-		}
-		if ((newName == null) || newName.isEmpty()) {
+		} else if ((newName == null) || newName.isEmpty()) {
 			showMessageDialog(null, "Name must be specified",
 					"Missing component family name", ERROR_MESSAGE);
 			return;
@@ -155,9 +151,10 @@ public class ComponentFamilyCreateAction extends AbstractAction {
 			chosenRegistry.createComponentFamily(newName, chosenProfile,
 					familyDescription, license, permission);
 		} catch (RegistryException e) {
-			showMessageDialog(null, "Unable to create family",
-					"Family creation problem", ERROR_MESSAGE);
 			logger.error(e);
+			showMessageDialog(null,
+					"Unable to create family: " + e.getMessage(),
+					"Family creation problem", ERROR_MESSAGE);
 		}
 	}
 

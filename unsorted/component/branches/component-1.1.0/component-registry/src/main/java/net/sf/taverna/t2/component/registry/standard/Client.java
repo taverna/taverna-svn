@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.component.registry.standard;
 
 import static java.net.HttpURLConnection.HTTP_OK;
+import static javax.xml.bind.Marshaller.JAXB_FRAGMENT;
 
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -63,7 +64,7 @@ class Client {
 
 	private Marshaller getMarshaller() throws JAXBException {
 		Marshaller m = jaxbContext.createMarshaller();
-		m.setProperty("com.sun.xml.bind.xmlDeclaration", false);
+		m.setProperty(JAXB_FRAGMENT, true);
 		return m;
 	}
 
