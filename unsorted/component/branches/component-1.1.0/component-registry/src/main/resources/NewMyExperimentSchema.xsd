@@ -38,14 +38,14 @@
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="Description" mixed="true">
-		<xs:all>
+		<xs:sequence>
 			<xs:element name="title" type="xs:string" minOccurs="0" />
 			<xs:element name="description" type="xs:string" minOccurs="0" />
 			<xs:element name="license-type" type="Description"
 				minOccurs="0" />
 			<xs:element name="permissions" type="Permissions"
 				minOccurs="0" />
-		</xs:all>
+		</xs:sequence>
 		<xs:attributeGroup ref="LocationAttributes" />
 	</xs:complexType>
 	<xs:complexType name="Privileges">
@@ -392,8 +392,9 @@
 	</xs:complexType>
 
 	<xs:complexType name="ComponentDescription">
-		<xs:complexContent>
-			<xs:restriction base="Description" />
+		<xs:complexContent mixed="true">
+			<xs:extension base="Description">
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="ComponentDescriptionList">
@@ -404,8 +405,9 @@
 	</xs:complexType>
 
 	<xs:complexType name="ComponentFamilyDescription">
-		<xs:complexContent>
-			<xs:restriction base="Description" />
+		<xs:complexContent mixed="true">
+			<xs:extension base="Description">
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="ComponentFamilyList">
@@ -447,8 +449,12 @@
 	</xs:complexType>
 
 	<xs:complexType name="ComponentProfileDescription">
-		<xs:complexContent>
-			<xs:restriction base="Description"></xs:restriction>
+		<xs:complexContent mixed="true">
+			<xs:extension base="Description">
+				<xs:sequence>
+					<xs:element ref="content-uri" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="ComponentProfileList">
@@ -458,6 +464,7 @@
 		</xs:sequence>
 	</xs:complexType>
 
+	<xs:element name="content-uri" type="xs:string" />
 	<xs:element name="component-profiles" type="ComponentProfileList" />
 	<xs:element name="component-families" type="ComponentFamilyList" />
 	<xs:element name="workflows" type="ComponentDescriptionList" />
