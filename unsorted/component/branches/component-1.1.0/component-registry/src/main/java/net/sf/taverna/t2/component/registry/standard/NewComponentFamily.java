@@ -13,8 +13,8 @@ import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
-import uk.org.taverna.component.api.ComponentFamilyDescription;
 import uk.org.taverna.component.api.ComponentFamilyType;
+import uk.org.taverna.component.api.Description;
 
 /**
  * A family of components in the new-interface registry.
@@ -33,7 +33,7 @@ class NewComponentFamily extends ComponentFamily {
 	private final String resource;
 
 	NewComponentFamily(NewComponentRegistry componentRegistry,
-			NewComponentProfile profile, ComponentFamilyDescription familyDesc)
+			NewComponentProfile profile, Description familyDesc)
 			throws RegistryException {
 		super(componentRegistry);
 		uri = familyDesc.getUri();

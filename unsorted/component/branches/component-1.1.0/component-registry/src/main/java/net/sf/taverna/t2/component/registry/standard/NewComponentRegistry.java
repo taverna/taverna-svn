@@ -29,12 +29,9 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.apache.log4j.Logger;
 
-import uk.org.taverna.component.api.ComponentDescription;
 import uk.org.taverna.component.api.ComponentDescriptionList;
-import uk.org.taverna.component.api.ComponentFamilyDescription;
 import uk.org.taverna.component.api.ComponentFamilyList;
 import uk.org.taverna.component.api.ComponentFamilyType;
-import uk.org.taverna.component.api.ComponentProfileDescription;
 import uk.org.taverna.component.api.ComponentProfileList;
 import uk.org.taverna.component.api.ComponentProfileType;
 import uk.org.taverna.component.api.ComponentType;
@@ -99,8 +96,8 @@ class NewComponentRegistry extends ComponentRegistry {
 		}
 	}
 
-	private List<ComponentFamilyDescription> listComponentFamilies(
-			String profileUri) throws RegistryException {
+	private List<Description> listComponentFamilies(String profileUri)
+			throws RegistryException {
 		return client.get(ComponentFamilyList.class, COMPONENT_FAMILY_LIST,
 				"component-profile=" + profileUri,
 				"elements=" + NewComponentFamily.ELEMENTS).getPack();
@@ -116,14 +113,14 @@ class NewComponentRegistry extends ComponentRegistry {
 	}
 
 	@SuppressWarnings("unused")
-	private ComponentFamilyType getComponentFamilyById(String id, String elements)
-			throws RegistryException {
+	private ComponentFamilyType getComponentFamilyById(String id,
+			String elements) throws RegistryException {
 		return client.get(ComponentFamilyType.class, PACK_SERVICE, "id=" + id,
 				"elements=" + elements);
 	}
 
-	private ComponentProfileType getComponentProfileById(String id, String elements)
-			throws RegistryException {
+	private ComponentProfileType getComponentProfileById(String id,
+			String elements) throws RegistryException {
 		return client.get(ComponentProfileType.class, FILE_SERVICE, "id=" + id,
 				"elements=" + elements);
 	}
@@ -132,7 +129,7 @@ class NewComponentRegistry extends ComponentRegistry {
 	protected void populateFamilyCache() throws RegistryException {
 		for (Profile pr : getComponentProfiles()) {
 			NewComponentProfile p = (NewComponentProfile) pr;
-			for (ComponentFamilyDescription cfd : listComponentFamilies(p.getUri()))
+			for (Description cfd : listComponentFamilies(p.getUri()))
 				familyCache.put(getElementString(cfd, "title"),
 						new NewComponentFamily(this, p, cfd));
 		}
@@ -161,8 +158,8 @@ class NewComponentRegistry extends ComponentRegistry {
 
 	@Override
 	protected void populateProfileCache() throws RegistryException {
-		for (ComponentProfileDescription cpd : client.get(
-				ComponentProfileList.class, COMPONENT_PROFILE_LIST,
+		for (Description cpd : client.get(ComponentProfileList.class,
+				COMPONENT_PROFILE_LIST,
 				"elements=" + NewComponentProfile.ELEMENTS).getFile())
 			if (cpd.getUri() != null && !cpd.getUri().isEmpty())
 				profileCache.add(new NewComponentProfile(this, cpd));
@@ -312,8 +309,8 @@ class NewComponentRegistry extends ComponentRegistry {
 		return PRIVATE;
 	}
 
-	private List<ComponentDescription> listComponents(String query,
-			String prefixes) throws RegistryException {
+	private List<Description> listComponents(String query, String prefixes)
+			throws RegistryException {
 		return client.get(ComponentDescriptionList.class, COMPONENT_LIST,
 				"query=" + query, "prefixes=" + prefixes,
 				"elements=" + NewComponent.ELEMENTS).getWorkflow();
@@ -323,7 +320,7 @@ class NewComponentRegistry extends ComponentRegistry {
 	public Set<ID> searchForComponents(String prefixes, String text)
 			throws RegistryException {
 		HashSet<ID> versions = new HashSet<ID>();
-		for (ComponentDescription cd : listComponents(text, prefixes)) {
+		for (Description cd : listComponents(text, prefixes)) {
 			NewComponent nc = null;
 			for (Family f : getComponentFamilies()) {
 				nc = (NewComponent) ((NewComponentFamily) f)
@@ -341,7 +338,7 @@ class NewComponentRegistry extends ComponentRegistry {
 		return versions;
 	}
 
-	private List<ComponentDescription> listComponents(String familyUri)
+	private List<Description> listComponents(String familyUri)
 			throws RegistryException {
 		return client.get(ComponentDescriptionList.class, COMPONENT_LIST,
 				"component-family=" + familyUri,
@@ -351,7 +348,7 @@ class NewComponentRegistry extends ComponentRegistry {
 	protected List<Component> listComponents(NewComponentFamily family)
 			throws RegistryException {
 		List<Component> result = new ArrayList<Component>();
-		for (ComponentDescription cd : listComponents(family.getUri()))
+		for (Description cd : listComponents(family.getUri()))
 			result.add(new NewComponent(this, family, cd));
 		return result;
 	}

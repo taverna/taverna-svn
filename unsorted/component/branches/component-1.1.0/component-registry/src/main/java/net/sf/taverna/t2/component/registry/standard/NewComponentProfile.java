@@ -7,8 +7,8 @@ import java.net.URL;
 
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.profile.ComponentProfile;
-import uk.org.taverna.component.api.ComponentProfileDescription;
 import uk.org.taverna.component.api.ComponentProfileType;
+import uk.org.taverna.component.api.Description;
 
 /**
  * Profiles managed by the new-interface component registry.
@@ -43,7 +43,7 @@ class NewComponentProfile extends ComponentProfile {
 	}
 
 	NewComponentProfile(NewComponentRegistry registry,
-			ComponentProfileDescription cpd) throws RegistryException {
+			Description cpd) throws RegistryException {
 		super(registry, getElementString(cpd, LOCATION));
 		this.registry = registry;
 		uri = cpd.getUri();

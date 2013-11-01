@@ -16,7 +16,6 @@ import net.sf.taverna.t2.component.api.SharingPolicy;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
-import uk.org.taverna.component.api.ComponentDescription;
 import uk.org.taverna.component.api.ComponentType;
 import uk.org.taverna.component.api.Description;
 
@@ -32,7 +31,7 @@ class NewComponent extends Component {
 	private final String resource;
 
 	NewComponent(NewComponentRegistry registry, NewComponentFamily family,
-			ComponentDescription cd) throws RegistryException {
+			Description cd) throws RegistryException {
 		super(cd.getUri());
 		this.registry = registry;
 		this.family = family;
