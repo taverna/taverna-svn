@@ -52,7 +52,8 @@ private User admin;
     super();
     this.setItemType(Resource.GROUP);
   }
-  
+
+  @Override
   public User getAdmin() {
     return admin;
   }
@@ -65,6 +66,7 @@ private User admin;
     return this.tags;
   }
   
+  @Override
   public List<Comment> getComments()
   {
     return this.comments;

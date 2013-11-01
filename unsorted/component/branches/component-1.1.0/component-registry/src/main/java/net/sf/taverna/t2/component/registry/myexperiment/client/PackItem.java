@@ -48,14 +48,17 @@ private int id;
 	this.setItemType(Resource.UNKNOWN); // set to unknown originally; will be changed as soon as the type is known
   }
 
+  @Override
   public int getID() {
 	return id;
   }
 
+  @Override
   public void setID(int id) {
 	this.id = id;
   }
 
+  @Override
   public void setID(String id) {
 	this.id = Integer.parseInt(id);
   }

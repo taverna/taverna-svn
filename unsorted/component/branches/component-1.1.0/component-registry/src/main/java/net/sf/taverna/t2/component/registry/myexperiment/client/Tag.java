@@ -42,6 +42,7 @@ private String tagName;
 	  super();
 	}
 
+    @Override
 	public int compare(Tag t1, Tag t2) {
 	  if (t1.getCount() == t2.getCount()) {
 		// in case of the same popularity, compare by tag name
@@ -58,6 +59,7 @@ private String tagName;
 	  super();
 	}
 
+    @Override
 	public int compare(Tag t1, Tag t2) {
 	  return (t1.getTagName().compareTo(t2.getTagName()));
 	}
@@ -68,6 +70,7 @@ private String tagName;
    * interface work properly - this way resources are treated to be the same if
    * they store identical data, rather than they simply hold the same reference.
    */
+  @Override
   public boolean equals(Object other) {
 	// could only be equal to another Tag object, not anything else
 	if (!(other instanceof Tag))
@@ -78,7 +81,12 @@ private String tagName;
 	Tag otherTag = (Tag) other;
 	return (this.count == otherTag.count && this.tagName.equals(otherTag.tagName));
   }
+  @Override
+  public int hashCode() {
+    return Tag.class.hashCode() ^ count ^ tagName.hashCode();
+  }
 
+  @Override
   public String toString() {
 	return ("Tag (" + this.tagName + ", " + this.count + ")");
   }

@@ -62,6 +62,7 @@ private int accessType;
     this.accessType = accessType;
   }
   
+  @Override
   public User getCreator() {
     return creator;
   }
@@ -75,6 +76,7 @@ private int accessType;
     return (this.tags);
   }
   
+  @Override
   public List<Comment> getComments()
   {
     return this.comments;

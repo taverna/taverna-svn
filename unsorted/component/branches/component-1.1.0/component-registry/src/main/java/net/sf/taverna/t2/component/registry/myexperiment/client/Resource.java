@@ -160,6 +160,7 @@ public class Resource implements Comparable<Resource>, Serializable {
   /**
    * This method is needed to sort Resource instances.
    */
+  @Override
   public int compareTo(Resource other) {
 	int iTypesCompared = this.getItemType() - other.getItemType();
 
@@ -191,6 +192,11 @@ public class Resource implements Comparable<Resource>, Serializable {
 	// (these fields will always be present in every Resource instance)
 	Resource otherRes = (Resource) other;
 	return (this.itemType == otherRes.itemType && this.uri.equals(otherRes.uri) && this.resource.equals(otherRes.resource));
+  }
+
+  @Override
+  public int hashCode() {
+    return Resource.class.hashCode() ^ itemType ^ uri.hashCode() ^ resource.hashCode();
   }
 
   /**
