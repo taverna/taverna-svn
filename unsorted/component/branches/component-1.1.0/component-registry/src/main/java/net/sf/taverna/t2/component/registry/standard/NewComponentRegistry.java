@@ -97,17 +97,11 @@ class NewComponentRegistry extends ComponentRegistry {
 		}
 	}
 
-	@Override
-	protected void populateFamilyCache() throws RegistryException {
-		for (Profile pr : getComponentProfiles()) {
-			NewComponentProfile p = (NewComponentProfile) pr;
-			for (ComponentFamilyDescription cfd : client.get(
-					ComponentFamilyList.class, COMPONENT_FAMILY_LIST,
-					"component-profile=" + p.getUri(),
-					"elements=" + NewComponentFamily.ELEMENTS).getPack())
-				familyCache.put(getElementString(cfd, "title"),
-						new NewComponentFamily(this, p, cfd));
-		}
+	private List<ComponentFamilyDescription> listComponentFamilies(
+			String profileUri) throws RegistryException {
+		return client.get(ComponentFamilyList.class, COMPONENT_FAMILY_LIST,
+				"component-profile=" + profileUri,
+				"elements=" + NewComponentFamily.ELEMENTS).getPack();
 	}
 
 	ComponentType getComponentById(String id, Integer version, String elements)
@@ -119,16 +113,27 @@ class NewComponentRegistry extends ComponentRegistry {
 				"elements=" + elements);
 	}
 
-	ComponentFamilyType getComponentFamilyById(String id, String elements)
+	@SuppressWarnings("unused")
+	private ComponentFamilyType getComponentFamilyById(String id, String elements)
 			throws RegistryException {
 		return client.get(ComponentFamilyType.class, PACK_SERVICE, "id=" + id,
 				"elements=" + elements);
 	}
 
-	ComponentProfileType getComponentProfileById(String id, String elements)
+	private ComponentProfileType getComponentProfileById(String id, String elements)
 			throws RegistryException {
 		return client.get(ComponentProfileType.class, FILE_SERVICE, "id=" + id,
 				"elements=" + elements);
+	}
+
+	@Override
+	protected void populateFamilyCache() throws RegistryException {
+		for (Profile pr : getComponentProfiles()) {
+			NewComponentProfile p = (NewComponentProfile) pr;
+			for (ComponentFamilyDescription cfd : listComponentFamilies(p.getUri()))
+				familyCache.put(getElementString(cfd, "title"),
+						new NewComponentFamily(this, p, cfd));
+		}
 	}
 
 	@Override
@@ -307,47 +312,46 @@ class NewComponentRegistry extends ComponentRegistry {
 		return PRIVATE;
 	}
 
+	private List<ComponentDescription> listComponents(String query,
+			String prefixes) throws RegistryException {
+		return client.get(ComponentDescriptionList.class, COMPONENT_LIST,
+				"query=" + query, "prefixes=" + prefixes,
+				"elements=" + NewComponent.ELEMENTS).getWorkflow();
+	}
+
 	@Override
 	public Set<ID> searchForComponents(String prefixes, String text)
 			throws RegistryException {
 		HashSet<ID> versions = new HashSet<ID>();
-		for (ComponentDescription cd : client.get(
-				ComponentDescriptionList.class, COMPONENT_LIST,
-				"query=" + text, "prefixes=" + prefixes,
-				"elements=" + NewComponent.ELEMENTS).getWorkflow()) {
+		for (ComponentDescription cd : listComponents(text, prefixes)) {
 			NewComponent nc = null;
 			for (Family f : getComponentFamilies()) {
-				if (!(f instanceof NewComponentFamily))
-					continue;
 				nc = (NewComponent) ((NewComponentFamily) f)
 						.getComponent(getElementString(cd, "title"));
 				if (nc != null)
 					break;
 			}
 			if (nc != null)
-				versions.add(new VersionId(nc, cd.getVersion()));
+				versions.add(new ComponentVersionIdentification(
+						getRegistryBase(), nc.getFamily().getName(), nc
+								.getName(), cd.getVersion()));
 			else
 				logger.warn("could not construct component for " + cd.getUri());
 		}
 		return versions;
 	}
 
-	static class VersionId extends ComponentVersionIdentification {
-		private static final long serialVersionUID = -7743495565477613860L;
-
-		VersionId(NewComponent component, Integer version) {
-			super(component.registry.getRegistryBase(), component.family
-					.getName(), component.getName(), version);
-		}
+	private List<ComponentDescription> listComponents(String familyUri)
+			throws RegistryException {
+		return client.get(ComponentDescriptionList.class, COMPONENT_LIST,
+				"component-family=" + familyUri,
+				"elements=" + NewComponent.ELEMENTS).getWorkflow();
 	}
 
 	protected List<Component> listComponents(NewComponentFamily family)
 			throws RegistryException {
 		List<Component> result = new ArrayList<Component>();
-		for (ComponentDescription cd : client.get(
-				ComponentDescriptionList.class, COMPONENT_LIST,
-				"component-family=" + family.getUri(),
-				"elements=" + NewComponent.ELEMENTS).getWorkflow())
+		for (ComponentDescription cd : listComponents(family.getUri()))
 			result.add(new NewComponent(this, family, cd));
 		return result;
 	}

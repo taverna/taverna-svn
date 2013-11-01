@@ -115,13 +115,14 @@ class NewComponent extends Component {
 	class Version extends ComponentVersion {
 		private int version;
 		private String description;
-		SoftReference<Dataflow> dataflow;
+		private String dataflowUri;
+		private SoftReference<Dataflow> dataflowRef;
 
 		protected Version(Integer version, String description, Dataflow dataflow) {
 			super(NewComponent.this);
 			this.version = version;
 			this.description = description;
-			this.dataflow = new SoftReference<Dataflow>(dataflow);
+			this.dataflowRef = new SoftReference<Dataflow>(dataflow);
 		}
 
 		protected Version(Integer version, String description) {
@@ -156,22 +157,28 @@ class NewComponent extends Component {
 			return description;
 		}
 
+		private String getDataflowUri() throws RegistryException {
+			if (dataflowUri == null)
+				dataflowUri = registry.getComponentById(id, version,
+						"content-uri").getContentUri();
+			return dataflowUri;
+		}
+
 		@Override
 		protected synchronized Dataflow internalGetDataflow()
 				throws RegistryException {
-			if (dataflow == null || dataflow.get() == null) {
-				String contentUri = registry.getComponentById(id, version,
-						"content-uri").getContentUri();
+			if (dataflowRef == null || dataflowRef.get() == null) {
+				String contentUri = getDataflowUri();
 				try {
-					dataflow = new SoftReference<Dataflow>(
-							getDataflowFromUri(contentUri + "?version="
-									+ version));
+					Dataflow result = getDataflowFromUri(contentUri
+							+ "?version=" + version);
+					dataflowRef = new SoftReference<Dataflow>(result);
+					return result;
 				} catch (Exception e) {
-					logger.error(e);
 					throw new RegistryException("Unable to open dataflow", e);
 				}
 			}
-			return dataflow.get();
+			return dataflowRef.get();
 		}
 	}
 

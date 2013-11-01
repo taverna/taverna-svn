@@ -3,8 +3,8 @@
  */
 package net.sf.taverna.t2.component.registry;
 
-import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.Component;
+import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 /**
@@ -51,5 +51,13 @@ public abstract class ComponentVersion implements
 	@Override
 	public final Component getComponent() {
 		return component;
+	}
+
+	@Override
+	public ID getID() {
+		Component c = getComponent();
+		return new ComponentVersionIdentification(c.getRegistry()
+				.getRegistryBase(), c.getFamily().getName(), c.getName(),
+				getVersionNumber());
 	}
 }

@@ -38,10 +38,6 @@ class NewComponentProfile extends ComponentProfile {
 		location = getElementString(cpd, LOCATION);
 	}
 
-	public ComponentProfileType get(String elements) throws RegistryException {
-		return registry.getComponentProfileById(id, elements);
-	}
-
 	public String getLocation() {
 		return location;
 	}
