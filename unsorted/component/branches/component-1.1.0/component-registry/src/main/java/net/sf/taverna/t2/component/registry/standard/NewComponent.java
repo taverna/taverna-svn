@@ -29,6 +29,7 @@ class NewComponent extends Component {
 	private final String id;
 	private final String title;
 	private final String description;
+	private final String resource;
 
 	NewComponent(NewComponentRegistry registry, NewComponentFamily family,
 			ComponentDescription cd) throws RegistryException {
@@ -38,6 +39,7 @@ class NewComponent extends Component {
 		id = cd.getId().trim();
 		title = getElementString(cd, "title");
 		description = getElementString(cd, "description");
+		resource = cd.getResource();
 	}
 
 	NewComponent(NewComponentRegistry registry, NewComponentFamily family,
@@ -48,6 +50,7 @@ class NewComponent extends Component {
 		id = ct.getId().trim();
 		title = ct.getTitle().trim();
 		description = ct.getDescription().trim();
+		resource = ct.getResource();
 	}
 
 	public ComponentType getCurrent(String elements) throws RegistryException {
@@ -103,6 +106,10 @@ class NewComponent extends Component {
 			return registry.equals(other.registry) && id.equals(other.id);
 		}
 		return false;
+	}
+
+	public String getResourceLocation() {
+		return resource;
 	}
 
 	private static final int BASEHASH = NewComponent.class.hashCode();

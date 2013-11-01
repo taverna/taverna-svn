@@ -47,6 +47,8 @@ import uk.org.taverna.component.api.Permissions;
 import uk.org.taverna.component.api.PolicyList;
 
 class NewComponentRegistry extends ComponentRegistry {
+	private static final String PROFILE_MIME_TYPE = "application/vnd.taverna.component-profile+xml";
+	private static final String T2FLOW_MIME_TYPE = "application/vnd.taverna.t2flow+xml";
 	static final Logger logger = Logger.getLogger(NewComponentRegistry.class);
 	static final JAXBContext jaxbContext;
 	static final Charset utf8;
@@ -207,7 +209,7 @@ class NewComponentRegistry extends ComponentRegistry {
 		profile.setFilename(title + ".xml");
 		profile.setTitle(title);
 		profile.setTitle(description);
-		profile.setContentType("application/vnd.taverna.component-profile+xml");
+		profile.setContentType(PROFILE_MIME_TYPE);
 		profile.setContent(new Content());
 		profile.getContent().setEncoding("base64");
 		profile.getContent().setType("binary");
@@ -227,7 +229,7 @@ class NewComponentRegistry extends ComponentRegistry {
 			throws RegistryException {
 		ComponentFamilyType familyDoc = new ComponentFamilyType();
 
-		familyDoc.setComponentProfile(profile.getLocation());
+		familyDoc.setComponentProfile(profile.getResourceLocation());
 		familyDoc.setDescription(description);
 		familyDoc.setTitle(familyName);
 		if (license == null)
@@ -248,8 +250,8 @@ class NewComponentRegistry extends ComponentRegistry {
 		comp.setTitle(title);
 		comp.setDescription(description);
 		if (family != null)
-			comp.setComponentFamily(family.getUri());
-		comp.setContentType("application/vnd.taverna.t2flow+xml");
+			comp.setComponentFamily(family.getResourceLocation());
+		comp.setContentType(T2FLOW_MIME_TYPE);
 		comp.setContent(new Content());
 		comp.getContent().setEncoding("base64");
 		comp.getContent().setType("binary");

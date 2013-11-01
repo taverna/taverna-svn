@@ -22,6 +22,7 @@ class NewComponentProfile extends ComponentProfile {
 	private final NewComponentRegistry registry;
 	private String id;
 	private String location;
+	private String resource;
 	private final String uri;
 
 	private static URL contentUrl(ComponentProfileType cpt) throws RegistryException {
@@ -38,6 +39,7 @@ class NewComponentProfile extends ComponentProfile {
 		uri = profile.getUri();
 		id = profile.getId();
 		location = profile.getContentUri();
+		resource = profile.getResource();
 	}
 
 	NewComponentProfile(NewComponentRegistry registry,
@@ -47,6 +49,7 @@ class NewComponentProfile extends ComponentProfile {
 		uri = cpd.getUri();
 		id = cpd.getId();
 		location = getElementString(cpd, LOCATION);
+		resource = cpd.getResource();
 	}
 
 	public String getLocation() {
@@ -80,5 +83,9 @@ class NewComponentProfile extends ComponentProfile {
 	@Override
 	public String toString() {
 		return "NewComponentProfile at " + location;
+	}
+
+	public String getResourceLocation() {
+		return resource;
 	}
 }
