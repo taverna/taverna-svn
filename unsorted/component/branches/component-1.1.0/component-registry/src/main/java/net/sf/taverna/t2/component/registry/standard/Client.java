@@ -11,6 +11,7 @@ import java.net.URLEncoder;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.registry.standard.annotations.Unused;
@@ -58,6 +59,12 @@ class Client {
 					.append(URLEncoder.encode(bits[1], "UTF-8"));
 		}
 		return new URL(registryBase, uriBuilder.toString()).toString();
+	}
+
+	private Marshaller getMarshaller() throws JAXBException {
+		Marshaller m = jaxbContext.createMarshaller();
+		m.setProperty("com.sun.xml.bind.xmlDeclaration", false);
+		return m;
 	}
 
 	/**
@@ -124,7 +131,7 @@ class Client {
 			url = url(uri, query);
 			logger.info("POST to " + url);
 			StringWriter sw = new StringWriter();
-			jaxbContext.createMarshaller().marshal(elem, sw);
+			getMarshaller().marshal(elem, sw);
 			if (logger.isDebugEnabled() || forceOut)
 				logger.info("About to post XML document:\n" + sw);
 			ServerResponse response = myE_Client.doMyExperimentPOST(url,
@@ -171,7 +178,7 @@ class Client {
 			url = url(uri, query);
 			logger.info("PUT to " + url);
 			StringWriter sw = new StringWriter();
-			jaxbContext.createMarshaller().marshal(elem, sw);
+			getMarshaller().marshal(elem, sw);
 			if (logger.isDebugEnabled() || forceOut)
 				logger.info("About to post XML document:\n" + sw);
 			ServerResponse response = myE_Client.doMyExperimentPUT(url,
