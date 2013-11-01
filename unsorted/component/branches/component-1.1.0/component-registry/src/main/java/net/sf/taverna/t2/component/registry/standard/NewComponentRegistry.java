@@ -207,8 +207,6 @@ class NewComponentRegistry extends ComponentRegistry {
 		profile.setFilename(title + ".xml");
 		profile.setTitle(title);
 		profile.setTitle(description);
-		profile.setType(new Description());
-		profile.getType().getContent().add("XML");
 		profile.setContentType("application/vnd.taverna.component-profile+xml");
 		profile.setContent(new Content());
 		profile.getContent().setEncoding("base64");
