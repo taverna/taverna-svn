@@ -24,6 +24,7 @@ class Client {
 	private final MyExperimentClient myE_Client;
 	private final URL registryBase;
 	private final JAXBContext jaxbContext;
+	private final boolean forceOut = true;// FIXME Remove before release
 
 	Client(JAXBContext context, Logger logger, URL repository) throws Exception {
 		this.logger = logger;
@@ -124,6 +125,8 @@ class Client {
 			logger.info("POST to " + url);
 			StringWriter sw = new StringWriter();
 			jaxbContext.createMarshaller().marshal(elem, sw);
+			if (logger.isDebugEnabled() || forceOut)
+				logger.info("About to post XML document:\n" + sw);
 			ServerResponse response = myE_Client.doMyExperimentPOST(url,
 					sw.toString());
 			if (response.getResponseCode() >= 400)
@@ -169,6 +172,8 @@ class Client {
 			logger.info("PUT to " + url);
 			StringWriter sw = new StringWriter();
 			jaxbContext.createMarshaller().marshal(elem, sw);
+			if (logger.isDebugEnabled() || forceOut)
+				logger.info("About to post XML document:\n" + sw);
 			ServerResponse response = myE_Client.doMyExperimentPUT(url,
 					sw.toString());
 			if (response.getResponseCode() >= 400)
