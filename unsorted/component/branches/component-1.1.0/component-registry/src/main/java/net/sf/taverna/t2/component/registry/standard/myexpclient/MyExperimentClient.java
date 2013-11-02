@@ -22,6 +22,7 @@ package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
 import static java.io.File.separatorChar;
 import static java.lang.Boolean.FALSE;
+import static java.lang.Math.min;
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
@@ -40,6 +41,7 @@ import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.get
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getChildText;
 import static net.sf.taverna.t2.component.registry.standard.myexpclient.Util.getTavernaHomeDir;
 import static org.apache.commons.io.IOUtils.copy;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -60,6 +62,7 @@ import java.util.Properties;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -100,6 +103,7 @@ public class MyExperimentClient {
 
 	private static final String DIR_NAME = (separatorChar == '\\' ? ".Taverna2 Component Plugin"
 			: ".taverna2ComponentPlugin");
+	private static final int MESSAGE_TRIM_LENGTH = 512;
 	public static final boolean FORCE_OUTPUT_OF_MESSAGES = true;// FIXME Remove
 																// before
 																// release
@@ -438,20 +442,23 @@ public class MyExperimentClient {
 	@SuppressWarnings("unused")
 	private static Document getDocumentFromStream(InputStream inputStream)
 			throws SAXException, IOException, ParserConfigurationException {
-		Logger logger = Logger.getLogger(MyExperimentClient.class);
+		DocumentBuilder db = DocumentBuilderFactory.newInstance()
+				.newDocumentBuilder();
+		Logger logger = getLogger(MyExperimentClient.class);
 		Document doc;
 		InputStream is = new BufferedInputStream(inputStream);
 		if (!logger.isDebugEnabled() && !FORCE_OUTPUT_OF_MESSAGES) {
-			doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-					.parse(is);
+			doc = db.parse(is);
 			is.close();
 		} else {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			copy(is, baos);
 			is.close();
-			logger.info("response message follows\n" + baos.toString("UTF-8"));
-			doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-					.parse(new ByteArrayInputStream(baos.toByteArray()));
+			String response = baos.toString("UTF-8");
+			logger.info("response message follows\n"
+					+ response.substring(0,
+							min(MESSAGE_TRIM_LENGTH, response.length())));
+			doc = db.parse(new ByteArrayInputStream(baos.toByteArray()));
 		}
 		return doc;
 	}
