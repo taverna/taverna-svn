@@ -22,6 +22,7 @@ package net.sf.taverna.t2.component.registry.myexperiment;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.URLEncoder.encode;
+import static net.sf.taverna.t2.component.registry.myexperiment.client.Base64.encodeBytes;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -73,7 +74,6 @@ class MyExperimentComponentRegistry extends ComponentRegistry {
 			myExperimentClient.setBaseURL(registryURL.toExternalForm());
 			myExperimentClient.doLogin();
 		} catch (Exception e) {
-			logger.error(e);
 			throw new RegistryException("Unable to access registry", e);
 		}
 	}
@@ -165,7 +165,8 @@ class MyExperimentComponentRegistry extends ComponentRegistry {
 		Element profileElement = null;
 		if (componentProfile instanceof MyExperimentComponentProfile) {
 			MyExperimentComponentProfile myExperimentComponentProfile = (MyExperimentComponentProfile) componentProfile;
-			if (myExperimentComponentProfile.getComponentRegistry().equals(this))
+			if (myExperimentComponentProfile.getComponentRegistry()
+					.equals(this))
 				profileElement = getResource(myExperimentComponentProfile
 						.getUri());
 		}
@@ -362,13 +363,11 @@ class MyExperimentComponentRegistry extends ComponentRegistry {
 					.append("<content-type>application/vnd.taverna.t2flow+xml</content-type>");
 			contentXml.append("<content encoding=\"base64\" type=\"binary\">");
 			try {
-				contentXml.append(
-						Base64.encodeBytes(dataflow.getBytes("UTF-8"))).append(
-						"</content>");
+				contentXml.append(encodeBytes(dataflow.getBytes("UTF-8")));
 			} catch (UnsupportedEncodingException e) {
-				logger.error(e);
 				throw new RegistryException("Unable to encode workflow", e);
 			}
+			contentXml.append("</content>");
 		}
 
 		contentXml.append("</workflow>");
@@ -585,7 +584,8 @@ class MyExperimentComponentRegistry extends ComponentRegistry {
 		return false;
 	}
 
-	private static final int BASEHASH = MyExperimentComponentRegistry.class.hashCode();
+	private static final int BASEHASH = MyExperimentComponentRegistry.class
+			.hashCode();
 
 	@Override
 	public int hashCode() {

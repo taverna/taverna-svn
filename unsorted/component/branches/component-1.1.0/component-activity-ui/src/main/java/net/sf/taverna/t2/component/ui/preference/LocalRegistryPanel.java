@@ -8,6 +8,7 @@ import static java.awt.GridBagConstraints.NONE;
 import static java.awt.GridBagConstraints.WEST;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -35,7 +36,7 @@ public class LocalRegistryPanel extends JPanel {
 	private static final String NAME_LABEL = "Name:";
 	private static final long serialVersionUID = 732945735813617327L;
 
-	private final Logger logger = Logger.getLogger(LocalRegistryPanel.class);
+	private final Logger logger = getLogger(LocalRegistryPanel.class);
 
 	private JTextField registryNameField = new JTextField(20);
 	private JTextField locationField = new JTextField(20);
@@ -82,18 +83,22 @@ public class LocalRegistryPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				JFileChooser chooser = new JFileChooser();
-				chooser.setFileSelectionMode(DIRECTORIES_ONLY);
-				int returnVal = chooser.showOpenDialog(LocalRegistryPanel.this);
-				try {
-					if (returnVal == APPROVE_OPTION)
-						locationField.setText(chooser.getSelectedFile()
-								.getCanonicalPath());
-				} catch (IOException e) {
-					logger.error(e);
-				}
+				pickDirectory();
 			}
 		}), constraints);
+	}
+
+	private void pickDirectory() {
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(DIRECTORIES_ONLY);
+		int returnVal = chooser.showOpenDialog(LocalRegistryPanel.this);
+		try {
+			if (returnVal == APPROVE_OPTION)
+				locationField.setText(chooser.getSelectedFile()
+						.getCanonicalPath());
+		} catch (IOException e) {
+			logger.error("unexpected filesystem problem", e);
+		}
 	}
 
 	/**
@@ -109,5 +114,4 @@ public class LocalRegistryPanel extends JPanel {
 	public JTextField getLocationField() {
 		return locationField;
 	}
-
 }

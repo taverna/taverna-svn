@@ -20,6 +20,12 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.ui.panel;
 
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.NONE;
+import static java.awt.GridBagConstraints.WEST;
+import static net.sf.taverna.t2.component.ui.util.Utils.LONG_STRING;
+import static org.apache.log4j.Logger.getLogger;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.List;
@@ -31,10 +37,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
+import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.SharingPolicy;
-import net.sf.taverna.t2.component.api.Registry;
-import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 
@@ -46,31 +51,32 @@ import org.apache.log4j.Logger;
  */
 public class SharingPolicyChooserPanel extends JPanel implements
 		Observer<RegistryChoiceMessage> {
+	private static final String SHARING_LABEL = "Sharing policy:";
+	private static final String READING_MSG = "Reading sharing policies";
+	private static final String NO_PERMISSIONS_MSG = "No permissions available";
 	private static final long serialVersionUID = 2175274929391537032L;
-	private static final Logger logger = Logger
-			.getLogger(SharingPolicyChooserPanel.class);
+	private static final Logger logger = getLogger(SharingPolicyChooserPanel.class);
 
-	private JComboBox permissionBox = new JComboBox();
-
-	private SortedMap<String, SharingPolicy> permissionMap = new TreeMap<String, SharingPolicy>();
+	private final JComboBox permissionBox = new JComboBox();
+	private final SortedMap<String, SharingPolicy> permissionMap = new TreeMap<String, SharingPolicy>();
 
 	private Registry registry;
 
 	public SharingPolicyChooserPanel() {
 		super();
-		permissionBox.setPrototypeDisplayValue(Utils.LONG_STRING);
+		permissionBox.setPrototypeDisplayValue(LONG_STRING);
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
 
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.NONE;
-		this.add(new JLabel("Sharing policy:"), gbc);
+		gbc.anchor = WEST;
+		gbc.fill = NONE;
+		this.add(new JLabel(SHARING_LABEL), gbc);
 		gbc.gridx = 1;
 		gbc.weightx = 1;
-		gbc.fill = GridBagConstraints.BOTH;
+		gbc.fill = BOTH;
 		this.add(permissionBox, gbc);
 
 		permissionBox.setEditable(false);
@@ -78,19 +84,19 @@ public class SharingPolicyChooserPanel extends JPanel implements
 
 	@Override
 	public void notify(Observable<RegistryChoiceMessage> sender,
-			RegistryChoiceMessage message) throws Exception {
+			RegistryChoiceMessage message) {
 		try {
-			this.registry = message.getChosenRegistry();
-			this.updateProfileModel();
+			registry = message.getChosenRegistry();
+			updateProfileModel();
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("problem when handling notification of registry", e);
 		}
 	}
 
 	private void updateProfileModel() {
 		permissionMap.clear();
 		permissionBox.removeAllItems();
-		permissionBox.addItem("Reading sharing policies");
+		permissionBox.addItem(READING_MSG);
 		permissionBox.setEnabled(false);
 		new SharingPolicyUpdater().execute();
 	}
@@ -102,6 +108,7 @@ public class SharingPolicyChooserPanel extends JPanel implements
 	}
 
 	private class SharingPolicyUpdater extends SwingWorker<String, Object> {
+
 		@Override
 		protected String doInBackground() throws Exception {
 			List<SharingPolicy> sharingPolicies;
@@ -112,18 +119,18 @@ public class SharingPolicyChooserPanel extends JPanel implements
 				if (sharingPolicies == null)
 					return null;
 			} catch (RegistryException e) {
-				logger.error(e);
+				logger.error("problem getting permissions", e);
 				return null;
 			} catch (NullPointerException e) {
-				logger.error(e);
+				logger.error("null pointer getting permissions", e);
 				return null;
 			}
 
-			for (SharingPolicy p : sharingPolicies)
+			for (SharingPolicy policy : sharingPolicies)
 				try {
-					permissionMap.put(p.getName(), p);
+					permissionMap.put(policy.getName(), policy);
 				} catch (NullPointerException e) {
-					logger.error(e);
+					logger.error("problem getting name of policy", e);
 				}
 			return null;
 		}
@@ -138,7 +145,7 @@ public class SharingPolicyChooserPanel extends JPanel implements
 				permissionBox.setSelectedItem(firstKey);
 				permissionBox.setEnabled(true);
 			} else {
-				permissionBox.addItem("No permissions available");
+				permissionBox.addItem(NO_PERMISSIONS_MSG);
 				permissionBox.setEnabled(false);
 			}
 		}

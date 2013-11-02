@@ -195,7 +195,7 @@ public abstract class AbstractSemanticAnnotationContextualView extends
 			try {
 				parseStatements();
 			} catch (Exception e) {
-				logger.error(e);
+				logger.error("failed to parse annotation statements", e);
 			}
 			return null;
 		}

@@ -91,7 +91,6 @@ class NewComponentRegistry extends ComponentRegistry {
 		try {
 			client = new Client(jaxbContext, logger, registryBase);
 		} catch (Exception e) {
-			logger.error(e);
 			throw new RegistryException("Unable to access registry", e);
 		}
 	}

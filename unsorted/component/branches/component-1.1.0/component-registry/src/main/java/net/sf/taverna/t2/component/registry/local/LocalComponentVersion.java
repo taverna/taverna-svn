@@ -12,7 +12,6 @@ import java.io.IOException;
 
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
-import net.sf.taverna.t2.workbench.file.DataflowInfo;
 import net.sf.taverna.t2.workbench.file.exceptions.OpenException;
 import net.sf.taverna.t2.workbench.file.impl.T2DataflowOpener;
 import net.sf.taverna.t2.workbench.file.impl.T2FlowFileType;
@@ -44,7 +43,7 @@ class LocalComponentVersion extends ComponentVersion {
 			if (descriptionFile.isFile())
 				return readFileToString(descriptionFile);
 		} catch (IOException e) {
-			logger.error(e);
+			logger.error("failed to get description from " + descriptionFile, e);
 		}
 		return "";
 	}
@@ -58,16 +57,16 @@ class LocalComponentVersion extends ComponentVersion {
 	protected final Dataflow internalGetDataflow() throws RegistryException {
 		T2DataflowOpener opener = new T2DataflowOpener();
 
-		DataflowInfo info;
+		File filename = new File(componentVersionDir, "dataflow.t2flow");
 		try {
-			info = opener.openDataflow(T2_FLOW_FILE_TYPE, new File(
-					componentVersionDir, "dataflow.t2flow"));
+			return opener.openDataflow(T2_FLOW_FILE_TYPE, filename)
+					.getDataflow();
 		} catch (OpenException e) {
-			logger.error(e);
+			logger.error(
+					"failed to get component realization from " + filename, e);
 			throw new RegistryException("Unable to open dataflow", e);
 		}
 
-		return info.getDataflow();
 	}
 
 	@Override

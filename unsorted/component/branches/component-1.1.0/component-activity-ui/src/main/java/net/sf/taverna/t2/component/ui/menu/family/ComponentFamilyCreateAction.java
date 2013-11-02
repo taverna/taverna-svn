@@ -151,7 +151,7 @@ public class ComponentFamilyCreateAction extends AbstractAction {
 			chosenRegistry.createComponentFamily(newName, chosenProfile,
 					familyDescription, license, permission);
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to create family", e);
 			showMessageDialog(null,
 					"Unable to create family: " + e.getMessage(),
 					"Family creation problem", ERROR_MESSAGE);

@@ -102,7 +102,7 @@ public class LicenseChooserPanel extends JPanel implements
 			this.registry = message.getChosenRegistry();
 			this.updateLicenseModel();
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("failure when handling license choice", e);
 		}
 	}
 
@@ -134,18 +134,18 @@ public class LicenseChooserPanel extends JPanel implements
 				if (licenses == null)
 					return null;
 			} catch (RegistryException e) {
-				logger.error(e);
+				logger.error("failure when reading licenses from registry", e);
 				return null;
 			} catch (NullPointerException e) {
-				logger.error(e);
+				logger.error("unexpected exception when reading licenses", e);
 				return null;
 			}
-			for (License p : licenses)
+			for (License license : licenses)
 				try {
-					String name = p.getName();
-					licenseMap.put(name, p);
+					String name = license.getName();
+					licenseMap.put(name, license);
 				} catch (NullPointerException e) {
-					logger.error(e);
+					logger.error("could not get name of license", e);
 				}
 			return null;
 		}
@@ -155,26 +155,27 @@ public class LicenseChooserPanel extends JPanel implements
 			licenseBox.removeAllItems();
 			for (String name : licenseMap.keySet())
 				licenseBox.addItem(name);
-			if (!licenseMap.isEmpty()) {
-				String firstKey = licenseMap.firstKey();
-				License preferredLicense = null;
-				try {
-					preferredLicense = registry.getPreferredLicense();
-				} catch (RegistryException e) {
-					logger.error(e);
-				}
-				if (preferredLicense != null) {
-					licenseBox.setSelectedItem(preferredLicense.getName());
-					setLicense(preferredLicense);
-				} else {
-					licenseBox.setSelectedItem(firstKey);
-					setLicense(licenseMap.get(firstKey));
-				}
-				licenseBox.setEnabled(true);
-			} else {
+			if (licenseMap.isEmpty()) {
 				licenseBox.addItem("No licenses available");
 				licenseBox.setEnabled(false);
+				return;
 			}
+
+			String firstKey = licenseMap.firstKey();
+			License preferredLicense = null;
+			try {
+				preferredLicense = registry.getPreferredLicense();
+			} catch (RegistryException e) {
+				logger.error("failed to get preferred license", e);
+			}
+			if (preferredLicense != null) {
+				licenseBox.setSelectedItem(preferredLicense.getName());
+				setLicense(preferredLicense);
+			} else {
+				licenseBox.setSelectedItem(firstKey);
+				setLicense(licenseMap.get(firstKey));
+			}
+			licenseBox.setEnabled(true);
 		}
 	}
 }

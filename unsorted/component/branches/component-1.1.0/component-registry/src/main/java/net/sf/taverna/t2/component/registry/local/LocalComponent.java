@@ -40,7 +40,8 @@ class LocalComponent extends Component {
 
 	private static Logger logger = getLogger(LocalComponent.class);
 
-	public LocalComponent(File componentDir, LocalComponentRegistry registry, LocalComponentFamily family) {
+	public LocalComponent(File componentDir, LocalComponentRegistry registry,
+			LocalComponentFamily family) {
 		super(componentDir);
 		this.componentDir = componentDir;
 		this.registry = registry;
@@ -129,7 +130,7 @@ class LocalComponent extends Component {
 			if (descriptionFile.isFile())
 				return readFileToString(descriptionFile);
 		} catch (IOException e) {
-			logger.error(e);
+			logger.error("failed to get description from " + descriptionFile, e);
 		}
 		return "";
 	}

@@ -78,7 +78,7 @@ public class SemanticAnnotationContextualView extends
 				super.setSemanticAnnotationProfiles(new ArrayList<SemanticAnnotationProfile>());
 
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to look up semantic annotations", e);
 		}
 
 		super.initialise();

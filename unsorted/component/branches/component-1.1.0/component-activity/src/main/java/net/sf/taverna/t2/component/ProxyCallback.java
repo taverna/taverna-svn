@@ -176,9 +176,8 @@ public class ProxyCallback implements AsynchronousActivityCallback {
 								toConsider.add(subDoc);
 						}
 			} catch (Exception e) {
-				logger.error(e);
+				logger.error("failed to locate exception mapping", e);
 			}
-
 		}
 
 		String exceptionMessage = matchingDoc.getExceptionMessage();
@@ -203,18 +202,18 @@ public class ProxyCallback implements AsynchronousActivityCallback {
 			exceptions.add(referenceService.register(matchingDoc, 0, true,
 					context));
 			return replacement;
-		} else {
-			ComponentException newException = createComponentException(
-					exceptionReplacement.getReplacementId(),
-					exceptionReplacement.getReplacementMessage());
-			T2Reference replacement = errorService.registerError(
-					exceptionReplacement.getReplacementMessage(), newException,
-					depth, context).getId();
-			exceptions.add(errorService.registerError(
-					exceptionReplacement.getReplacementMessage(), newException,
-					0, context).getId());
-			return replacement;
 		}
+
+		ComponentException newException = createComponentException(
+				exceptionReplacement.getReplacementId(),
+				exceptionReplacement.getReplacementMessage());
+		T2Reference replacement = errorService.registerError(
+				exceptionReplacement.getReplacementMessage(), newException,
+				depth, context).getId();
+		exceptions.add(errorService.registerError(
+				exceptionReplacement.getReplacementMessage(), newException, 0,
+				context).getId());
+		return replacement;
 	}
 
 	private Set<T2Reference> getErrors(T2Reference ref) {

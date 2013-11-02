@@ -121,12 +121,13 @@ public class ComponentFamilyDeleteAction extends AbstractAction {
 			config.setRegistryBase(chosenRegistry.getRegistryBase());
 			removeComponentServiceProvider(config);
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to delete family", e);
 			showMessageDialog(null,
 					format(FAILED_MSG, chosenFamily.getName(), e.getMessage()),
 					ERROR_TITLE, ERROR_MESSAGE);
 		} catch (ConfigurationException e) {
-			logger.error(e);
+			logger.error("failed to update service provider panel "
+					+ "after deleting family", e);
 		}
 	}
 

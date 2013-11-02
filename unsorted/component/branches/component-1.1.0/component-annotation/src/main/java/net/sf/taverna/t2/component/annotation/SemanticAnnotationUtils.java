@@ -129,7 +129,7 @@ public class SemanticAnnotationUtils {
 			if (annotation != null && !annotation.getContent().isEmpty())
 				populateModelFromString(result, annotation.getContent());
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("failed to construct semantic annotation model", e);
 		}
 		return result;
 	}
@@ -176,7 +176,7 @@ public class SemanticAnnotationUtils {
 					problemProfiles.add(saProfile);
 			}
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to look up profiles for semantic annotations", e);
 		}
 		return problemProfiles;
 	}

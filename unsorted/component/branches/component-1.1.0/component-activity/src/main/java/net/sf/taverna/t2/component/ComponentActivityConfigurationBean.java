@@ -61,7 +61,7 @@ public class ComponentActivityConfigurationBean extends
 			if (eh != null)
 				outputs.add(makeOutputDefinition(1, ERROR_CHANNEL));
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to get exception handling for family", e);
 		}
 		return result;
 	}
@@ -96,7 +96,7 @@ public class ComponentActivityConfigurationBean extends
 			if (ports == null)
 				ports = getPortsDefinition(getDataflow(this));
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to get component realization", e);
 		}
 		return ports;
 	}

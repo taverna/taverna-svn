@@ -108,7 +108,7 @@ public class ComponentMergeAction extends AbstractAction {
 					"Merge from " + sourceComponent.getFamily().getName() + ":"
 							+ sourceComponent.getName());
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to merge component", e);
 		}
 	}
 

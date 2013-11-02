@@ -88,13 +88,14 @@ public class ComponentDeleteAction extends AbstractAction {
 			config.setRegistryBase(chosenRegistry.getRegistryBase());
 			refreshComponentServiceProvider(config);
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to delete component", e);
 			showMessageDialog(
 					null,
 					format(FAILED_MSG, chosenComponent.getName(),
 							e.getMessage()), DELETE_FAILED_TITLE, ERROR_MESSAGE);
 		} catch (ConfigurationException e) {
-			logger.error(e);
+			logger.error("failed to handle service panel update "
+					+ "after deleting component", e);
 		}
 	}
 

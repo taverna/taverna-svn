@@ -39,7 +39,7 @@ public class ComponentWorkflowCreatorAction extends AbstractAction implements
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent event) {
 		Dataflow d = FileManager.getInstance().getCurrentDataflow();
 		try {
 			Version.ID ident = getNewComponentIdentification(d.getLocalName());
@@ -47,8 +47,8 @@ public class ComponentWorkflowCreatorAction extends AbstractAction implements
 				return;
 
 			saveWorkflowAsComponent(d, ident);
-		} catch (Exception e1) {
-			logger.error(e1);
+		} catch (Exception e) {
+			logger.error("failed to save workflow as component", e);
 		}
 	}
 

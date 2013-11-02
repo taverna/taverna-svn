@@ -73,15 +73,15 @@ class MyExperimentComponentVersion extends ComponentVersion {
 
 	@Override
 	protected final String internalGetDescription() {
-		logger.info("Getting workflow from myExperiment");
 		if (description == null) {
+			logger.info("Getting workflow from myExperiment");
 			try {
 				Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
 				String resourceUri = workflowElement.getAttributeValue("uri");
 				Element descriptionElement = componentRegistry.getResourceElement(resourceUri, "description");
 				description = descriptionElement.getTextTrim();
 			} catch (RegistryException e) {
-				logger.error(e);
+				logger.error("failed to get description", e);
 				return "";
 			}
 		}
@@ -101,10 +101,8 @@ class MyExperimentComponentVersion extends ComponentVersion {
 			try {
 				info = opener.openDataflow(T2_FLOW_FILE_TYPE, new URL(downloadUri));
 			} catch (OpenException e) {
-				logger.error(e);
 				throw new RegistryException("Unable to open dataflow", e);
 			} catch (MalformedURLException e) {
-				logger.error(e);
 				throw new RegistryException("Unable to open dataflow", e);
 			}
 
@@ -132,7 +130,7 @@ class MyExperimentComponentVersion extends ComponentVersion {
 			if (workflowElement == null)
 				return false;
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to get workflow address", e);
 			return false;
 		}
 		String wfUri = workflowElement.getAttributeValue("resource");

@@ -129,11 +129,11 @@ public class SearchChoicePanel extends JPanel {
 			try {
 				matches = this.get();
 			} catch (InterruptedException e) {
-				logger.error(e);
+				logger.error("search was interrupted", e);
 				setAll(SEARCH_FAILED);
 				return;
 			} catch (ExecutionException e) {
-				logger.error(e);
+				logger.error("problem in execution", e.getCause());
 				setAll(SEARCH_FAILED);
 				return;
 			}

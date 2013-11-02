@@ -49,7 +49,7 @@ public class ComponentServiceProvider extends
 		try {
 			registry = calculateRegistry(config.getRegistryBase());
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to get registry API", e);
 			callBack.fail("Unable to read components", e);
 			return;
 		}
@@ -70,13 +70,13 @@ public class ComponentServiceProvider extends
 									ident);
 							results.add(newDesc);
 						} catch (Exception e) {
-							logger.error(e);
+							logger.error("problem getting service descriptor", e);
 						}
 				callBack.partialResults(results);
 				callBack.finished();
 			}
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("problem querying registry", e);
 			callBack.fail("Unable to read components", e);
 		}
 	}

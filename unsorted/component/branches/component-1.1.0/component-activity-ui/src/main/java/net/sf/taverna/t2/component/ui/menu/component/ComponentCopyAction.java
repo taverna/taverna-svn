@@ -120,7 +120,7 @@ public class ComponentCopyAction extends AbstractAction {
 						sourceVersion.getDataflow());
 			}
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to copy component", e);
 			showMessageDialog(null,
 					"Unable to create component: " + e.getMessage(),
 					"Component Copy Problem", ERROR_MESSAGE);

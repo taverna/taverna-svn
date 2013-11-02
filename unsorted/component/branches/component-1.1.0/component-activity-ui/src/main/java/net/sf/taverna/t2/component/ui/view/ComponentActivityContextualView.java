@@ -1,5 +1,10 @@
 package net.sf.taverna.t2.component.ui.view;
 
+import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateComponent;
+import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateComponentVersion;
+import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateFamily;
+import static org.apache.log4j.Logger.getLogger;
+
 import java.awt.Frame;
 import java.net.URL;
 import java.util.List;
@@ -12,7 +17,6 @@ import net.sf.taverna.t2.component.api.Component;
 import net.sf.taverna.t2.component.api.Family;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.Version;
-import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.component.ui.config.ComponentConfigureAction;
 import net.sf.taverna.t2.workbench.ui.actions.activity.HTMLBasedActivityContextualView;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
@@ -23,9 +27,10 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class ComponentActivityContextualView extends
 		HTMLBasedActivityContextualView<ComponentActivityConfigurationBean> {
-
-	private static Logger logger = Logger
-			.getLogger(ComponentActivityContextualView.class);
+	private static final String VERSION_DESCRIPTION_LABEL = "Component version description";
+	private static final String COMPONENT_DESCRIPTION_LABEL = "Component description";
+	private static final String FAMILY_DESCRIPTION_LABEL = "Family description";
+	private static Logger logger = getLogger(ComponentActivityContextualView.class);
 
 	public ComponentActivityContextualView(ComponentActivity activity) {
 		super(activity);
@@ -50,92 +55,93 @@ public class ComponentActivityContextualView extends
 	}
 
 	@Override
-	public Action getConfigureAction(final Frame owner) {
+	public Action getConfigureAction(Frame owner) {
 		return new ComponentConfigureAction((ComponentActivity) getActivity(),
 				owner);
 	}
 
 	@Override
 	protected String getRawTableRowsHtml() {
-		String html = "";
+		StringBuilder html = new StringBuilder();
 
 		URL registryBase = getConfigBean().getRegistryBase();
-		html += "<tr><td><b>Component registry base</b></td><td>"
-				+ registryBase.toString() + "</td></tr>";
+		appendRow(html, "Component registry base", registryBase);
+
 		String familyName = getConfigBean().getFamilyName();
-		html += "<tr><td><b>Component family</b></td><td>" + familyName
-				+ "</td></tr>";
+		appendRow(html, "Component family", familyName);
 		try {
-			Family family = ComponentUtil.calculateFamily(registryBase,
-					familyName);
-			if (family != null) {
-				html += getDescriptionHtml("Family description",
+			Family family = calculateFamily(registryBase, familyName);
+			if (family != null)
+				appendDescriptionHtml(html, FAMILY_DESCRIPTION_LABEL,
 						family.getDescription());
-			}
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to get component family description", e);
 		}
+
 		String componentName = getConfigBean().getComponentName();
-		html += "<tr><td><b>Component name</b></td><td>" + componentName
-				+ "</td></tr>";
+		appendRow(html, "Component name", componentName);
 		try {
-			Component component = ComponentUtil.calculateComponent(
-					registryBase, familyName, componentName);
-			if (component != null) {
-				html += getDescriptionHtml("Component description",
+			Component component = calculateComponent(registryBase, familyName,
+					componentName);
+			if (component != null)
+				appendDescriptionHtml(html, COMPONENT_DESCRIPTION_LABEL,
 						component.getDescription());
-			}
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to get component description", e);
 		}
 
 		Integer componentVersion = getConfigBean().getComponentVersion();
-		html += "<tr><td><b>Component version</b></td><td>" + componentVersion
-				+ "</td></tr>";
+		appendRow(html, "Component version", componentVersion);
 		try {
-			Version version = ComponentUtil.calculateComponentVersion(
-					registryBase, familyName, componentName, componentVersion);
-			if (version != null) {
-				html += getDescriptionHtml("Component version description",
+			Version version = calculateComponentVersion(registryBase,
+					familyName, componentName, componentVersion);
+			if (version != null)
+				appendDescriptionHtml(html, VERSION_DESCRIPTION_LABEL,
 						version.getDescription());
-			}
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to get component version description", e);
 		}
 
 		List<ActivityInputPortDefinitionBean> inputPortDefinitions = getConfigBean()
 				.getPorts().getInputPortDefinitions();
 		if (!inputPortDefinitions.isEmpty()) {
-			html = html + "<tr><th>Input Port Name</th>" + "<th>Depth</th>"
-					+ "</tr>";
-			for (ActivityInputPortDefinitionBean bean : inputPortDefinitions) {
-				html = html + "<tr><td>" + bean.getName() + "</td><td>"
-						+ bean.getDepth() + "</td></tr>";
-			}
+			appendHeaderRow(html, "Input Port Name", "Depth");
+			for (ActivityInputPortDefinitionBean bean : inputPortDefinitions)
+				appendPlainRow(html, bean.getName(), bean.getDepth());
 		}
 		List<ActivityOutputPortDefinitionBean> outputPortDefinitions = getConfigBean()
 				.getPorts().getOutputPortDefinitions();
 		if (!outputPortDefinitions.isEmpty()) {
-			html = html + "<tr><th>Output Port Name</th>" + "<th>Depth</th>"
-					+ "</tr>";
-			for (ActivityOutputPortDefinitionBean bean : outputPortDefinitions) {
-				html = html + "<tr><td>" + bean.getName() + "</td><td>"
-						+ bean.getDepth() + "</td>" + "</tr>";
-			}
+			appendHeaderRow(html, "Output Port Name", "Depth");
+			for (ActivityOutputPortDefinitionBean bean : outputPortDefinitions)
+				appendPlainRow(html, bean.getName(), bean.getDepth());
 		}
-		return html;
-
+		return html.toString();
 	}
 
-	private String getDescriptionHtml(String header, String description) {
-		String result = "";
-		if ((description != null) && !description.isEmpty()) {
-			result += "<tr><td colspan=\"2\"><b>" + header + "</b></td></tr>";
-			result += "<tr><td colspan=\"2\" nowrap=\"wrap\" style=\"width:100px;\">"
-					+ description + "</td></tr>";
-		}
-		return result;
-
+	private void appendRow(StringBuilder html, Object label, Object value) {
+		html.append("<tr><td><b>").append(label).append("</b></td><td>")
+				.append(value).append("</td></tr>");
 	}
 
+	private void appendHeaderRow(StringBuilder html, Object label1,
+			Object label2) {
+		html.append("<tr><th>").append(label1).append("</th><th>")
+				.append(label2).append("</th></tr>");
+	}
+
+	private void appendPlainRow(StringBuilder html, Object value1, Object value2) {
+		html.append("<tr><td>").append(value1).append("</td><td>")
+				.append(value2).append("</td></tr>");
+	}
+
+	private void appendDescriptionHtml(StringBuilder html, String header,
+			String description) {
+		if ((description != null) && !description.isEmpty())
+			html.append("<tr><td colspan=\"2\"><b>")
+					.append(header)
+					.append("</b></td></tr>")
+					.append("<tr><td colspan=\"2\" nowrap=\"wrap\" style=\"width:100px;\">")
+					.append(description).append("</td></tr>");
+	}
 }

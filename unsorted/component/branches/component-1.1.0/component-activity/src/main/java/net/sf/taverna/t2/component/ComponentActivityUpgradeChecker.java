@@ -48,7 +48,7 @@ public class ComponentActivityUpgradeChecker implements
 					config.getFamilyName(), config.getComponentName())
 					.getComponentVersionMap().lastKey();
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to get component description", e);
 		}
 
 		if (latestVersion > versionNumber)

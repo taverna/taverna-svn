@@ -49,7 +49,7 @@ public class LocalWorld {
 				model.read(new StringReader(readFileToString(modelFile)), null,
 						ENCODING);
 		} catch (IOException e) {
-			logger.error(e);
+			logger.error("failed to construct local annotation world", e);
 		}
 	}
 
@@ -71,7 +71,7 @@ public class LocalWorld {
 		try {
 			writeStringToFile(modelFile, createTurtle(model));
 		} catch (IOException e) {
-			logger.error(e);
+			logger.error("failed to save local annotation world", e);
 		}
 	}
 

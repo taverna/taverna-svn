@@ -3,16 +3,18 @@
  */
 package net.sf.taverna.t2.component.ui.panel;
 
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.WEST;
 import static java.awt.event.ItemEvent.SELECTED;
+import static net.sf.taverna.t2.component.ui.util.Utils.LONG_STRING;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedMap;
 
 import javax.swing.JComboBox;
@@ -21,7 +23,6 @@ import javax.swing.JPanel;
 
 import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.preference.ComponentPreference;
-import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 
@@ -33,38 +34,32 @@ import org.apache.log4j.Logger;
  */
 public class RegistryChooserPanel extends JPanel implements
 		Observable<RegistryChoiceMessage> {
+	private static final String REGISTRY_LABEL = "Component registry:";
 	private static final long serialVersionUID = 8390860727800654604L;
-	private static final Logger logger = Logger
-			.getLogger(RegistryChooserPanel.class);
+	private static final Logger logger = getLogger(RegistryChooserPanel.class);
 
-	private List<Observer<RegistryChoiceMessage>> observers = new ArrayList<Observer<RegistryChoiceMessage>>();
-
+	private final List<Observer<RegistryChoiceMessage>> observers = new ArrayList<Observer<RegistryChoiceMessage>>();
 	private final JComboBox registryBox;
-
-	Map<String, String> toolTipMap = new HashMap<String, String>();
-
-	private ComponentPreference pref = ComponentPreference.getInstance();
-
-	final SortedMap<String, Registry> registryMap;
+	private final ComponentPreference pref = ComponentPreference.getInstance();
+	private final SortedMap<String, Registry> registryMap;
 
 	public RegistryChooserPanel() {
-		super();
-		this.setLayout(new GridBagLayout());
+		setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
 
 		registryMap = pref.getRegistryMap();
 		registryBox = new JComboBox(registryMap.keySet().toArray());
-		registryBox.setPrototypeDisplayValue(Utils.LONG_STRING);
+		registryBox.setPrototypeDisplayValue(LONG_STRING);
 
 		registryBox.setEditable(false);
 
 		gbc.gridx = 0;
-		gbc.anchor = GridBagConstraints.WEST;
-		this.add(new JLabel("Component registry:"), gbc);
+		gbc.anchor = WEST;
+		this.add(new JLabel(REGISTRY_LABEL), gbc);
 		gbc.gridx = 1;
 		gbc.weightx = 1;
-		gbc.fill = GridBagConstraints.BOTH;
+		gbc.fill = BOTH;
 		this.add(registryBox, gbc);
 
 		registryBox.addItemListener(new ItemListener() {
@@ -93,9 +88,9 @@ public class RegistryChooserPanel extends JPanel implements
 				chosenRegistry);
 		for (Observer<RegistryChoiceMessage> o : getObservers())
 			try {
-				o.notify(RegistryChooserPanel.this, message);
+				o.notify(this, message);
 			} catch (Exception e) {
-				logger.error(e);
+				logger.error("problem handling selection update", e);
 			}
 	}
 
@@ -108,7 +103,7 @@ public class RegistryChooserPanel extends JPanel implements
 		try {
 			observer.notify(this, message);
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("problem handling addition of observer", e);
 		}
 	}
 

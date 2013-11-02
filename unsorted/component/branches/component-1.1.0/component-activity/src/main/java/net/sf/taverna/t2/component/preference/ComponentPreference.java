@@ -51,10 +51,12 @@ public class ComponentPreference {
 				FileReader reader = new FileReader(configFile);
 				properties.load(reader);
 				reader.close();
-			} catch (final FileNotFoundException e) {
-				logger.error(e);
-			} catch (final IOException e) {
-				logger.error(e);
+			} catch (FileNotFoundException e) {
+				logger.error("configuration file (" + configFile
+						+ ") disappeared", e);
+			} catch (IOException e) {
+				logger.error("configuration file (" + configFile
+						+ ") was not read correctly", e);
 			}
 		} else {
 			fillDefaultProperties();
@@ -66,13 +68,14 @@ public class ComponentPreference {
 		registryMap.clear();
 		for (Object key : properties.keySet())
 			try {
-				String name = (String) key;
-				registryMap.put(name, calculateRegistry(new URL(
-						(String) properties.get(name))));
+				registryMap.put((String) key, calculateRegistry(new URL(
+						(String) properties.get(key))));
 			} catch (MalformedURLException e) {
-				logger.error(e);
+				logger.error("bogus url (" + properties.get(key)
+						+ ") in configuration file", e);
 			} catch (RegistryException e) {
-				logger.error(e);
+				logger.error("failed to construct registry handle for "
+						+ properties.get(key), e);
 			}
 	}
 
@@ -99,9 +102,11 @@ public class ComponentPreference {
 			properties.store(out, "");
 			out.close();
 		} catch (FileNotFoundException e) {
-			logger.error(e);
+			logger.error("configuration file (" + getConfigFile()
+					+ ") is not writable", e);
 		} catch (IOException e) {
-			logger.error(e);
+			logger.error("configuration file (" + getConfigFile()
+					+ ") was not written", e);
 		}
 	}
 

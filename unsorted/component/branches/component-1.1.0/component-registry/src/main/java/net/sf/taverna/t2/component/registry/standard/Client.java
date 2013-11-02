@@ -22,6 +22,7 @@ import net.sf.taverna.t2.component.registry.standard.myexpclient.MyExperimentCli
 import org.apache.log4j.Logger;
 
 class Client {
+	private static final String API_VERIFICATION_RESOURCE = "/component-profiles.xml";
 	private final Logger logger;
 	private final MyExperimentClient myE_Client;
 	private final URL registryBase;
@@ -40,11 +41,11 @@ class Client {
 
 	public boolean verify() {
 		try {
-			String url = url("/component-profiles.xml");
+			String url = url(API_VERIFICATION_RESOURCE);
 			logger.info("HEAD for " + url);
 			return myE_Client.doMyExperimentHEAD(url).getResponseCode() == HTTP_OK;
 		} catch (Exception e) {
-			logger.info("failed to connect to " + registryBase);
+			logger.info("failed to connect to " + registryBase, e);
 			return false;
 		}
 	}
@@ -63,7 +64,6 @@ class Client {
 
 	private Marshaller getMarshaller() throws JAXBException {
 		return jaxbContext.createMarshaller();
-		//marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
 	}
 
 	/**
@@ -85,6 +85,7 @@ class Client {
 			throws RegistryException {
 		String url = null;
 		try {
+
 			url = url(uri, query);
 			logger.info("GET of " + url);
 			ServerResponse response = myE_Client.doMyExperimentGET(url);
@@ -92,6 +93,7 @@ class Client {
 				throw new RegistryException("Unable to perform request "
 						+ response.getResponseCode());
 			return response.getResponse(jaxbContext, clazz);
+
 		} catch (RegistryException e) {
 			throw e;
 		} catch (MalformedURLException e) {
@@ -101,7 +103,6 @@ class Client {
 			throw new RegistryException("Problem when unmarshalling response",
 					e);
 		} catch (Exception e) {
-			logger.info("failed in GET to " + url, e);
 			throw new RegistryException("Problem when sending request", e);
 		}
 	}
@@ -127,6 +128,7 @@ class Client {
 			String... query) throws RegistryException {
 		String url = null;
 		try {
+
 			url = url(uri, query);
 			logger.info("POST to " + url);
 			StringWriter sw = new StringWriter();
@@ -139,6 +141,7 @@ class Client {
 				throw new RegistryException("Unable to perform request "
 						+ response.getResponseCode());
 			return response.getResponse(jaxbContext, clazz);
+
 		} catch (RegistryException e) {
 			throw e;
 		} catch (MalformedURLException e) {
@@ -147,7 +150,6 @@ class Client {
 		} catch (JAXBException e) {
 			throw new RegistryException("Problem when marshalling request", e);
 		} catch (Exception e) {
-			logger.info("failed in POST to " + url, e);
 			throw new RegistryException("Problem when sending request", e);
 		}
 	}
@@ -174,6 +176,7 @@ class Client {
 			String... query) throws RegistryException {
 		String url = null;
 		try {
+
 			url = url(uri, query);
 			logger.info("PUT to " + url);
 			StringWriter sw = new StringWriter();
@@ -186,6 +189,7 @@ class Client {
 				throw new RegistryException("Unable to perform request "
 						+ response.getResponseCode());
 			return response.getResponse(jaxbContext, clazz);
+
 		} catch (RegistryException e) {
 			throw e;
 		} catch (MalformedURLException e) {
@@ -194,7 +198,6 @@ class Client {
 		} catch (JAXBException e) {
 			throw new RegistryException("Problem when marshalling request", e);
 		} catch (Exception e) {
-			logger.info("failed in POST to " + url, e);
 			throw new RegistryException("Problem when sending request", e);
 		}
 	}
@@ -214,14 +217,15 @@ class Client {
 		String url = null;
 		ServerResponse response;
 		try {
+
 			url = url(uri, query);
 			logger.info("DELETE of " + url);
 			response = myE_Client.doMyExperimentDELETE(url);
+
 		} catch (MalformedURLException e) {
 			throw new RegistryException("Problem constructing resource URL:"
 					+ e.getMessage());
 		} catch (Exception e) {
-			logger.info("failed in DELETE to " + url, e);
 			throw new RegistryException("Unable to perform request: "
 					+ e.getMessage(), e);
 		}

@@ -249,7 +249,7 @@ public class MyExperimentClient {
 			try {
 				clearCredentials();
 			} catch (Exception e) {
-				logger.error(e);
+				logger.error("failed to clear credentials", e);
 			}
 			doc = null;
 		} else

@@ -211,13 +211,13 @@ public class ComponentPreferencePanel extends JPanel {
 			tableModel.insertRegistry(inputPanel.getRegistryNameField()
 					.getText(), getLocalRegistry(newDir));
 		} catch (MalformedURLException e) {
+			logger.error("bad url provided by user", e);
 			showMessageDialog(null, EXCEPTION_MESSAGE + location,
 					EXCEPTION_TITLE, ERROR_MESSAGE);
-			logger.error(e);
 		} catch (RegistryException e) {
+			logger.error("problem creating local registry", e);
 			showMessageDialog(null, EXCEPTION_MESSAGE + location,
 					EXCEPTION_TITLE, ERROR_MESSAGE);
-			logger.error(e);
 		}
 	}
 
@@ -229,8 +229,7 @@ public class ComponentPreferencePanel extends JPanel {
 				VALIDATION_MESSAGE, tableModel.getRegistryMap().keySet(),
 				DUPLICATE, "[\\p{L}\\p{Digit}_.]+", INVALID_NAME);
 		vuid.addTextComponentValidation(inputPanel.getLocationField(),
-				SET_URL_MESSAGE, null, "", URL_PATTERN,
- BAD_URL_MESSAGE);
+				SET_URL_MESSAGE, null, "", URL_PATTERN, BAD_URL_MESSAGE);
 		vuid.setSize(new Dimension(400, 250));
 		if (!vuid.show(ComponentPreferencePanel.this))
 			return;
@@ -240,13 +239,13 @@ public class ComponentPreferencePanel extends JPanel {
 			tableModel.insertRegistry(inputPanel.getRegistryNameField()
 					.getText(), getRemoteRegistry(location));
 		} catch (MalformedURLException e) {
+			logger.error("bad url provided by user", e);
 			showMessageDialog(null, EXCEPTION_MESSAGE + location,
 					EXCEPTION_TITLE, ERROR_MESSAGE);
-			logger.error(e);
 		} catch (RegistryException e) {
 			showMessageDialog(null, EXCEPTION_MESSAGE + location,
 					EXCEPTION_TITLE, ERROR_MESSAGE);
-			logger.error(e);
+			logger.error("problem creating remote registry", e);
 		}
 	}
 

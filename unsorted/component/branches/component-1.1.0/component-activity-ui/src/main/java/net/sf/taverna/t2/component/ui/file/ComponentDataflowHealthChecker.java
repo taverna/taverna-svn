@@ -61,7 +61,8 @@ public class ComponentDataflowHealthChecker implements HealthChecker<Dataflow> {
 				return visitReport;
 			}
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error(
+					"failed to comprehend profile while checking for match", e);
 		}
 
 		return null;

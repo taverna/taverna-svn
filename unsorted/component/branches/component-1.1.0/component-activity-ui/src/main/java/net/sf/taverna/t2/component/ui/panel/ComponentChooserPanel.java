@@ -3,6 +3,12 @@
  */
 package net.sf.taverna.t2.component.ui.panel;
 
+import static java.awt.GridBagConstraints.HORIZONTAL;
+import static java.awt.GridBagConstraints.WEST;
+import static java.awt.event.ItemEvent.SELECTED;
+import static net.sf.taverna.t2.component.ui.util.Utils.LONG_STRING;
+import static org.apache.log4j.Logger.getLogger;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
@@ -20,7 +26,6 @@ import javax.swing.SwingWorker;
 import net.sf.taverna.t2.component.api.Component;
 import net.sf.taverna.t2.component.api.Family;
 import net.sf.taverna.t2.component.api.Registry;
-import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 
@@ -33,47 +38,43 @@ import org.apache.log4j.Logger;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class ComponentChooserPanel extends JPanel implements
 		Observable<ComponentChoiceMessage>, Observer {
+	private static final String NAME_LABEL = "Component name:";
 	private static final long serialVersionUID = -4459660016225074302L;
+	private static Logger logger = getLogger(ComponentChooserPanel.class);
 
-	private static Logger logger = Logger
-			.getLogger(ComponentChooserPanel.class);
-
-	private List<Observer<ComponentChoiceMessage>> observers = new ArrayList<Observer<ComponentChoiceMessage>>();
-
+	private final List<Observer<ComponentChoiceMessage>> observers = new ArrayList<Observer<ComponentChoiceMessage>>();
 	private final JComboBox componentChoice = new JComboBox();
-
-	private SortedMap<String, Component> componentMap = new TreeMap<String, Component>();
-
-	private RegistryAndFamilyChooserPanel registryAndFamilyChooserPanel = new RegistryAndFamilyChooserPanel();
+	private final SortedMap<String, Component> componentMap = new TreeMap<String, Component>();
+	private final RegistryAndFamilyChooserPanel registryAndFamilyChooserPanel = new RegistryAndFamilyChooserPanel();
 
 	public ComponentChooserPanel() {
 		super();
-		this.setLayout(new GridBagLayout());
+		setLayout(new GridBagLayout());
 
-		componentChoice.setPrototypeDisplayValue(Utils.LONG_STRING);
+		componentChoice.setPrototypeDisplayValue(LONG_STRING);
 
 		updateComponentModel();
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = WEST;
+		gbc.fill = HORIZONTAL;
 		gbc.gridwidth = 2;
 		gbc.weightx = 1;
-		this.add(registryAndFamilyChooserPanel, gbc);
+		add(registryAndFamilyChooserPanel, gbc);
 
 		gbc.gridy = 1;
 		gbc.gridwidth = 1;
 		gbc.weightx = 0;
-		this.add(new JLabel("Component name:"), gbc);
+		add(new JLabel(NAME_LABEL), gbc);
 		gbc.gridx = 1;
 		gbc.weightx = 1;
-		this.add(componentChoice, gbc);
+		add(componentChoice, gbc);
 		registryAndFamilyChooserPanel.addObserver(this);
 
 		componentChoice.addItemListener(new ItemListener() {
 			@Override
-			public void itemStateChanged(ItemEvent arg0) {
-				if (arg0.getStateChange() == ItemEvent.SELECTED) {
+			public void itemStateChanged(ItemEvent event) {
+				if (event.getStateChange() == SELECTED) {
 					updateToolTipText();
 					notifyObservers();
 				}
@@ -98,7 +99,9 @@ public class ComponentChooserPanel extends JPanel implements
 			try {
 				o.notify(ComponentChooserPanel.this, message);
 			} catch (Exception e) {
-				logger.error(e);
+				logger.error(
+						"observer had problem with component selection message",
+						e);
 			}
 	}
 
@@ -119,7 +122,7 @@ public class ComponentChooserPanel extends JPanel implements
 	}
 
 	@Override
-	public void notify(Observable sender, Object message) throws Exception {
+	public void notify(Observable sender, Object message) {
 		try {
 			if (message instanceof FamilyChoiceMessage)
 				updateComponentModel();
@@ -127,7 +130,7 @@ public class ComponentChooserPanel extends JPanel implements
 				registryAndFamilyChooserPanel.notify(null,
 						(ProfileChoiceMessage) message);
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("problem when component/family was selected", e);
 		}
 	}
 
@@ -141,7 +144,7 @@ public class ComponentChooserPanel extends JPanel implements
 		try {
 			observer.notify(this, message);
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("failed to notify about addition of observer", e);
 		}
 	}
 
@@ -189,7 +192,5 @@ public class ComponentChooserPanel extends JPanel implements
 			notifyObservers();
 			componentChoice.setEnabled(!componentMap.isEmpty());
 		}
-
 	}
-
 }

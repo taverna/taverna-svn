@@ -44,7 +44,7 @@ public class DispatchStackPatcher implements HealthChecker<ComponentActivity> {
 				ds.addLayer(new PatchedInvoke(), oldIndex);
 			}
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("failed to patch invoke layer", e);
 		}
 		return null;
 	}

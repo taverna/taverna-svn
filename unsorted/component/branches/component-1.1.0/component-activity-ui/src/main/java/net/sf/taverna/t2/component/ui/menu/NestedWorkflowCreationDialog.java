@@ -12,6 +12,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static net.sf.taverna.t2.component.ui.menu.component.ComponentServiceCreatorAction.copyProcessor;
 import static net.sf.taverna.t2.component.ui.menu.component.ComponentServiceCreatorAction.pasteProcessor;
 import static net.sf.taverna.t2.workbench.views.graph.GraphViewComponent.graphControllerMap;
+import static net.sf.taverna.t2.workflowmodel.utils.Tools.uniqueObjectName;
 import static net.sf.taverna.t2.workflowmodel.utils.Tools.uniqueProcessorName;
 import static org.apache.log4j.Logger.getLogger;
 
@@ -73,7 +74,6 @@ import net.sf.taverna.t2.workflowmodel.impl.DataflowImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.utils.AnnotationTools;
-import net.sf.taverna.t2.workflowmodel.utils.Tools;
 
 import org.apache.log4j.Logger;
 
@@ -332,7 +332,7 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 					currentWorkflowEditList));
 			gc.redraw();
 		} catch (EditException e1) {
-			logger.error(e1);
+			logger.error("failed to manufacture nested workflow", e1);
 		}
 	}
 
@@ -342,7 +342,7 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 		try {
 			da.configure(nestedDataflow);
 		} catch (ActivityConfigurationException e1) {
-			logger.error(e1);
+			logger.error("failed to set up dataflow in processor", e1);
 		}
 		try {
 			edits.getAddActivityEdit(nestingProcessor, da).doEdit();
@@ -365,7 +365,7 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 						aop.getName()).doEdit();
 			}
 		} catch (EditException e1) {
-			logger.error(e1);
+			logger.error("failed to add ports to processor", e1);
 		}
 	}
 
@@ -433,7 +433,7 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 								(Processor) oldNewMapping.get(pre),
 								(Processor) oldNewMapping.get(p)).doEdit();
 					} catch (EditException e1) {
-						logger.error(e1);
+						logger.error("failed to transfer condition", e1);
 					}
 				} else if (isTargetMoved) {
 					editList.add(edits.getRemoveConditionEdit(pre, p));
@@ -469,12 +469,12 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 				try {
 					edits.getConnectDatalinkEdit(newDatalink).doEdit();
 				} catch (EditException e1) {
-					logger.error(e1);
+					logger.error("failed to connect datalink", e1);
 				}
 			} else if (oldNewMapping.containsKey(datalinkSource)) {
 				DataflowOutputPort dop = null;
 				if (!outputPortMap.containsKey(datalinkSource)) {
-					String portName = Tools.uniqueObjectName(
+					String portName = uniqueObjectName(
 							datalinkSource.getName(), outputPortNames);
 					outputPortNames.add(portName);
 					outputPortMap
@@ -495,13 +495,13 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 									.getInternalInputPort());
 					edits.getConnectDatalinkEdit(newDatalink).doEdit();
 				} catch (EditException e1) {
-					logger.error(e1);
+					logger.error("failed to add dataflow output", e1);
 				}
 			} else if (oldNewMapping.containsKey(datalinkSink)) {
 				DataflowInputPort dip = null;
 				if (!inputPortMap.containsKey(datalinkSink)) {
-					String portName = Tools.uniqueObjectName(
-							datalinkSink.getName(), inputPortNames);
+					String portName = uniqueObjectName(datalinkSink.getName(),
+							inputPortNames);
 					inputPortNames.add(portName);
 					inputPortMap.put(
 							datalinkSink,
@@ -523,7 +523,7 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 									.get(datalinkSink));
 					edits.getConnectDatalinkEdit(newDatalink).doEdit();
 				} catch (EditException e1) {
-					logger.error(e1);
+					logger.error("failed to add dataflow input", e1);
 				}
 			}
 		}
@@ -531,19 +531,17 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 
 	private void transferProcessors(List<Edit<?>> editList,
 			Map<Object, Object> oldNewMapping, Dataflow nestedDataflow) {
-		for (TokenProcessingEntity p : includedProcessors) {
+		for (TokenProcessingEntity entity : includedProcessors)
 			try {
-				if (p instanceof Processor) {
+				if (entity instanceof Processor)
 					transferProcessor(editList, oldNewMapping, nestedDataflow,
-							(Processor) p);
-				} else if (p instanceof Merge) {
+							(Processor) entity);
+				else if (entity instanceof Merge)
 					transferMerge(editList, oldNewMapping, nestedDataflow,
-							(Merge) p);
-				}
+							(Merge) entity);
 			} catch (Exception e1) {
-				logger.error(e1);
+				logger.error("failed to transfer processor", e1);
 			}
-		}
 	}
 
 	private void transferMerge(List<Edit<?>> editList,
@@ -609,7 +607,7 @@ public class NestedWorkflowCreationDialog extends HelpEnabledDialog {
 			at.setAnnotationString(nestedDataflow, DescriptiveTitle.class,
 					nameField.getText()).doEdit();
 		} catch (EditException e2) {
-			logger.error(e);
+			logger.error("failed to put annotation on nested dataflow", e2);
 		}
 		return nestedDataflow;
 	}

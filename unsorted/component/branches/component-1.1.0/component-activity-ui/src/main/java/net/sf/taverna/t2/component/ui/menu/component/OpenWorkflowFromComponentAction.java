@@ -79,7 +79,7 @@ public class OpenWorkflowFromComponentAction extends AbstractAction {
 				}
 			});
 		} catch (OpenException e) {
-			logger.error(e);
+			logger.error("failed to open component definition", e);
 		}
 	}
 }

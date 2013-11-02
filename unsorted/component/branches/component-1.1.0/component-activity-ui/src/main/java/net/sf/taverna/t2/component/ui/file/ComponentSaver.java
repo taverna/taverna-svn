@@ -129,7 +129,7 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 		try {
 			refreshComponentServiceProvider(config);
 		} catch (ConfigurationException e) {
-			logger.error("Unable to refresh service panel");
+			logger.error("Unable to refresh service panel", e);
 		}
 
 		return new DataflowInfo(COMPONENT_FILE_TYPE, newIdent, dataflow);

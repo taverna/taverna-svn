@@ -130,7 +130,7 @@ class LocalComponentFamily extends ComponentFamily {
 			if (descriptionFile.isFile())
 				return readFileToString(descriptionFile);
 		} catch (IOException e) {
-			logger.error(e);
+			logger.error("failed to get description from " + descriptionFile, e);
 		}
 		return "";
 	}

@@ -79,21 +79,17 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 	}
 
 	@Override
-	public void actionPerformed(final ActionEvent e) {
+	public void actionPerformed(ActionEvent event) {
 		Version.ID ident = getNewComponentIdentification(p.getLocalName());
 
-		if (ident == null) {
+		if (ident == null)
 			return;
-		}
-		final Activity<?> a = p.getActivityList().get(0);
 
-		final Dataflow current = fm.getCurrentDataflow();
-
+		Activity<?> a = p.getActivityList().get(0);
+		Dataflow current = fm.getCurrentDataflow();
 		Dataflow d = null;
-
-		final ComponentActivity ca = new ComponentActivity();
-		final ComponentActivityConfigurationBean cacb;
-
+		ComponentActivity ca = new ComponentActivity();
+		ComponentActivityConfigurationBean cacb;
 		Element processorElement;
 		try {
 			if (a instanceof NestedDataflow) {
@@ -110,34 +106,33 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 				Processor newProcessor = null;
 				try {
 					newProcessor = pasteProcessor(processorElement, d);
-				} catch (IllegalArgumentException e1) {
-					logger.error(e1);
+				} catch (IllegalArgumentException e) {
+					logger.error(
+							"failed to paste processor representing component",
+							e);
 				}
 
-				final List<Edit<?>> componentWorkflowEditList = new ArrayList<Edit<?>>();
+				List<Edit<?>> componentWorkflowEditList = new ArrayList<Edit<?>>();
 
-				for (final ProcessorInputPort pip : newProcessor
-						.getInputPorts()) {
-					final DataflowInputPort dip = edits
-							.createDataflowInputPort(pip.getName(),
-									pip.getDepth(), pip.getDepth(), d);
+				for (ProcessorInputPort pip : newProcessor.getInputPorts()) {
+					DataflowInputPort dip = edits.createDataflowInputPort(
+							pip.getName(), pip.getDepth(), pip.getDepth(), d);
 					componentWorkflowEditList.add(edits
 							.getAddDataflowInputPortEdit(d, dip));
 
-					final Datalink dl = edits.createDatalink(
+					Datalink dl = edits.createDatalink(
 							dip.getInternalOutputPort(), pip);
 					componentWorkflowEditList.add(edits
 							.getConnectDatalinkEdit(dl));
 				}
 
-				for (final ProcessorOutputPort pop : newProcessor
-						.getOutputPorts()) {
-					final DataflowOutputPort dop = edits
-							.createDataflowOutputPort(pop.getName(), d);
+				for (ProcessorOutputPort pop : newProcessor.getOutputPorts()) {
+					DataflowOutputPort dop = edits.createDataflowOutputPort(
+							pop.getName(), d);
 					componentWorkflowEditList.add(edits
 							.getAddDataflowOutputPortEdit(d, dop));
 
-					final Datalink dl = edits.createDatalink(pop,
+					Datalink dl = edits.createDatalink(pop,
 							dop.getInternalInputPort());
 					componentWorkflowEditList.add(edits
 							.getConnectDatalinkEdit(dl));
@@ -150,15 +145,15 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 
 			ca.configure(cacb);
 
-			final List<Edit<?>> currentWorkflowEditList = new ArrayList<Edit<?>>();
+			List<Edit<?>> currentWorkflowEditList = new ArrayList<Edit<?>>();
 
-			for (final ProcessorInputPort pip : p.getInputPorts()) {
+			for (ProcessorInputPort pip : p.getInputPorts()) {
 				currentWorkflowEditList.add(edits
 						.getAddActivityInputPortMappingEdit(ca, pip.getName(),
 								pip.getName()));
 			}
 
-			for (final ProcessorOutputPort pop : p.getOutputPorts()) {
+			for (ProcessorOutputPort pop : p.getOutputPorts()) {
 				currentWorkflowEditList.add(edits
 						.getAddActivityOutputPortMappingEdit(ca, pop.getName(),
 								pop.getName()));
@@ -168,8 +163,8 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 			currentWorkflowEditList.add(edits.getAddActivityEdit(p, ca));
 			em.doDataflowEdit(current,
 					new CompoundEdit(currentWorkflowEditList));
-		} catch (Exception e1) {
-			logger.error(e1);
+		} catch (Exception e) {
+			logger.error("failed to instantiate component", e);
 		}
 	}
 
@@ -214,7 +209,7 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 				return null;
 			}
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to search registry", e);
 			showMessageDialog(null,
 					"Problem searching registry: " + e.getMessage(),
 					"Component creation problem", ERROR_MESSAGE);
