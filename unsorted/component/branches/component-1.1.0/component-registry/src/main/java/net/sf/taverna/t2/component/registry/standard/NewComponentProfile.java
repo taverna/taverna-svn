@@ -42,9 +42,17 @@ class NewComponentProfile extends ComponentProfile {
 		resource = profile.getResource();
 	}
 
+	private static URL getLocationURL(Description cpd) throws RegistryException {
+		try {
+			return new URL(getElementString(cpd, LOCATION));
+		} catch (MalformedURLException e) {
+			throw new RegistryException("bad profile location", e);
+		}
+	}
+
 	NewComponentProfile(NewComponentRegistry registry,
 			Description cpd) throws RegistryException {
-		super(registry, getElementString(cpd, LOCATION));
+		super(registry, getLocationURL(cpd));
 		this.registry = registry;
 		uri = cpd.getUri();
 		id = cpd.getId();
