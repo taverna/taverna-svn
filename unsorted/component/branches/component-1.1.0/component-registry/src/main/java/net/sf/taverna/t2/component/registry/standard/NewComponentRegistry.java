@@ -98,7 +98,7 @@ class NewComponentRegistry extends ComponentRegistry {
 	private List<Description> listComponentFamilies(String profileUri)
 			throws RegistryException {
 		return client.get(ComponentFamilyList.class, COMPONENT_FAMILY_LIST,
-				"component-profile=" + profileUri,
+				"component_profile=" + profileUri,
 				"elements=" + NewComponentFamily.ELEMENTS).getPack();
 	}
 
@@ -340,7 +340,7 @@ class NewComponentRegistry extends ComponentRegistry {
 	private List<Description> listComponents(String familyUri)
 			throws RegistryException {
 		return client.get(ComponentDescriptionList.class, COMPONENT_LIST,
-				"component-family=" + familyUri,
+				"component_family=" + familyUri,
 				"elements=" + NewComponent.ELEMENTS).getWorkflow();
 	}
 
