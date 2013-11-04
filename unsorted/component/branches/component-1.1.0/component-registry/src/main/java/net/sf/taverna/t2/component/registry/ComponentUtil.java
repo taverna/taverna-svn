@@ -2,9 +2,9 @@ package net.sf.taverna.t2.component.registry;
 
 import static org.apache.log4j.Logger.getLogger;
 
-import java.lang.ref.WeakReference;
 import java.net.URL;
-import java.util.WeakHashMap;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.taverna.t2.component.api.Component;
 import net.sf.taverna.t2.component.api.Family;
@@ -25,18 +25,15 @@ import org.apache.log4j.Logger;
  */
 public class ComponentUtil {
 	private ComponentUtil() {
-		cache = new WeakHashMap<String, WeakReference<Registry>>();
+		cache = new HashMap<String, Registry>();
 	}
 
 	private static Logger logger = getLogger(ComponentUtil.class);
 	private static ComponentUtil impl = new ComponentUtil();
-	private final WeakHashMap<String, WeakReference<Registry>> cache;
+	private final Map<String, Registry> cache;
 
 	private Registry getRegistry(URL registryBase) throws RegistryException {
-		Registry registry = null;
-		WeakReference<Registry> regref = cache.get(registryBase.toString());
-		if (regref != null)
-			registry = regref.get();
+		Registry registry = cache.get(registryBase.toString());
 		if (registry != null)
 			return registry;
 
@@ -51,8 +48,7 @@ public class ComponentUtil {
 			registry = LocalComponentRegistryLocator
 					.getComponentRegistry(registryBase);
 		}
-		cache.put(registryBase.toString(),
-				new WeakReference<Registry>(registry));
+		cache.put(registryBase.toString(), registry);
 		return registry;
 	}
 

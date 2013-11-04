@@ -37,7 +37,6 @@ public class ComponentDataflowCache {
 				try {
 					componentVersion = calculateComponentVersion(id);
 				} catch (Exception e) {
-					e.printStackTrace();
 					throw new RegistryException(e.getMessage(), e);
 				}
 				logger.info("Calculated component version");
