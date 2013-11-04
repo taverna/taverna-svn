@@ -25,21 +25,13 @@ class NewComponentProfile extends ComponentProfile {
 	private String resource;
 	private final String uri;
 
-	private static URL contentUrl(ComponentProfileType cpt) throws RegistryException {
+	private static URL contentUrl(ComponentProfileType cpt)
+			throws RegistryException {
 		try {
 			return new URL(cpt.getContentUri());
 		} catch (MalformedURLException e) {
-			throw new RegistryException("unexpected bad URL", e);
+			throw new RegistryException("bad profile location", e);
 		}
-	}
-	NewComponentProfile(NewComponentRegistry registry,
-			ComponentProfileType profile) throws RegistryException {
-		super(registry, contentUrl(profile));
-		this.registry = registry;
-		uri = profile.getUri();
-		id = profile.getId();
-		location = profile.getContentUri();
-		resource = profile.getResource();
 	}
 
 	private static URL getLocationURL(Description cpd) throws RegistryException {
@@ -51,7 +43,17 @@ class NewComponentProfile extends ComponentProfile {
 	}
 
 	NewComponentProfile(NewComponentRegistry registry,
-			Description cpd) throws RegistryException {
+			ComponentProfileType profile) throws RegistryException {
+		super(registry, contentUrl(profile));
+		this.registry = registry;
+		uri = profile.getUri();
+		id = profile.getId();
+		location = profile.getContentUri();
+		resource = profile.getResource();
+	}
+
+	NewComponentProfile(NewComponentRegistry registry, Description cpd)
+			throws RegistryException {
 		super(registry, getLocationURL(cpd));
 		this.registry = registry;
 		uri = cpd.getUri();

@@ -128,7 +128,7 @@ class NewComponentRegistry extends ComponentRegistry {
 	protected void populateFamilyCache() throws RegistryException {
 		for (Profile pr : getComponentProfiles()) {
 			NewComponentProfile p = (NewComponentProfile) pr;
-			for (Description cfd : listComponentFamilies(p.getUri()))
+			for (Description cfd : listComponentFamilies(p.getResourceLocation()))
 				familyCache.put(getElementString(cfd, "title"),
 						new NewComponentFamily(this, p, cfd));
 		}
@@ -347,7 +347,7 @@ class NewComponentRegistry extends ComponentRegistry {
 	protected List<Component> listComponents(NewComponentFamily family)
 			throws RegistryException {
 		List<Component> result = new ArrayList<Component>();
-		for (Description cd : listComponents(family.getUri()))
+		for (Description cd : listComponents(family.getResourceLocation()))
 			result.add(new NewComponent(this, family, cd));
 		return result;
 	}

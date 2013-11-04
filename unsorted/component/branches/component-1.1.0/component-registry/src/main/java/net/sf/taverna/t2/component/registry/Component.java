@@ -48,6 +48,10 @@ public abstract class Component implements
 	 */
 	protected SortedMap<Integer, Version> versionMap = new TreeMap<Integer, Version>();
 
+	protected Component(URL url) {
+		this.url = url;
+	}
+	
 	protected Component(String url) {
 		try {
 			this.url = new URL(url);
@@ -146,7 +150,7 @@ public abstract class Component implements
 			String revisionComment) throws RegistryException;
 
 	@Override
-	public final synchronized URL getComponentURL() {
+	public final URL getComponentURL() {
 		return url;
 	}
 }
