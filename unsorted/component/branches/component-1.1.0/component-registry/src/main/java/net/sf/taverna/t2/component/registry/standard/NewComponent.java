@@ -70,7 +70,7 @@ class NewComponent extends Component {
 	protected void populateComponentVersionMap() {
 		try {
 			for (Description d : getCurrent("versions").getVersions()
-					.getVersion())
+					.getWorkflow())
 				versionMap.put(d.getVersion(), new Version(d.getVersion(),
 						getValue(d)));
 		} catch (RegistryException e) {

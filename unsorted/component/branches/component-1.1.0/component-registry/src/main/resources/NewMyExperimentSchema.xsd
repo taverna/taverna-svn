@@ -120,7 +120,7 @@
 	</xs:complexType>
 	<xs:complexType name="Versions">
 		<xs:sequence>
-			<xs:element name="version" type="Description" maxOccurs="unbounded" />
+			<xs:element name="workflow" type="Description" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 
