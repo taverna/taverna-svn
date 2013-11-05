@@ -66,4 +66,6 @@ public interface Component extends NamedItem {
 	Registry getRegistry();
 
 	Family getFamily();
+
+	void delete() throws RegistryException;
 }

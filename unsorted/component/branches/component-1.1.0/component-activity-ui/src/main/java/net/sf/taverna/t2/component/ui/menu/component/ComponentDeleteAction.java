@@ -16,12 +16,12 @@ import static net.sf.taverna.t2.component.ui.util.Utils.refreshComponentServiceP
 import static org.apache.log4j.Logger.getLogger;
 
 import java.awt.event.ActionEvent;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
+import javax.swing.SwingWorker;
 
 import net.sf.taverna.t2.component.api.Component;
-import net.sf.taverna.t2.component.api.Family;
-import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.ui.panel.ComponentChooserPanel;
@@ -59,53 +59,64 @@ public class ComponentDeleteAction extends AbstractAction {
 		ComponentChooserPanel panel = new ComponentChooserPanel();
 		int answer = showConfirmDialog(null, panel, TITLE, OK_CANCEL_OPTION);
 		if (answer == OK_OPTION)
-			doDelete(panel.getChosenComponent(), panel.getChosenRegistry(),
-					panel.getChosenFamily());
+			doDelete(panel.getChosenComponent());
 	}
 
-	private void doDelete(Component chosenComponent, Registry chosenRegistry,
-			Family chosenFamily) {
+	private void doDelete(final Component chosenComponent) {
 		if (chosenComponent == null) {
 			showMessageDialog(null, WHAT_COMPONENT_MSG,
 					COMPONENT_PROBLEM_TITLE, ERROR_MESSAGE);
-			return;
-		} else if (componentIsInUse(chosenRegistry, chosenFamily,
-				chosenComponent)) {
+		} else if (componentIsInUse(chosenComponent)) {
 			showMessageDialog(null, OPEN_COMPONENT_MSG,
 					COMPONENT_PROBLEM_TITLE, ERROR_MESSAGE);
-			return;
-		}
-
-		if (showConfirmDialog(null,
+		} else if (showConfirmDialog(null,
 				format(CONFIRM_MSG, chosenComponent.getName()), CONFIRM_TITLE,
-				YES_NO_OPTION) != YES_OPTION)
-			return;
+				YES_NO_OPTION) == YES_OPTION)
+			new SwingWorker<ComponentServiceProviderConfig, Object>() {
+				@Override
+				protected ComponentServiceProviderConfig doInBackground()
+						throws Exception {
+					return deleteComponent(chosenComponent);
+				}
 
+				@Override
+				protected void done() {
+					refresh(chosenComponent, this);
+				}
+			}.execute();
+	}
+
+	private ComponentServiceProviderConfig deleteComponent(Component component)
+			throws RegistryException {
+		ComponentServiceProviderConfig config = new ComponentServiceProviderConfig(
+				component.getFamily());
+		component.delete();
+		return config;
+	}
+
+	protected void refresh(Component component,
+			SwingWorker<ComponentServiceProviderConfig, Object> worker) {
 		try {
-			chosenFamily.removeComponent(chosenComponent);
-			ComponentServiceProviderConfig config = new ComponentServiceProviderConfig();
-			config.setFamilyName(chosenFamily.getName());
-			config.setRegistryBase(chosenRegistry.getRegistryBase());
-			refreshComponentServiceProvider(config);
-		} catch (RegistryException e) {
-			logger.error("failed to delete component", e);
+			refreshComponentServiceProvider(worker.get());
+		} catch (ExecutionException e) {
+			logger.error("failed to delete component", e.getCause());
 			showMessageDialog(
 					null,
-					format(FAILED_MSG, chosenComponent.getName(),
-							e.getMessage()), DELETE_FAILED_TITLE, ERROR_MESSAGE);
+					format(FAILED_MSG, component.getName(), e.getCause()
+							.getMessage()), DELETE_FAILED_TITLE, ERROR_MESSAGE);
 		} catch (ConfigurationException e) {
 			logger.error("failed to handle service panel update "
 					+ "after deleting component", e);
+		} catch (InterruptedException e) {
+			logger.warn("interrupted during component deletion", e);
 		}
 	}
 
-	private static boolean componentIsInUse(Registry chosenRegistry,
-			Family chosenFamily, Component chosenComponent) {
+	private static boolean componentIsInUse(Component component) {
 		for (Dataflow d : fm.getOpenDataflows()) {
 			Object dataflowSource = fm.getDataflowSource(d);
 			if (dataflowSource instanceof Version.ID
-					&& ((Version.ID) dataflowSource)
-							.mostlyEqualTo(chosenComponent))
+					&& ((Version.ID) dataflowSource).mostlyEqualTo(component))
 				return true;
 		}
 		return false;

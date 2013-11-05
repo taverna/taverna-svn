@@ -177,10 +177,8 @@ public class ComponentServiceCreatorAction extends AbstractAction {
 
 		createInitialComponent(d, ident);
 
-		ComponentServiceProviderConfig config = new ComponentServiceProviderConfig();
-		config.setFamilyName(ident.getFamilyName());
-		config.setRegistryBase(ident.getRegistryBase());
-		refreshComponentServiceProvider(config);
+		refreshComponentServiceProvider(new ComponentServiceProviderConfig(
+				ident));
 		return new ComponentActivityConfigurationBean(ident);
 	}
 

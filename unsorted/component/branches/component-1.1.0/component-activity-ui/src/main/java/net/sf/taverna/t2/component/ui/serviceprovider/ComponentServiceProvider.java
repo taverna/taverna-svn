@@ -70,7 +70,8 @@ public class ComponentServiceProvider extends
 									ident);
 							results.add(newDesc);
 						} catch (Exception e) {
-							logger.error("problem getting service descriptor", e);
+							logger.error("problem getting service descriptor",
+									e);
 						}
 				callBack.partialResults(results);
 				callBack.finished();
@@ -128,9 +129,7 @@ public class ComponentServiceProvider extends
 		if ((chosenRegistry == null) || (chosenFamily == null))
 			return;
 
-		ComponentServiceProviderConfig newConfig = new ComponentServiceProviderConfig();
-		newConfig.setRegistryBase(chosenRegistry.getRegistryBase());
-		newConfig.setFamilyName(chosenFamily.getName());
-		callBack.newProviderConfiguration(newConfig);
+		callBack.newProviderConfiguration(new ComponentServiceProviderConfig(
+				chosenFamily));
 	}
 }

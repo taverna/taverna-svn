@@ -154,4 +154,9 @@ public abstract class ComponentFamily implements
 
 	protected abstract void internalRemoveComponent(Component component)
 			throws RegistryException;
+
+	@Override
+	public void delete() throws RegistryException {
+		getComponentRegistry().removeComponentFamily(this);
+	}
 }

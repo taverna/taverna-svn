@@ -121,11 +121,9 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 				ident);
 		newIdent.setComponentVersion(newVersion.getVersionNumber());
 
-		ComponentServiceProviderConfig config = new ComponentServiceProviderConfig();
-		config.setRegistryBase(ident.getRegistryBase());
-		config.setFamilyName(ident.getFamilyName());
 		try {
-			refreshComponentServiceProvider(config);
+			refreshComponentServiceProvider(new ComponentServiceProviderConfig(
+					ident));
 		} catch (ConfigurationException e) {
 			logger.error("Unable to refresh service panel", e);
 		}

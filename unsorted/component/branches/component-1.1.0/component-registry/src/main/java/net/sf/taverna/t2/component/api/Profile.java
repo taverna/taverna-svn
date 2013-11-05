@@ -46,4 +46,5 @@ public interface Profile extends NamedItem {
 
 	ExceptionHandling getExceptionHandling();
 
+	void delete() throws RegistryException;
 }

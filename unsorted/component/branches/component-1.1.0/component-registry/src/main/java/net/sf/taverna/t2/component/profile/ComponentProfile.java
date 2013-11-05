@@ -415,6 +415,11 @@ public class ComponentProfile implements
 		}
 		return null;
 	}
+
+	@Override
+	public void delete() throws RegistryException {
+		throw new RegistryException("deletion not supported");
+	}
 }
 
 /**
@@ -507,5 +512,10 @@ final class EmptyProfile implements net.sf.taverna.t2.component.api.Profile {
 	@Override
 	public ExceptionHandling getExceptionHandling() {
 		return null;
+	}
+
+	@Override
+	public void delete() throws RegistryException {
+		throw new RegistryException("deletion forbidden");
 	}
 }

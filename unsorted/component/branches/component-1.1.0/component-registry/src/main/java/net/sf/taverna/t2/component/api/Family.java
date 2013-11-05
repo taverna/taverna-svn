@@ -89,4 +89,10 @@ public interface Family extends NamedItem {
 	 */
 	@Override
 	String getDescription();
+
+	/**
+	 * Delete this family from its registry.
+	 * @throws RegistryException
+	 */
+	void delete() throws RegistryException;
 }

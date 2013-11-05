@@ -153,4 +153,9 @@ public abstract class Component implements
 	public final URL getComponentURL() {
 		return url;
 	}
+
+	@Override
+	public void delete() throws RegistryException {
+		getFamily().removeComponent(this);
+	}
 }

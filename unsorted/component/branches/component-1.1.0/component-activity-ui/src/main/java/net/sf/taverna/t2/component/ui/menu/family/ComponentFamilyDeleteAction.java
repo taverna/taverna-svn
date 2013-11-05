@@ -21,9 +21,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 
 import net.sf.taverna.t2.component.api.Family;
 import net.sf.taverna.t2.component.api.Registry;
@@ -91,11 +93,19 @@ public class ComponentFamilyDeleteAction extends AbstractAction {
 		int answer = showConfirmDialog(null, overallPanel, PICK_FAMILY_TITLE,
 				OK_CANCEL_OPTION);
 		if (answer == OK_OPTION)
-			doDelete(registryPanel.getChosenRegistry(),
+			deletionActionFlow(registryPanel.getChosenRegistry(),
 					familyPanel.getChosenFamily());
 	}
 
-	private void doDelete(Registry chosenRegistry, Family chosenFamily) {
+	/**
+	 * Check if the preconditions for the deletion action are satisfied.
+	 * 
+	 * @param chosenRegistry
+	 *            What registry contains the family.
+	 * @param chosenFamily
+	 */
+	private void deletionActionFlow(Registry chosenRegistry,
+			final Family chosenFamily) {
 		if (chosenRegistry == null) {
 			showMessageDialog(null, WHAT_REGISTRY_MSG, REGISTRY_FAIL_TITLE,
 					ERROR_MESSAGE);
@@ -107,24 +117,43 @@ public class ComponentFamilyDeleteAction extends AbstractAction {
 		} else if (familyIsInUse(chosenRegistry, chosenFamily)) {
 			showMessageDialog(null, OPEN_MSG, FAMILY_FAIL_TITLE, ERROR_MESSAGE);
 			return;
-		}
-
-		if (showConfirmDialog(null,
+		} else if (showConfirmDialog(null,
 				format(CONFIRM_MSG, chosenFamily.getName()), CONFIRM_TITLE,
-				YES_NO_OPTION) != YES_OPTION)
-			return;
+				YES_NO_OPTION) == YES_OPTION)
+			new SwingWorker<ComponentServiceProviderConfig, Object>() {
+				@Override
+				protected ComponentServiceProviderConfig doInBackground()
+						throws Exception {
+					return deleteFamily(chosenFamily);
+				}
 
+				@Override
+				protected void done() {
+					deletionDone(chosenFamily, this);
+				}
+			}.execute();
+	}
+
+	private ComponentServiceProviderConfig deleteFamily(Family family)
+			throws RegistryException {
+		ComponentServiceProviderConfig config = new ComponentServiceProviderConfig(
+				family);
+		family.delete();
+		return config;
+	}
+
+	private void deletionDone(Family family,
+			SwingWorker<ComponentServiceProviderConfig, Object> worker) {
 		try {
-			chosenRegistry.removeComponentFamily(chosenFamily);
-			ComponentServiceProviderConfig config = new ComponentServiceProviderConfig();
-			config.setFamilyName(chosenFamily.getName());
-			config.setRegistryBase(chosenRegistry.getRegistryBase());
-			removeComponentServiceProvider(config);
-		} catch (RegistryException e) {
-			logger.error("failed to delete family", e);
-			showMessageDialog(null,
-					format(FAILED_MSG, chosenFamily.getName(), e.getMessage()),
-					ERROR_TITLE, ERROR_MESSAGE);
+			removeComponentServiceProvider(worker.get());
+		} catch (InterruptedException e) {
+			logger.warn("interrupted during removal of component family", e);
+		} catch (ExecutionException e) {
+			logger.error("failed to delete family", e.getCause());
+			showMessageDialog(
+					null,
+					format(FAILED_MSG, family.getName(), e.getCause()
+							.getMessage()), ERROR_TITLE, ERROR_MESSAGE);
 		} catch (ConfigurationException e) {
 			logger.error("failed to update service provider panel "
 					+ "after deleting family", e);
