@@ -10,6 +10,7 @@ import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon.getIcon;
 import static net.sf.taverna.t2.workbench.views.graph.GraphViewComponent.graphControllerMap;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.awt.event.ActionEvent;
 
@@ -36,8 +37,7 @@ import org.apache.log4j.Logger;
  */
 public class OpenWorkflowFromComponentAction extends AbstractAction {
 	private static final long serialVersionUID = 7382677337746318211L;
-	private static final Logger logger = Logger
-			.getLogger(OpenWorkflowFromComponentAction.class);
+	private static final Logger logger = getLogger(OpenWorkflowFromComponentAction.class);
 	private static final String ACTION_NAME = "Open component...";
 	private static final String ACTION_DESCRIPTION = "Open the workflow that implements a component";
 	private static final FileManager fm = FileManager.getInstance();

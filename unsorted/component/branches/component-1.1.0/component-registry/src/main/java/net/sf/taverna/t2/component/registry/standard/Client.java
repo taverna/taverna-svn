@@ -1,13 +1,13 @@
 package net.sf.taverna.t2.component.registry.standard;
 
 import static java.net.HttpURLConnection.HTTP_OK;
-import static net.sf.taverna.t2.component.registry.standard.myexpclient.MyExperimentClient.FORCE_OUTPUT_OF_MESSAGES;
+import static java.net.URLEncoder.encode;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -23,17 +23,16 @@ import org.apache.log4j.Logger;
 
 class Client {
 	private static final String API_VERIFICATION_RESOURCE = "/component-profiles.xml";
-	private final Logger logger;
+	private static final Logger logger = getLogger(Client.class);
 	private final MyExperimentClient myE_Client;
 	private final URL registryBase;
 	private final JAXBContext jaxbContext;
 
-	Client(JAXBContext context, Logger logger, URL repository) throws Exception {
-		this.logger = logger;
+	Client(JAXBContext context, URL repository) throws Exception {
 		this.registryBase = repository;
 		this.jaxbContext = context;
 
-		myE_Client = new MyExperimentClient(logger);
+		myE_Client = new MyExperimentClient();
 		myE_Client.setBaseURL(repository.toExternalForm());
 		myE_Client.doLogin();
 		logger.info("instantiated client connection engine to " + repository);
@@ -42,7 +41,7 @@ class Client {
 	public boolean verify() {
 		try {
 			String url = url(API_VERIFICATION_RESOURCE);
-			logger.info("HEAD for " + url);
+			logger.info("API verification: HEAD for " + url);
 			return myE_Client.doMyExperimentHEAD(url).getResponseCode() == HTTP_OK;
 		} catch (Exception e) {
 			logger.info("failed to connect to " + registryBase, e);
@@ -57,7 +56,7 @@ class Client {
 			String[] bits = queryElement.split("=", 2);
 			uriBuilder.append(uriBuilder.indexOf("?") < 0 ? "?" : "&")
 					.append(bits[0]).append('=')
-					.append(URLEncoder.encode(bits[1], "UTF-8"));
+					.append(encode(bits[1], "UTF-8"));
 		}
 		return new URL(registryBase, uriBuilder.toString()).toString();
 	}
@@ -133,7 +132,7 @@ class Client {
 			logger.info("POST to " + url);
 			StringWriter sw = new StringWriter();
 			getMarshaller().marshal(elem, sw);
-			if (logger.isDebugEnabled() || FORCE_OUTPUT_OF_MESSAGES)
+			if (logger.isDebugEnabled())
 				logger.info("About to post XML document:\n" + sw);
 			ServerResponse response = myE_Client.doMyExperimentPOST(url,
 					sw.toString());
@@ -181,7 +180,7 @@ class Client {
 			logger.info("PUT to " + url);
 			StringWriter sw = new StringWriter();
 			getMarshaller().marshal(elem, sw);
-			if (logger.isDebugEnabled() || FORCE_OUTPUT_OF_MESSAGES)
+			if (logger.isDebugEnabled())
 				logger.info("About to post XML document:\n" + sw);
 			ServerResponse response = myE_Client.doMyExperimentPUT(url,
 					sw.toString());

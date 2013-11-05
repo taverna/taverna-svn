@@ -4,6 +4,7 @@
 package net.sf.taverna.t2.component.ui.file;
 
 import static net.sf.taverna.t2.component.registry.ComponentDataflowCache.getDataflow;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -28,7 +29,7 @@ import org.apache.log4j.Logger;
 public class ComponentOpener extends AbstractDataflowPersistenceHandler
 		implements DataflowPersistenceHandler {
 	private static final FileType COMPONENT_FILE_TYPE = ComponentFileType.instance;
-	private static Logger logger = Logger.getLogger(ComponentOpener.class);
+	private static Logger logger = getLogger(ComponentOpener.class);
 
 	@Override
 	public DataflowInfo openDataflow(FileType fileType, Object source)

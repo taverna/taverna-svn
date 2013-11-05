@@ -8,6 +8,8 @@ import java.util.Iterator;
 
 import javax.swing.ImageIcon;
 
+import net.sf.taverna.t2.component.registry.myexperiment.client.utils.Base64;
+
 import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;

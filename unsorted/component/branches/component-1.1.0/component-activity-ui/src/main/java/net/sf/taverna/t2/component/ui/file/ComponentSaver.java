@@ -9,6 +9,7 @@ import static javax.swing.JOptionPane.showConfirmDialog;
 import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.checkComponent;
 import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateRegistry;
 import static net.sf.taverna.t2.component.ui.util.Utils.refreshComponentServiceProvider;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,12 +43,9 @@ import org.apache.log4j.Logger;
  */
 public class ComponentSaver extends AbstractDataflowPersistenceHandler
 		implements DataflowPersistenceHandler {
-
 	private static final String UNSATISFIED_PROFILE_WARNING = "The component does not satisfy the profile.\nSee validation report.\nDo you still want to save?";
-
 	private static final FileType COMPONENT_FILE_TYPE = ComponentFileType.instance;
-
-	private static Logger logger = Logger.getLogger(ComponentSaver.class);
+	private static final Logger logger = getLogger(ComponentSaver.class);
 
 	@Override
 	public DataflowInfo saveDataflow(Dataflow dataflow, FileType fileType,

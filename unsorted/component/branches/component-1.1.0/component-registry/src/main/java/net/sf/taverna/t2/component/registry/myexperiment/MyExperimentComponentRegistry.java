@@ -22,7 +22,8 @@ package net.sf.taverna.t2.component.registry.myexperiment;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.URLEncoder.encode;
-import static net.sf.taverna.t2.component.registry.myexperiment.client.Base64.encodeBytes;
+import static net.sf.taverna.t2.component.registry.myexperiment.client.utils.Base64.encodeBytes;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -40,9 +41,9 @@ import net.sf.taverna.t2.component.api.SharingPolicy;
 import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
-import net.sf.taverna.t2.component.registry.myexperiment.client.Base64;
 import net.sf.taverna.t2.component.registry.myexperiment.client.MyExperimentClient;
 import net.sf.taverna.t2.component.registry.myexperiment.client.ServerResponse;
+import net.sf.taverna.t2.component.registry.myexperiment.client.utils.Base64;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -56,16 +57,12 @@ import org.jdom.output.XMLOutputter;
  * @author David Withers
  */
 class MyExperimentComponentRegistry extends ComponentRegistry {
-
-	private static Logger logger = Logger
-			.getLogger(MyExperimentComponentRegistry.class);
-
-	private final MyExperimentClient myExperimentClient;
-
+	private static Logger logger = getLogger(MyExperimentComponentRegistry.class);
 	public static MyExperimentSharingPolicy PRIVATE = new MyExperimentPrivatePolicy();
 	public static MyExperimentSharingPolicy PUBLIC = new MyExperimentPublicPolicy();
+	private static final String DO_PUT = "_DO_UPDATE_SIGNAL_";
 
-	private final String DO_PUT = "_DO_UPDATE_SIGNAL_";
+	private final MyExperimentClient myExperimentClient;
 
 	MyExperimentComponentRegistry(URL registryURL) throws RegistryException {
 		super(registryURL);

@@ -8,6 +8,7 @@ import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.cre
 import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.populateModelFromString;
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +30,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
  */
 public class LocalWorld {
 	private static final String FILENAME = "localWorld.ttl";
-	private static final Logger logger = Logger.getLogger(LocalWorld.class);
+	private static final Logger logger = getLogger(LocalWorld.class);
 	protected static final String ENCODING = "TURTLE";
 	private static LocalWorld instance = null;
 

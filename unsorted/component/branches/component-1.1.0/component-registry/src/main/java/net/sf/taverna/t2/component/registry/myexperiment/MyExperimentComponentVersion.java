@@ -20,6 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
+import static org.apache.log4j.Logger.getLogger;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -42,9 +44,7 @@ import org.jdom.Element;
  * @author David Withers
  */
 class MyExperimentComponentVersion extends ComponentVersion {
-	private static final Logger logger = Logger
-			.getLogger(MyExperimentComponentVersion.class);
-
+	private static final Logger logger = getLogger(MyExperimentComponentVersion.class);
 	private static final T2FlowFileType T2_FLOW_FILE_TYPE = new T2FlowFileType();
 
 	private final MyExperimentComponentRegistry componentRegistry;

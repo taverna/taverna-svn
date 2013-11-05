@@ -8,6 +8,7 @@ import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
 import static javax.swing.JOptionPane.OK_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -37,7 +38,7 @@ import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon;
  */
 public class ComponentProfileCopyAction extends AbstractAction {
 	private static final long serialVersionUID = 6332253931049645259L;
-	private static final Logger log = Logger.getLogger(ComponentProfileCopyAction.class);
+	private static final Logger log = getLogger(ComponentProfileCopyAction.class);
 	private static final String COPY_PROFILE = "Copy profile...";
 
 	public ComponentProfileCopyAction() {

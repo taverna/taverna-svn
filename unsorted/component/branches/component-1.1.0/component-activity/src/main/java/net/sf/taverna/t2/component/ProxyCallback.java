@@ -8,6 +8,7 @@ import static net.sf.taverna.t2.component.ComponentExceptionFactory.createUnexpe
 import static net.sf.taverna.t2.reference.T2ReferenceType.ErrorDocument;
 import static net.sf.taverna.t2.reference.T2ReferenceType.IdentifiedList;
 import static net.sf.taverna.t2.reference.T2ReferenceType.ReferenceSet;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ import org.apache.log4j.Logger;
  * 
  */
 public class ProxyCallback implements AsynchronousActivityCallback {
-	private static final Logger logger = Logger.getLogger(ProxyCallback.class);
+	private static final Logger logger = getLogger(ProxyCallback.class);
 
 	private AsynchronousActivityCallback originalCallback;
 	private final ReferenceService referenceService;

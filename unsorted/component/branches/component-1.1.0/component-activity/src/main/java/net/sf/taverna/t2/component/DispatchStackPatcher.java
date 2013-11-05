@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.component;
 
 import static net.sf.taverna.t2.visit.VisitReport.findAncestor;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ import org.apache.log4j.Logger;
 
 public class DispatchStackPatcher implements HealthChecker<ComponentActivity> {
 
-	private static Logger logger = Logger.getLogger(DispatchStackPatcher.class);
+	private static Logger logger = getLogger(DispatchStackPatcher.class);
 
 	@Override
 	public boolean canVisit(Object o) {

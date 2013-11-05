@@ -20,7 +20,12 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.ui.panel;
 
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.NONE;
+import static java.awt.GridBagConstraints.WEST;
 import static java.awt.event.ItemEvent.SELECTED;
+import static net.sf.taverna.t2.component.ui.util.Utils.LONG_STRING;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -38,7 +43,6 @@ import javax.swing.SwingWorker;
 import net.sf.taverna.t2.component.api.License;
 import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.api.RegistryException;
-import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 
@@ -51,8 +55,7 @@ import org.apache.log4j.Logger;
 public class LicenseChooserPanel extends JPanel implements
 		Observer<RegistryChoiceMessage> {
 	private static final long serialVersionUID = 2175274929391537032L;
-
-	private static Logger logger = Logger.getLogger(LicenseChooserPanel.class);
+	private static final Logger logger = getLogger(LicenseChooserPanel.class);
 
 	private JComboBox licenseBox = new JComboBox();
 
@@ -62,19 +65,19 @@ public class LicenseChooserPanel extends JPanel implements
 
 	public LicenseChooserPanel() {
 		super();
-		licenseBox.setPrototypeDisplayValue(Utils.LONG_STRING);
+		licenseBox.setPrototypeDisplayValue(LONG_STRING);
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
 
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.NONE;
+		gbc.anchor = WEST;
+		gbc.fill = NONE;
 		this.add(new JLabel("License:"), gbc);
 		gbc.gridx = 1;
 		gbc.weightx = 1;
-		gbc.fill = GridBagConstraints.BOTH;
+		gbc.fill = BOTH;
 		this.add(licenseBox, gbc);
 
 		licenseBox.setEditable(false);
@@ -99,8 +102,8 @@ public class LicenseChooserPanel extends JPanel implements
 	public void notify(Observable<RegistryChoiceMessage> sender,
 			RegistryChoiceMessage message) throws Exception {
 		try {
-			this.registry = message.getChosenRegistry();
-			this.updateLicenseModel();
+			registry = message.getChosenRegistry();
+			updateLicenseModel();
 		} catch (Exception e) {
 			logger.error("failure when handling license choice", e);
 		}
@@ -123,7 +126,6 @@ public class LicenseChooserPanel extends JPanel implements
 	}
 
 	private class LicenseUpdater extends SwingWorker<String, Object> {
-
 		@Override
 		protected String doInBackground() throws Exception {
 			List<License> licenses;

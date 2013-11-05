@@ -5,6 +5,7 @@ package net.sf.taverna.t2.component.ui.menu.profile;
 
 import static javax.swing.JOptionPane.showMessageDialog;
 import static net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon.getIcon;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.awt.event.ActionEvent;
 
@@ -19,7 +20,7 @@ import org.apache.log4j.Logger;
 public class ComponentProfileDeleteAction extends AbstractAction {
 	private static final long serialVersionUID = -5697971204434020559L;
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(ComponentProfileDeleteAction.class);
+	private static final Logger log = getLogger(ComponentProfileDeleteAction.class);
 	private static final String DELETE_PROFILE = "Delete profile...";
 
 	public ComponentProfileDeleteAction() {

@@ -91,6 +91,10 @@ public class MyExperimentClient {
 	private static final String INI_FILE_NAME = "myexperiment-plugin.ini";
 	public static final String INI_BASE_URL = "my_experiment_base_url";
 	public static final String INI_AUTO_LOGIN = "auto_login";
+	private static final Logger logger = Logger.getLogger(MyExperimentClient.class);
+	private static final String DIR_NAME = (separatorChar == '\\' ? ".Taverna2 Component Plugin"
+			: ".taverna2ComponentPlugin");
+	private static final int MESSAGE_TRIM_LENGTH = 512;
 
 	public static boolean baseChangedSinceLastStart = false;
 
@@ -100,13 +104,6 @@ public class MyExperimentClient {
 		public static final String PACK_LIST = "/packs.xml";
 		public static final String FILE_LIST = "/files.xml";
 	}
-
-	private static final String DIR_NAME = (separatorChar == '\\' ? ".Taverna2 Component Plugin"
-			: ".taverna2ComponentPlugin");
-	private static final int MESSAGE_TRIM_LENGTH = 512;
-	public static final boolean FORCE_OUTPUT_OF_MESSAGES = true;// FIXME Remove
-																// before
-																// release
 
 	// SETTINGS
 	/** myExperiment base URL to use */
@@ -120,20 +117,11 @@ public class MyExperimentClient {
 	 */
 	private final Properties iniSettings;
 
-	// the logger
-	private Logger logger;
-
 	// authentication settings (and the current user)
 	private String authString = null;
 
-	// default constructor
 	public MyExperimentClient() {
 		iniSettings = new Properties();
-	}
-
-	public MyExperimentClient(Logger logger) {
-		this();
-		this.logger = logger;
 
 		logger.info("Starting myExperiment client");
 
@@ -210,9 +198,13 @@ public class MyExperimentClient {
 		}
 	}
 
+	private static CredentialManager cm() throws CMException {
+		return CredentialManager.getInstance();
+	}
+
 	private static String getCredentials(String urlString) {
 		try {
-			UsernamePassword userAndPass = CredentialManager.getInstance()
+			UsernamePassword userAndPass = cm()
 					.getUsernameAndPasswordForService(URI.create(urlString),
 							true, null);
 			// Check for user didn't log in...
@@ -293,13 +285,12 @@ public class MyExperimentClient {
 	}
 
 	private void clearCredentials() throws CMException {
-		CredentialManager cm = CredentialManager.getInstance();
 		@SuppressWarnings("deprecation")
-		List<String> toDelete = cm
+		List<String> toDelete = cm()
 				.getServiceURLsforAllUsernameAndPasswordPairs();
 		for (String uri : toDelete)
 			if (uri.startsWith(baseURL))
-				cm.deleteUsernameAndPasswordForService(uri);
+				cm().deleteUsernameAndPasswordForService(uri);
 		// cm.resetAuthCache();
 	}
 
@@ -439,7 +430,6 @@ public class MyExperimentClient {
 		return doMyExperimentReceiveServerResponse(conn, url, true, false);
 	}
 
-	@SuppressWarnings("unused")
 	private static Document getDocumentFromStream(InputStream inputStream)
 			throws SAXException, IOException, ParserConfigurationException {
 		DocumentBuilder db = DocumentBuilderFactory.newInstance()
@@ -447,7 +437,7 @@ public class MyExperimentClient {
 		Logger logger = getLogger(MyExperimentClient.class);
 		Document doc;
 		InputStream is = new BufferedInputStream(inputStream);
-		if (!logger.isDebugEnabled() && !FORCE_OUTPUT_OF_MESSAGES) {
+		if (!logger.isDebugEnabled()) {
 			doc = db.parse(is);
 			is.close();
 		} else {

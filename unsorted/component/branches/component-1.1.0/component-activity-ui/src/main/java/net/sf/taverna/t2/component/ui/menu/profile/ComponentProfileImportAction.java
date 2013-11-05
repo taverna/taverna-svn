@@ -12,6 +12,7 @@ import static javax.swing.JOptionPane.OK_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static net.sf.taverna.t2.component.registry.ComponentUtil.makeProfile;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -47,8 +48,7 @@ import net.sf.taverna.t2.lang.ui.DeselectingButton;
  */
 public class ComponentProfileImportAction extends AbstractAction {
 	private static final long serialVersionUID = -3796754761286943970L;
-	private static final Logger log = Logger
-			.getLogger(ComponentProfileImportAction.class);
+	private static final Logger log = getLogger(ComponentProfileImportAction.class);
 	private static final String IMPORT_PROFILE = "Import profile...";
 	private static final JFileChooser chooser = new JFileChooser();
 

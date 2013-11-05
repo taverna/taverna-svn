@@ -24,6 +24,7 @@ import static java.lang.System.arraycopy;
 import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.ERROR;
 import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.RESULT;
 import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.RESULT_COMPLETION;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.HashMap;
@@ -72,7 +73,7 @@ import org.apache.log4j.Logger;
 @DispatchLayerJobReaction(emits = { ERROR, RESULT_COMPLETION, RESULT }, relaysUnmodified = false, stateEffects = {})
 @ControlBoundary
 public class PatchedInvoke extends AbstractDispatchLayer<Object> {
-	private static final Logger logger = Logger.getLogger(PatchedInvoke.class);
+	private static final Logger logger = getLogger(PatchedInvoke.class);
 	private static Long invocationCount = 0L;
 	private static final MonitorManager monitorManager = MonitorManager
 			.getInstance();

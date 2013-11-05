@@ -26,6 +26,7 @@ import static java.util.Collections.emptyMap;
 import static net.sf.taverna.t2.component.profile.BaseProfileLocator.getBaseProfile;
 import static net.sf.taverna.t2.workflowmodel.health.HealthCheck.NO_PROBLEM;
 import static net.sf.taverna.t2.workflowmodel.health.RemoteHealthChecker.contactEndpoint;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,8 +74,7 @@ import com.hp.hpl.jena.ontology.OntProperty;
  */
 public class ComponentProfile implements
 		net.sf.taverna.t2.component.api.Profile {
-	private static final Logger logger = Logger
-			.getLogger(ComponentProfile.class);
+	private static final Logger logger = getLogger(ComponentProfile.class);
 	private static final Map<String, OntModel> ontologyModels = new HashMap<String, OntModel>();
 	private static final JAXBContext jaxbContext;
 	static {

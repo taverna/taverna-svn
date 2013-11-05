@@ -2,6 +2,7 @@ package net.sf.taverna.t2.component;
 
 import static java.lang.Thread.currentThread;
 import static net.sf.taverna.t2.component.registry.ComponentDataflowCache.getDataflow;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.util.Map;
 
@@ -34,8 +35,7 @@ public class ComponentActivity extends
 		AbstractAsynchronousActivity<ComponentActivityConfigurationBean>
 		implements AsynchronousActivity<ComponentActivityConfigurationBean>,
 		NestedDataflow {
-	private static final Logger logger = Logger
-			.getLogger(ComponentActivity.class);
+	private static final Logger logger = getLogger(ComponentActivity.class);
 	private static final EditManager em = EditManager.getInstance();
 	private static final Edits EDITS = em.getEdits();
 	private static final AnnotationTools aTools = new AnnotationTools();
@@ -53,27 +53,25 @@ public class ComponentActivity extends
 
 		skeletonDataflow = (DataflowImpl) EDITS.createDataflow();
 		skeletonDataflow.setLocalName(configBean.getComponentName());
-		for (ActivityInputPort aip : this.getInputPorts()) {
-			DataflowInputPort dip = EDITS.createDataflowInputPort(
-					aip.getName(), aip.getDepth(), aip.getDepth(),
-					skeletonDataflow);
+		for (ActivityInputPort aip : getInputPorts())
 			try {
+				DataflowInputPort dip = EDITS.createDataflowInputPort(
+						aip.getName(), aip.getDepth(), aip.getDepth(),
+						skeletonDataflow);
 				EDITS.getAddDataflowInputPortEdit(skeletonDataflow, dip)
 						.doEdit();
 			} catch (EditException e) {
 				logger.error("failed to add dataflow input", e);
 			}
-		}
-		for (OutputPort aop : this.getOutputPorts()) {
-			DataflowOutputPort dop = EDITS.createDataflowOutputPort(
-					aop.getName(), skeletonDataflow);
+		for (OutputPort aop : getOutputPorts())
 			try {
+				DataflowOutputPort dop = EDITS.createDataflowOutputPort(
+						aop.getName(), skeletonDataflow);
 				EDITS.getAddDataflowOutputPortEdit(skeletonDataflow, dop)
 						.doEdit();
 			} catch (EditException e) {
 				logger.error("failed to add dataflow output", e);
 			}
-		}
 	}
 
 	@Override
@@ -121,7 +119,7 @@ public class ComponentActivity extends
 
 	@Override
 	public ComponentActivityConfigurationBean getConfiguration() {
-		return this.configBean;
+		return configBean;
 	}
 
 	public DataflowActivity getComponentRealization()

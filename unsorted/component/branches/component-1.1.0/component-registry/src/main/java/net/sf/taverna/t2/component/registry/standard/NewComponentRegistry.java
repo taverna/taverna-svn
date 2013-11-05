@@ -3,6 +3,7 @@ package net.sf.taverna.t2.component.registry.standard;
 import static net.sf.taverna.t2.component.registry.standard.Policy.PRIVATE;
 import static net.sf.taverna.t2.component.registry.standard.Utils.getElementString;
 import static net.sf.taverna.t2.component.registry.standard.Utils.serializeDataflow;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -46,7 +47,7 @@ import uk.org.taverna.component.api.PolicyList;
 class NewComponentRegistry extends ComponentRegistry {
 	private static final String PROFILE_MIME_TYPE = "application/vnd.taverna.component-profile+xml";
 	private static final String T2FLOW_MIME_TYPE = "application/vnd.taverna.t2flow+xml";
-	static final Logger logger = Logger.getLogger(NewComponentRegistry.class);
+	static final Logger logger = getLogger(NewComponentRegistry.class);
 	static final JAXBContext jaxbContext;
 	static final Charset utf8;
 	private static final ObjectFactory objectFactory = new ObjectFactory();
@@ -89,7 +90,7 @@ class NewComponentRegistry extends ComponentRegistry {
 	protected NewComponentRegistry(URL registryBase) throws RegistryException {
 		super(registryBase);
 		try {
-			client = new Client(jaxbContext, logger, registryBase);
+			client = new Client(jaxbContext, registryBase);
 		} catch (Exception e) {
 			throw new RegistryException("Unable to access registry", e);
 		}

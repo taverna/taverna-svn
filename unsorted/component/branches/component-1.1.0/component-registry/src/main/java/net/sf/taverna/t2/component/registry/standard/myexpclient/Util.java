@@ -20,6 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.standard.myexpclient;
 
+import static org.apache.log4j.Logger.getLogger;
+
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
@@ -261,7 +263,7 @@ class Util {
 	 * Taverna Workbench.
 	 */
 	public static File getTavernaHomeDir() {
-		Logger log = Logger.getLogger(Util.class);
+		Logger log = getLogger(Util.class);
 		try {
 			/*
 			 * ApplicationRuntime class is defined within Taverna API. If this

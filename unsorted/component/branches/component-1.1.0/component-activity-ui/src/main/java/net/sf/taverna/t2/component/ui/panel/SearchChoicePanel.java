@@ -3,7 +3,11 @@
  */
 package net.sf.taverna.t2.component.ui.panel;
 
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.WEST;
 import static java.awt.event.ItemEvent.SELECTED;
+import static net.sf.taverna.t2.component.ui.util.Utils.LONG_STRING;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -24,7 +28,6 @@ import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.preference.ComponentPreference;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
-import net.sf.taverna.t2.component.ui.util.Utils;
 
 import org.apache.log4j.Logger;
 
@@ -34,13 +37,11 @@ import org.apache.log4j.Logger;
  */
 @SuppressWarnings("serial")
 public class SearchChoicePanel extends JPanel {
-	private Logger logger = Logger.getLogger(SearchChoicePanel.class);
-
+	private static final Logger logger = getLogger(SearchChoicePanel.class);
 	private static final String SEARCHING = "Searching...";
 	private static final String[] SEARCHING_ARRAY = new String[] { SEARCHING };
 	private static final String NO_MATCHES = "No matches";
 	private static final String SEARCH_FAILED = "Search failed";
-
 	private static final List<String> RESERVED_WORDS = Arrays
 			.asList(new String[] { SEARCHING, NO_MATCHES, SEARCH_FAILED });
 
@@ -61,11 +62,11 @@ public class SearchChoicePanel extends JPanel {
 		this.setLayout(new GridBagLayout());
 
 		componentBox = new JComboBox(SEARCHING_ARRAY);
-		componentBox.setPrototypeDisplayValue(Utils.LONG_STRING);
+		componentBox.setPrototypeDisplayValue(LONG_STRING);
 		familyBox = new JComboBox(SEARCHING_ARRAY);
-		familyBox.setPrototypeDisplayValue(Utils.LONG_STRING);
+		familyBox.setPrototypeDisplayValue(LONG_STRING);
 		versionBox = new JComboBox(SEARCHING_ARRAY);
-		versionBox.setPrototypeDisplayValue(Utils.LONG_STRING);
+		versionBox.setPrototypeDisplayValue(LONG_STRING);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 
@@ -74,8 +75,8 @@ public class SearchChoicePanel extends JPanel {
 		gbc.insets.left = 5;
 		gbc.insets.right = 5;
 		gbc.gridx = 0;
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.BOTH;
+		gbc.anchor = WEST;
+		gbc.fill = BOTH;
 		gbc.gridwidth = 1;
 		gbc.weightx = 1;
 		gbc.gridy++;
@@ -102,18 +103,10 @@ public class SearchChoicePanel extends JPanel {
 		gbc.gridx = 1;
 		this.add(versionBox, gbc);
 
-		(new Searcher()).execute();
-
+		new Searcher().execute();
 	}
 
 	private class Searcher extends SwingWorker<Set<Version.ID>, Object> {
-		private void setAll(String text) {
-			registryURLLabel.setText(text);
-			familyBox.addItem(text);
-			componentBox.addItem(text);
-			versionBox.addItem(text);
-		}
-
 		@Override
 		protected Set<Version.ID> doInBackground() throws Exception {
 			return registry.searchForComponents(prefixes, queryText);
@@ -121,57 +114,34 @@ public class SearchChoicePanel extends JPanel {
 
 		@Override
 		protected void done() {
-			familyBox.removeAllItems();
-			componentBox.removeAllItems();
-			versionBox.removeAllItems();
-
-			final Set<Version.ID> matches;
+			clearAll();
 			try {
-				matches = this.get();
+				Set<Version.ID> matches = get();
+				if (matches.isEmpty())
+					setAll(NO_MATCHES);
+				else
+					searchCompletedSuccessfully(matches);
 			} catch (InterruptedException e) {
 				logger.error("search was interrupted", e);
 				setAll(SEARCH_FAILED);
-				return;
 			} catch (ExecutionException e) {
 				logger.error("problem in execution", e.getCause());
 				setAll(SEARCH_FAILED);
-				return;
 			}
-			if (matches.isEmpty()) {
-				setAll(NO_MATCHES);
-				return;
-			}
-
-			Version.ID one = (Version.ID) matches.toArray()[0];
-			registryURLLabel.setText(ComponentPreference.getInstance()
-					.getRegistryName(one.getRegistryBase()));
-			String[] componentFamilyNames = calculateMatchingFamilyNames(matches);
-			for (String familyName : componentFamilyNames)
-				familyBox.addItem(familyName);
-			familyBox.addItemListener(new ItemListener() {
-				@Override
-				public void itemStateChanged(ItemEvent e) {
-					if (e.getStateChange() == SELECTED)
-						updateComponentBox(matches, componentBox,
-								(String) familyBox.getSelectedItem());
-				}
-			});
-			componentBox.addItemListener(new ItemListener() {
-				@Override
-				public void itemStateChanged(ItemEvent e) {
-					if (e.getStateChange() == SELECTED)
-						updateVersionBox(matches, versionBox,
-								(String) componentBox.getSelectedItem(),
-								(String) familyBox.getSelectedItem());
-				}
-			});
-			familyBox.setSelectedIndex(0);
-			updateComponentBox(matches, componentBox,
-					(String) familyBox.getSelectedItem());
-			updateVersionBox(matches, versionBox,
-					(String) componentBox.getSelectedItem(),
-					(String) familyBox.getSelectedItem());
 		}
+	}
+
+	private void clearAll() {
+		familyBox.removeAllItems();
+		componentBox.removeAllItems();
+		versionBox.removeAllItems();
+	}
+
+	private void setAll(String text) {
+		registryURLLabel.setText(text);
+		familyBox.addItem(text);
+		componentBox.addItem(text);
+		versionBox.addItem(text);
 	}
 
 	private String[] calculateMatchingFamilyNames(
@@ -232,4 +202,35 @@ public class SearchChoicePanel extends JPanel {
 				(Integer) versionBox.getSelectedItem());
 	}
 
+	private void searchCompletedSuccessfully(final Set<Version.ID> matches) {
+		Version.ID one = (Version.ID) matches.toArray()[0];
+		registryURLLabel.setText(ComponentPreference.getInstance()
+				.getRegistryName(one.getRegistryBase()));
+		String[] componentFamilyNames = calculateMatchingFamilyNames(matches);
+		for (String familyName : componentFamilyNames)
+			familyBox.addItem(familyName);
+		familyBox.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == SELECTED)
+					updateComponentBox(matches, componentBox,
+							(String) familyBox.getSelectedItem());
+			}
+		});
+		componentBox.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == SELECTED)
+					updateVersionBox(matches, versionBox,
+							(String) componentBox.getSelectedItem(),
+							(String) familyBox.getSelectedItem());
+			}
+		});
+		familyBox.setSelectedIndex(0);
+		updateComponentBox(matches, componentBox,
+				(String) familyBox.getSelectedItem());
+		updateVersionBox(matches, versionBox,
+				(String) componentBox.getSelectedItem(),
+				(String) familyBox.getSelectedItem());
+	}
 }

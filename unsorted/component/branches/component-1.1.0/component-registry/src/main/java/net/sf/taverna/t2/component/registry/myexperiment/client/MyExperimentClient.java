@@ -47,6 +47,7 @@ import java.util.Properties;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.t2.component.registry.ClientVersion;
+import net.sf.taverna.t2.component.registry.myexperiment.client.utils.Base64;
 import net.sf.taverna.t2.security.credentialmanager.CMException;
 import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 import net.sf.taverna.t2.security.credentialmanager.UsernamePassword;

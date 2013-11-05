@@ -20,6 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
+import static org.apache.log4j.Logger.getLogger;
+
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -51,8 +53,7 @@ import org.jdom.output.XMLOutputter;
  * @author David Withers
  */
 final class MyExperimentComponentFamily extends ComponentFamily {
-	private static Logger logger = Logger
-			.getLogger(MyExperimentComponentFamily.class);
+	private static Logger logger = getLogger(MyExperimentComponentFamily.class);
 
 	private final String uri;
 	private final AnnotationTools annotationTools;

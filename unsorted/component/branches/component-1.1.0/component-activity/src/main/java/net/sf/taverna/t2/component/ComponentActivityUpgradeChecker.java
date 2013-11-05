@@ -6,6 +6,7 @@ package net.sf.taverna.t2.component;
 import static net.sf.taverna.t2.component.ComponentHealthCheck.OUT_OF_DATE;
 import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateComponent;
 import static net.sf.taverna.t2.visit.VisitReport.Status.WARNING;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.util.List;
 
@@ -22,10 +23,10 @@ import org.apache.log4j.Logger;
  */
 public class ComponentActivityUpgradeChecker implements
 		HealthChecker<ComponentActivity> {
+	private static final String OUTDATED_MSG = "Component out of date";
 	private static final VisitKind visitKind = ComponentHealthCheck
 			.getInstance();
-	private static Logger logger = Logger
-			.getLogger(ComponentActivityUpgradeChecker.class);
+	private static Logger logger = getLogger(ComponentActivityUpgradeChecker.class);
 
 	@Override
 	public boolean canVisit(Object o) {
@@ -52,8 +53,8 @@ public class ComponentActivityUpgradeChecker implements
 		}
 
 		if (latestVersion > versionNumber)
-			return new VisitReport(visitKind, activity,
-					"Component out of date", OUT_OF_DATE, WARNING);
+			return new VisitReport(visitKind, activity, OUTDATED_MSG,
+					OUT_OF_DATE, WARNING);
 		return null;
 	}
 

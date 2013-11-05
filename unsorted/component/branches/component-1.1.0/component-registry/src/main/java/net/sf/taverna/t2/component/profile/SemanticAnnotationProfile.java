@@ -22,6 +22,7 @@ package net.sf.taverna.t2.component.profile;
 
 import static java.io.File.createTempFile;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,8 +47,7 @@ import com.hp.hpl.jena.ontology.OntResource;
  * @author David Withers
  */
 public class SemanticAnnotationProfile {
-	private static final Logger log = Logger
-			.getLogger(SemanticAnnotationProfile.class);
+	private static final Logger log = getLogger(SemanticAnnotationProfile.class);
 	private final ComponentProfile componentProfile;
 	private final SemanticAnnotation semanticAnnotation;
 

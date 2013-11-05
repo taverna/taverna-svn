@@ -18,15 +18,17 @@ public class NewComponentRegistryLocator {
 
 	public static synchronized ComponentRegistry getComponentRegistry(
 			URL registryBase) throws RegistryException {
-		if (!componentRegistries.containsKey(registryBase.toExternalForm()))
+		if (!componentRegistries.containsKey(registryBase.toExternalForm())) {
+			logger.debug("constructing registry instance for " + registryBase);
 			componentRegistries.put(registryBase.toExternalForm(),
 					new NewComponentRegistry(registryBase));
+		}
 		return componentRegistries.get(registryBase.toExternalForm());
 	}
 
 	public static boolean verifyBase(URL registryBase) {
 		try {
-			return new Client(jaxbContext, logger, registryBase).verify();
+			return new Client(jaxbContext, registryBase).verify();
 		} catch (Exception e) {
 			logger.info("failed to construct connection client to "
 					+ registryBase, e);

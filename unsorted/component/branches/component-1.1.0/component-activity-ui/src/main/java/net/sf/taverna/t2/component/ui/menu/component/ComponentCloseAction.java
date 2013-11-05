@@ -5,6 +5,7 @@ package net.sf.taverna.t2.component.ui.menu.component;
 
 import static net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon.getIcon;
 import static net.sf.taverna.t2.component.ui.util.Utils.currentDataflowIsComponent;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.awt.event.ActionEvent;
 
@@ -29,7 +30,7 @@ public class ComponentCloseAction extends AbstractAction implements
 	private static final String CLOSE_COMPONENT = "Close component";
 
 	@SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(ComponentCloseAction.class);
+	private static Logger logger = getLogger(ComponentCloseAction.class);
 	private static Action closeWorkflowAction = new CloseWorkflowAction();
 	private static FileManager fileManager = FileManager.getInstance();
 

@@ -54,11 +54,9 @@ import com.hp.hpl.jena.rdf.model.Statement;
  * @author David Withers
  */
 public class SemanticAnnotationUtils {
-
 	protected static final String ENCODING = "TURTLE";
 	/* Pretend-base for making relative URIs */
 	private static String BASE = "widget://4aa8c93c-3212-487c-a505-3e337adf54a3/";
-
 	private static Logger logger = getLogger(SemanticAnnotationUtils.class);
 
 	public static String getObjectName(Statement statement) {
