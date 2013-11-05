@@ -5,7 +5,7 @@ package net.sf.taverna.t2.component.ui.file;
 
 import static net.sf.taverna.t2.component.ComponentHealthCheck.FAILS_PROFILE;
 import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.checkComponent;
-import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateRegistry;
+import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateFamily;
 import static net.sf.taverna.t2.visit.VisitReport.Status.SEVERE;
 import static org.apache.log4j.Logger.getLogger;
 
@@ -14,7 +14,6 @@ import java.util.Set;
 
 import net.sf.taverna.t2.component.ComponentHealthCheck;
 import net.sf.taverna.t2.component.api.Family;
-import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.profile.SemanticAnnotationProfile;
@@ -30,42 +29,50 @@ import org.apache.log4j.Logger;
  * 
  */
 public class ComponentDataflowHealthChecker implements HealthChecker<Dataflow> {
+	private static final String PROFILE_UNSATISFIED_MSG = "Workflow does not satisfy component profile";
 	private static FileManager fm = FileManager.getInstance();
 	private static Logger logger = getLogger(ComponentDataflowHealthChecker.class);
+	private static ComponentHealthCheck visitType = ComponentHealthCheck
+			.getInstance();
+
+	private Version.ID getSource(Object o) {
+		return (Version.ID) fm.getDataflowSource((Dataflow) o);
+	}
 
 	@Override
 	public boolean canVisit(Object o) {
-		if (!(o instanceof Dataflow))
-			return false;
-		Object source = fm.getDataflowSource((Dataflow) o);
-		return (source instanceof Version.ID);
+		try {
+			getSource(o);
+			return true;
+		} catch (IllegalArgumentException e) {
+			// Not open?
+		} catch (ClassCastException e) {
+			// Not dataflow? Not component?
+		}
+		return false;
 	}
 
 	@Override
 	public VisitReport visit(Dataflow dataflow, List<Object> ancestry) {
-		Version.ID ident = (Version.ID) fm.getDataflowSource(dataflow);
-		Family family;
-
-		Registry registry;
 		try {
-			registry = calculateRegistry(ident.getRegistryBase());
-			family = registry.getComponentFamily(ident.getFamilyName());
+			Version.ID ident = getSource(dataflow);
+			Family family = calculateFamily(ident.getRegistryBase(),
+					ident.getFamilyName());
+
 			Set<SemanticAnnotationProfile> problemProfiles = checkComponent(
 					dataflow, family.getComponentProfile());
-			if (!problemProfiles.isEmpty()) {
-				VisitReport visitReport = new VisitReport(
-						ComponentHealthCheck.getInstance(), dataflow,
-						"Workflow does not satisfy component profile",
-						FAILS_PROFILE, SEVERE);
-				visitReport.setProperty("problemProfiles", problemProfiles);
-				return visitReport;
-			}
+			if (problemProfiles.isEmpty())
+				return null;
+
+			VisitReport visitReport = new VisitReport(visitType, dataflow,
+					PROFILE_UNSATISFIED_MSG, FAILS_PROFILE, SEVERE);
+			visitReport.setProperty("problemProfiles", problemProfiles);
+			return visitReport;
 		} catch (RegistryException e) {
 			logger.error(
 					"failed to comprehend profile while checking for match", e);
+			return null;
 		}
-
-		return null;
 	}
 
 	@Override
