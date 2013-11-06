@@ -32,9 +32,8 @@ class Client {
 		this.registryBase = repository;
 		this.jaxbContext = context;
 
-		myE_Client = new MyExperimentClient();
-		myE_Client.setBaseURL(repository.toExternalForm());
-		myE_Client.doLogin();
+		myE_Client = new MyExperimentClient(repository.toString());
+		myE_Client.login();
 		logger.info("instantiated client connection engine to " + repository);
 	}
 
@@ -42,7 +41,7 @@ class Client {
 		try {
 			String url = url(API_VERIFICATION_RESOURCE);
 			logger.info("API verification: HEAD for " + url);
-			return myE_Client.doMyExperimentHEAD(url).getResponseCode() == HTTP_OK;
+			return myE_Client.HEAD(url).getCode() == HTTP_OK;
 		} catch (Exception e) {
 			logger.info("failed to connect to " + registryBase, e);
 			return false;
@@ -82,22 +81,21 @@ class Client {
 	 */
 	public <T> T get(Class<T> clazz, String uri, String... query)
 			throws RegistryException {
-		String url = null;
 		try {
 
-			url = url(uri, query);
+			String url = url(uri, query);
 			logger.info("GET of " + url);
-			ServerResponse response = myE_Client.doMyExperimentGET(url);
-			if (response.getResponseCode() != HTTP_OK)
-				throw new RegistryException("Unable to perform request "
-						+ response.getResponseCode());
+			ServerResponse response = myE_Client.GET(url);
+			if (response.isFailure())
+				throw new RegistryException(
+						"Unable to perform request (%d): %s",
+						response.getCode(), response.getError());
 			return response.getResponse(jaxbContext, clazz);
 
 		} catch (RegistryException e) {
 			throw e;
 		} catch (MalformedURLException e) {
-			throw new RegistryException("Problem constructing resource URL:"
-					+ e.getMessage());
+			throw new RegistryException("Problem constructing resource URL", e);
 		} catch (JAXBException e) {
 			throw new RegistryException("Problem when unmarshalling response",
 					e);
@@ -125,27 +123,25 @@ class Client {
 	 */
 	public <T> T post(Class<T> clazz, JAXBElement<?> elem, String uri,
 			String... query) throws RegistryException {
-		String url = null;
 		try {
 
-			url = url(uri, query);
+			String url = url(uri, query);
 			logger.info("POST to " + url);
 			StringWriter sw = new StringWriter();
 			getMarshaller().marshal(elem, sw);
 			if (logger.isDebugEnabled())
 				logger.info("About to post XML document:\n" + sw);
-			ServerResponse response = myE_Client.doMyExperimentPOST(url,
-					sw.toString());
-			if (response.getResponseCode() >= 400)
-				throw new RegistryException("Unable to perform request "
-						+ response.getResponseCode());
+			ServerResponse response = myE_Client.POST(url, sw.toString());
+			if (response.isFailure())
+				throw new RegistryException(
+						"Unable to perform request (%d): %s",
+						response.getCode(), response.getError());
 			return response.getResponse(jaxbContext, clazz);
 
 		} catch (RegistryException e) {
 			throw e;
 		} catch (MalformedURLException e) {
-			throw new RegistryException("Problem constructing resource URL:"
-					+ e.getMessage());
+			throw new RegistryException("Problem constructing resource URL", e);
 		} catch (JAXBException e) {
 			throw new RegistryException("Problem when marshalling request", e);
 		} catch (Exception e) {
@@ -173,27 +169,25 @@ class Client {
 	@Unused
 	public <T> T put(Class<T> clazz, JAXBElement<?> elem, String uri,
 			String... query) throws RegistryException {
-		String url = null;
 		try {
 
-			url = url(uri, query);
+			String url = url(uri, query);
 			logger.info("PUT to " + url);
 			StringWriter sw = new StringWriter();
 			getMarshaller().marshal(elem, sw);
 			if (logger.isDebugEnabled())
 				logger.info("About to post XML document:\n" + sw);
-			ServerResponse response = myE_Client.doMyExperimentPUT(url,
-					sw.toString());
-			if (response.getResponseCode() >= 400)
-				throw new RegistryException("Unable to perform request "
-						+ response.getResponseCode());
+			ServerResponse response = myE_Client.PUT(url, sw.toString());
+			if (response.isFailure())
+				throw new RegistryException(
+						"Unable to perform request (%d): %s",
+						response.getCode(), response.getError());
 			return response.getResponse(jaxbContext, clazz);
 
 		} catch (RegistryException e) {
 			throw e;
 		} catch (MalformedURLException e) {
-			throw new RegistryException("Problem constructing resource URL:"
-					+ e.getMessage());
+			throw new RegistryException("Problem constructing resource URL", e);
 		} catch (JAXBException e) {
 			throw new RegistryException("Problem when marshalling request", e);
 		} catch (Exception e) {
@@ -213,24 +207,20 @@ class Client {
 	 *             If anything goes wrong.
 	 */
 	public void delete(String uri, String... query) throws RegistryException {
-		String url = null;
 		ServerResponse response;
 		try {
 
-			url = url(uri, query);
+			String url = url(uri, query);
 			logger.info("DELETE of " + url);
-			response = myE_Client.doMyExperimentDELETE(url);
+			response = myE_Client.DELETE(url);
 
 		} catch (MalformedURLException e) {
-			throw new RegistryException("Problem constructing resource URL:"
-					+ e.getMessage());
+			throw new RegistryException("Problem constructing resource URL", e);
 		} catch (Exception e) {
-			throw new RegistryException("Unable to perform request: "
-					+ e.getMessage(), e);
+			throw new RegistryException("Unable to perform request", e);
 		}
-		if (response.getResponseCode() >= 400)
-			throw new RegistryException(
-					"Unable to perform request: result code "
-							+ response.getResponseCode());
+		if (response.isFailure())
+			throw new RegistryException("Unable to perform request (%d): %s",
+					response.getCode(), response.getError());
 	}
 }

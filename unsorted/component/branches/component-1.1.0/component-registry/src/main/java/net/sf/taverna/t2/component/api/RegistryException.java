@@ -33,16 +33,19 @@ public class RegistryException extends Exception {
 		super();
 	}
 
-	public RegistryException(String arg0, Throwable arg1) {
-		super(arg0, arg1);
+	public RegistryException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
-	public RegistryException(String arg0) {
-		super(arg0);
+	public RegistryException(String message) {
+		super(message);
 	}
 
-	public RegistryException(Throwable arg0) {
-		super(arg0);
+	public RegistryException(Throwable cause) {
+		super(cause);
 	}
 
+	public RegistryException(String messageTemplate, Object...parameters) {
+		super(String.format(messageTemplate, parameters));
+	}
 }
