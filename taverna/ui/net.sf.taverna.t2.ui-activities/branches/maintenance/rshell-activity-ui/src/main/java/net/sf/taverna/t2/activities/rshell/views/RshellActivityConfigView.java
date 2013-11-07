@@ -88,6 +88,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -115,8 +116,6 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 
 	private static Logger logger = Logger.getLogger(RshellActivityConfigView.class);
 
-	/** False for R1.5 and below, true for R1.6 and above */
-	private boolean rVersion;
 	/** The beanshell script */
 	private JEditorPane scriptTextArea;
 	/** A List of views over the input ports */
@@ -128,11 +127,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	/** the configuration bean used to configure the activity */
 	private RshellActivityConfigurationBean configuration;
 	
-	/**
-	 * Holds the state of the OK button in case a parent view wants to know
-	 * whether the configuration is finished
-	 */
-	private ActionListener buttonClicked;
+
 	/** Remembers where the next input should be placed in the view */
 	private int inputGridy;
 	/**
@@ -162,7 +157,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 	private JCheckBox keepSessionAliveCheckBox;
 	private JPanel settingsPanel;
 	private JTabbedPane tabbedPane;
-	private JTabbedPane ports;
+//	private JTabbedPane ports;
 
 	private static Set<String> keys = EditorKeySetUtil.loadKeySet(RshellActivityConfigView.class.getResourceAsStream("keys.txt"));
 
@@ -275,6 +270,28 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 			}
 			
 		});
+		
+		JButton editRScriptButton = new JButton("Edit script");
+		editRScriptButton.setToolTipText("Edit the R script in a local editor");
+		editRScriptButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			    try {
+					File tempFile = File.createTempFile("script", ".r");
+					FileUtils.writeStringToFile(tempFile, scriptTextArea.getText());
+					Runtime run = Runtime.getRuntime();
+				    String lcOSName = System.getProperty("os.name").toLowerCase();
+				    boolean MAC_OS_X = lcOSName.startsWith("mac os x");
+				    if (MAC_OS_X) {
+				        run.exec("open " + tempFile);
+				    } else {
+				        //run.exec("cmd.exe /c start " + file); //win NT, win2000
+				        run.exec("rundll32 url.dll, FileProtocolHandler " + tempFile.getAbsolutePath());
+				    }
+				} catch (IOException e1) {
+					logger.error(e1);
+				}
+			}
+		});		
 		JButton loadRScriptButton = new JButton("Load script");
 		loadRScriptButton.setToolTipText("Load an R script from a file");
 		loadRScriptButton.addActionListener(new ActionListener() {
@@ -322,6 +339,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		buttonPanel.setLayout(new FlowLayout());
 //		buttonPanel.add(rVersionCheck);
 //		buttonPanel.add(checkScriptButton);
+		buttonPanel.add(editRScriptButton);
 		buttonPanel.add(loadRScriptButton);
 		buttonPanel.add(saveRScriptButton);
 		buttonPanel.add(clearScriptButton);
@@ -459,36 +477,6 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		settingsPanel.add(keepSessionAliveCheckBox, fieldConstraints);
 		fieldConstraints.gridy++;
 		
-	}
-
-	/**
-	 * Creates a {@link JTabbedPane} with the Output and Input ports
-	 * 
-	 * @return a {@link JTabbedPane} with the ports
-	 */
-	private JTabbedPane setPortPanel() {
-		ports = new JTabbedPane();
-
-		JPanel portEditPanel = new JPanel(new GridLayout(0, 2));
-
-		GridBagConstraints panelConstraint = new GridBagConstraints();
-		panelConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
-		panelConstraint.gridx = 0;
-		panelConstraint.gridy = 0;
-		panelConstraint.weightx = 0.1;
-		panelConstraint.weighty = 0.1;
-		panelConstraint.fill = GridBagConstraints.BOTH;
-
-		JScrollPane inputScroller = new JScrollPane(setInputPanel());
-		portEditPanel.add(inputScroller, panelConstraint);
-
-		panelConstraint.gridy = 1;
-		ports.add("Inputs Ports", inputScroller);
-		JScrollPane outputScroller = new JScrollPane(setOutputPanel());
-		portEditPanel.add(outputScroller, panelConstraint);
-		ports.add("Output Ports", outputScroller);
-
-		return ports;
 	}
 
 	/**
@@ -703,7 +691,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 			outputEditPanel.add(nameField, outputConstraint);
 			outputConstraint.weightx = 0;
 			outputConstraint.gridx = 1;
-			final JSpinner depthSpinner = rshellOutputViewer.getDepthSpinner();
+//			final JSpinner depthSpinner = rshellOutputViewer.getDepthSpinner();
 			final JComboBox semanticTypeSelector = rshellOutputViewer
 					.getSemanticTypeSelector();
 			outputEditPanel.add(semanticTypeSelector, outputConstraint);
@@ -832,31 +820,9 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		return outerOutputPanel;
 	}
 
-	public void setButtonClickedListener(ActionListener listener) {
-		buttonClicked = listener;
-	}
-
-	/**
-	 * Calls
-	 * {@link RshellActivity#configure(RshellActivityConfigurationBean)}
-	 * using a {@link RshellActivityConfigurationBean} set with the new
-	 * values in the view. After setting the values it uses the
-	 * {@link #buttonClicked} {@link ActionListener} to tell any listeners that
-	 * the new values have been set (primarily used to tell any parent
-	 * components to remove the frames containing this panel)
-	 * 
-	 * @return the action which occurs when the OK button is clicked
-	 */
-	private AbstractAction getOKAction() {
-		return new AbstractAction() {
-
-			public void actionPerformed(ActionEvent e) {
-				
-				buttonClicked.actionPerformed(e);
-			}
-
-		};
-	}
+//	public void setButtonClickedListener(ActionListener listener) {
+//		buttonClicked = listener;
+//	}
 
 	/**
 	 * Check the proposed port name against the set of input ports that the

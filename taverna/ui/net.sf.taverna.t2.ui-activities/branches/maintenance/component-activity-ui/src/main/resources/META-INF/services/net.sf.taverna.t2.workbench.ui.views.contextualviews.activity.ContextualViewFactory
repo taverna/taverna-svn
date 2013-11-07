@@ -1,3 +1,5 @@
  net.sf.taverna.t2.component.ui.view.ComponentActivityContextViewFactory
  net.sf.taverna.t2.component.ui.view.ComponentContextViewFactory
  net.sf.taverna.t2.component.ui.view.ComponentActivitySemanticAnnotationContextViewFactory
+ net.sf.taverna.t2.component.annotation.SemanticAnnotationContextualViewFactory
+ 
