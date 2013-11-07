@@ -3,6 +3,10 @@
  */
 package net.sf.taverna.t2.component.ui.panel;
 
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.WEST;
+import static org.apache.log4j.Logger.getLogger;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.List;
@@ -22,31 +26,29 @@ import org.apache.log4j.Logger;
  */
 public class RegistryAndFamilyChooserPanel extends JPanel implements
 		Observer<ProfileChoiceMessage>, Observable<FamilyChoiceMessage> {
-	private static Logger logger = Logger
-			.getLogger(RegistryAndFamilyChooserPanel.class);
+	private static Logger logger = getLogger(RegistryAndFamilyChooserPanel.class);
 	private static final long serialVersionUID = -535518473593617735L;
-	RegistryChooserPanel registryPanel = new RegistryChooserPanel();
-	FamilyChooserPanel familyPanel = new FamilyChooserPanel();
+	final RegistryChooserPanel registryPanel = new RegistryChooserPanel();
+	final FamilyChooserPanel familyPanel = new FamilyChooserPanel();
 
 	@SuppressWarnings("unchecked")
 	public RegistryAndFamilyChooserPanel() {
-		super();
-		this.setLayout(new GridBagLayout());
+		setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.BOTH;
+		gbc.anchor = WEST;
+		gbc.fill = BOTH;
 		gbc.gridwidth = 2;
 		gbc.weightx = 1;
-		this.add(registryPanel, gbc);
+		add(registryPanel, gbc);
 
 		registryPanel.addObserver(familyPanel);
 		gbc.gridx = 0;
 		gbc.gridy = 1;
 		gbc.weighty = 1;
-		this.add(familyPanel, gbc);
+		add(familyPanel, gbc);
 	}
 
 	public Registry getChosenRegistry() {
@@ -74,12 +76,12 @@ public class RegistryAndFamilyChooserPanel extends JPanel implements
 
 	@Override
 	public void notify(Observable<ProfileChoiceMessage> sender,
-			ProfileChoiceMessage message) throws Exception {
+			ProfileChoiceMessage message) {
 		try {
 			familyPanel.notify(sender, message);
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("problem handling notification about profile choice",
+					e);
 		}
 	}
-
 }

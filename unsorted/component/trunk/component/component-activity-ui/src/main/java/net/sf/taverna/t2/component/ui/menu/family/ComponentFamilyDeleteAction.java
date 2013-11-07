@@ -3,31 +3,37 @@
  */
 package net.sf.taverna.t2.component.ui.menu.family;
 
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.WEST;
+import static java.lang.String.format;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
 import static javax.swing.JOptionPane.OK_OPTION;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
+import static net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon.getIcon;
+import static net.sf.taverna.t2.component.ui.util.Utils.removeComponentServiceProvider;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 
-import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.Family;
 import net.sf.taverna.t2.component.api.Registry;
+import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.ui.panel.FamilyChooserPanel;
 import net.sf.taverna.t2.component.ui.panel.RegistryChooserPanel;
-import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon;
 import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceProviderConfig;
-import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workflowmodel.ConfigurationException;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -39,21 +45,23 @@ import org.apache.log4j.Logger;
  * 
  */
 public class ComponentFamilyDeleteAction extends AbstractAction {
-
-	/**
-	 * 
-	 */
+	private static final String CONFIRM_MSG = "Are you sure you want to delete %s";
+	private static final String CONFIRM_TITLE = "Delete Component Family Confirmation";
+	private static final String DELETE_FAMILY_LABEL = "Delete family...";
+	private static final String ERROR_TITLE = "Component Family Deletion Error";
+	private static final String FAILED_MSG = "Unable to delete %s: %s";
+	private static final String FAMILY_FAIL_TITLE = "Component Family Problem";
+	private static final String OPEN_MSG = "Components in the family are open";
+	private static final String PICK_FAMILY_TITLE = "Delete Component Family";
+	private static final String REGISTRY_FAIL_TITLE = "Component Registry Problem";
+	private static final String WHAT_FAMILY_MSG = "Unable to determine family";
+	private static final String WHAT_REGISTRY_MSG = "Unable to determine registry";
+	private static final FileManager fm = FileManager.getInstance();
+	private static final Logger logger = getLogger(ComponentFamilyDeleteAction.class);
 	private static final long serialVersionUID = -4976161883778371344L;
 
-	private static Logger logger = Logger
-			.getLogger(ComponentFamilyDeleteAction.class);
-
-	private static final String DELETE_FAMILY = "Delete family...";
-
-	private static FileManager fm = FileManager.getInstance();
-
 	public ComponentFamilyDeleteAction() {
-		super(DELETE_FAMILY, ComponentServiceIcon.getIcon());
+		super(DELETE_FAMILY_LABEL, getIcon());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -69,8 +77,8 @@ public class ComponentFamilyDeleteAction extends AbstractAction {
 		gbc.insets = new Insets(0, 5, 0, 5);
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.BOTH;
+		gbc.anchor = WEST;
+		gbc.fill = BOTH;
 		gbc.gridwidth = 2;
 		gbc.weightx = 1;
 		overallPanel.add(registryPanel, gbc);
@@ -82,49 +90,73 @@ public class ComponentFamilyDeleteAction extends AbstractAction {
 		gbc.weighty = 1;
 		overallPanel.add(familyPanel, gbc);
 
-		int answer = showConfirmDialog(null, overallPanel,
-				"Delete Component Family", OK_CANCEL_OPTION);
-		if (answer == OK_OPTION) {
-			doDelete(registryPanel.getChosenRegistry(),
+		int answer = showConfirmDialog(null, overallPanel, PICK_FAMILY_TITLE,
+				OK_CANCEL_OPTION);
+		if (answer == OK_OPTION)
+			deletionActionFlow(registryPanel.getChosenRegistry(),
 					familyPanel.getChosenFamily());
-		}
 	}
 
-	private void doDelete(Registry chosenRegistry, Family chosenFamily) {
+	/**
+	 * Check if the preconditions for the deletion action are satisfied.
+	 * 
+	 * @param chosenRegistry
+	 *            What registry contains the family.
+	 * @param chosenFamily
+	 */
+	private void deletionActionFlow(Registry chosenRegistry,
+			final Family chosenFamily) {
 		if (chosenRegistry == null) {
-			showMessageDialog(null, "Unable to determine registry",
-					"Component Registry Problem", JOptionPane.ERROR_MESSAGE);
+			showMessageDialog(null, WHAT_REGISTRY_MSG, REGISTRY_FAIL_TITLE,
+					ERROR_MESSAGE);
 			return;
-		}
-		if (chosenFamily == null) {
-			showMessageDialog(null, "Unable to determine family",
-					"Component Family Problem", JOptionPane.ERROR_MESSAGE);
+		} else if (chosenFamily == null) {
+			showMessageDialog(null, WHAT_FAMILY_MSG, FAMILY_FAIL_TITLE,
+					ERROR_MESSAGE);
 			return;
-		}
-		if (familyIsInUse(chosenRegistry, chosenFamily)) {
-			showMessageDialog(null, "Components in the family are open",
-					"Component Family Problem", JOptionPane.ERROR_MESSAGE);
+		} else if (familyIsInUse(chosenRegistry, chosenFamily)) {
+			showMessageDialog(null, OPEN_MSG, FAMILY_FAIL_TITLE, ERROR_MESSAGE);
 			return;
-		}
-		int confirmation = showConfirmDialog(null,
-				"Are you sure you want to delete " + chosenFamily.getName(),
-				"Delete Component Family Confirmation", YES_NO_OPTION);
+		} else if (showConfirmDialog(null,
+				format(CONFIRM_MSG, chosenFamily.getName()), CONFIRM_TITLE,
+				YES_NO_OPTION) == YES_OPTION)
+			new SwingWorker<ComponentServiceProviderConfig, Object>() {
+				@Override
+				protected ComponentServiceProviderConfig doInBackground()
+						throws Exception {
+					return deleteFamily(chosenFamily);
+				}
+
+				@Override
+				protected void done() {
+					deletionDone(chosenFamily, this);
+				}
+			}.execute();
+	}
+
+	private ComponentServiceProviderConfig deleteFamily(Family family)
+			throws RegistryException {
+		ComponentServiceProviderConfig config = new ComponentServiceProviderConfig(
+				family);
+		family.delete();
+		return config;
+	}
+
+	private void deletionDone(Family family,
+			SwingWorker<ComponentServiceProviderConfig, Object> worker) {
 		try {
-			if (confirmation == YES_OPTION) {
-				chosenRegistry.removeComponentFamily(chosenFamily);
-				ComponentServiceProviderConfig config = new ComponentServiceProviderConfig();
-				config.setFamilyName(chosenFamily.getName());
-				config.setRegistryBase(chosenRegistry.getRegistryBase());
-				Utils.removeComponentServiceProvider(config);
-			}
-		} catch (RegistryException e) {
-			showMessageDialog(null,
-					"Unable to delete " + chosenFamily.getName(),
-					"Component Family Deletion Error",
-					JOptionPane.ERROR_MESSAGE);
-			logger.error(e);
+			removeComponentServiceProvider(worker.get());
+		} catch (InterruptedException e) {
+			logger.warn("interrupted during removal of component family", e);
+		} catch (ExecutionException e) {
+			logger.error("failed to delete family", e.getCause());
+			showMessageDialog(
+					null,
+					format(FAILED_MSG, family.getName(), e.getCause()
+							.getMessage()), ERROR_TITLE, ERROR_MESSAGE);
 		} catch (ConfigurationException e) {
-			logger.error(e);
+			logger.error("failed to update service provider panel "
+					+ "after deleting family", e);
 		}
 	}
 
@@ -134,11 +166,10 @@ public class ComponentFamilyDeleteAction extends AbstractAction {
 			Object dataflowSource = fm.getDataflowSource(d);
 			if (dataflowSource instanceof Version.ID) {
 				Version.ID ident = (Version.ID) dataflowSource;
-				if (ident.getRegistryBase().equals(
-						chosenRegistry.getRegistryBase())
-						&& ident.getFamilyName().equals(chosenFamily.getName())) {
+				if (ident.getRegistryBase().toString()
+						.equals(chosenRegistry.getRegistryBase().toString())
+						&& ident.getFamilyName().equals(chosenFamily.getName()))
 					return true;
-				}
 			}
 		}
 		return false;

@@ -81,15 +81,13 @@ public abstract class ComponentFamily implements
 	@Override
 	public final synchronized Profile getComponentProfile()
 			throws RegistryException {
-		if (componentProfile == null) {
+		if (componentProfile == null)
 			componentProfile = internalGetComponentProfile();
-		}
 		if (componentProfile == null) {
 			Profile baseProfile = getBaseProfile();
 			if ((baseProfile != null)
-					&& componentProfile.getName().equals(baseProfile.getName())) {
+					&& componentProfile.getName().equals(baseProfile.getName()))
 				return baseProfile;
-			}
 		}
 		return componentProfile;
 	}
@@ -105,9 +103,8 @@ public abstract class ComponentFamily implements
 
 	private void checkComponentCache() throws RegistryException {
 		synchronized (componentCache) {
-			if (componentCache.isEmpty()) {
+			if (componentCache.isEmpty())
 				populateComponentCache();
-			}
 		}
 	}
 
@@ -123,16 +120,13 @@ public abstract class ComponentFamily implements
 	@Override
 	public final Version createComponentBasedOn(String componentName,
 			String description, Dataflow dataflow) throws RegistryException {
-		if (componentName == null) {
+		if (componentName == null)
 			throw new RegistryException("Component name must not be null");
-		}
-		if (dataflow == null) {
+		if (dataflow == null)
 			throw new RegistryException("Dataflow must not be null");
-		}
 		checkComponentCache();
-		if (componentCache.containsKey(componentName)) {
+		if (componentCache.containsKey(componentName))
 			throw new RegistryException("Component name already used");
-		}
 		Version version = internalCreateComponentBasedOn(componentName,
 				description, dataflow);
 		synchronized (componentCache) {
@@ -160,4 +154,9 @@ public abstract class ComponentFamily implements
 
 	protected abstract void internalRemoveComponent(Component component)
 			throws RegistryException;
+
+	@Override
+	public void delete() throws RegistryException {
+		getComponentRegistry().removeComponentFamily(this);
+	}
 }

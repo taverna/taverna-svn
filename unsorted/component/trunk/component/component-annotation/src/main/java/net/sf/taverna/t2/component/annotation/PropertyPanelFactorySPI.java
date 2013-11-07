@@ -20,9 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
+import static java.awt.Color.WHITE;
 import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.getObjectName;
-
-import java.awt.Color;
 
 import javax.swing.JComponent;
 import javax.swing.JTextArea;
@@ -78,7 +77,7 @@ public abstract class PropertyPanelFactorySPI {
 		value.setLineWrap(true);
 		value.setWrapStyleWord(true);
 		value.setEditable(false);
-		value.setBackground(Color.WHITE);
+		value.setBackground(WHITE);
 		value.setOpaque(true);
 		value.setBorder(new EmptyBorder(2, 4, 2, 4));
 		return value;

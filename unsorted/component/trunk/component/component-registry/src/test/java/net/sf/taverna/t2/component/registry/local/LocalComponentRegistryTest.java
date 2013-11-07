@@ -47,7 +47,7 @@ public class LocalComponentRegistryTest extends ComponentRegistryTest {
 
 	@Test
 	public void testGetComponentRegistry() throws Exception {
-		Registry getAgain = LocalComponentRegistry
+		Registry getAgain = LocalComponentRegistryLocator
 				.getComponentRegistry(componentRegistryUrl);
 		assertSame(componentRegistry, getAgain);
 	}

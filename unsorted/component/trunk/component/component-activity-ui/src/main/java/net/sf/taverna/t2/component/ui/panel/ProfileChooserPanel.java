@@ -3,7 +3,12 @@
  */
 package net.sf.taverna.t2.component.ui.panel;
 
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.NONE;
+import static java.awt.GridBagConstraints.WEST;
 import static java.awt.event.ItemEvent.SELECTED;
+import static net.sf.taverna.t2.component.ui.util.Utils.LONG_STRING;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -22,7 +27,6 @@ import javax.swing.SwingWorker;
 import net.sf.taverna.t2.component.api.Profile;
 import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.api.RegistryException;
-import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 
@@ -34,33 +38,32 @@ import org.apache.log4j.Logger;
  */
 public class ProfileChooserPanel extends JPanel implements
 		Observer<RegistryChoiceMessage>, Observable<ProfileChoiceMessage> {
+	private static final String READING_MSG = "Reading profiles";
+	private static final String PROFILE_LABEL = "Profile:";
 	private static final long serialVersionUID = 2175274929391537032L;
+	private static Logger logger = getLogger(ProfileChooserPanel.class);
 
-	private static Logger logger = Logger.getLogger(ProfileChooserPanel.class);
-
-	private List<Observer<ProfileChoiceMessage>> observers = new ArrayList<Observer<ProfileChoiceMessage>>();
-
-	private JComboBox profileBox = new JComboBox();
-
-	private SortedMap<String, Profile> profileMap = new TreeMap<String, Profile>();
+	private final List<Observer<ProfileChoiceMessage>> observers = new ArrayList<Observer<ProfileChoiceMessage>>();
+	private final JComboBox profileBox = new JComboBox();
+	private final SortedMap<String, Profile> profileMap = new TreeMap<String, Profile>();
 
 	private Registry registry;
 
 	public ProfileChooserPanel() {
 		super();
-		profileBox.setPrototypeDisplayValue(Utils.LONG_STRING);
+		profileBox.setPrototypeDisplayValue(LONG_STRING);
 		this.setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
 
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.NONE;
-		this.add(new JLabel("Profile:"), gbc);
+		gbc.anchor = WEST;
+		gbc.fill = NONE;
+		this.add(new JLabel(PROFILE_LABEL), gbc);
 		gbc.gridx = 1;
 		gbc.weightx = 1;
-		gbc.fill = GridBagConstraints.BOTH;
+		gbc.fill = BOTH;
 		this.add(profileBox, gbc);
 		profileBox.addItemListener(new ItemListener() {
 			@Override
@@ -77,10 +80,10 @@ public class ProfileChooserPanel extends JPanel implements
 	public void notify(Observable<RegistryChoiceMessage> sender,
 			RegistryChoiceMessage message) throws Exception {
 		try {
-			this.registry = message.getChosenRegistry();
-			this.updateProfileModel();
+			registry = message.getChosenRegistry();
+			updateProfileModel();
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("failure when notifying about chosen registry", e);
 		}
 	}
 
@@ -88,7 +91,7 @@ public class ProfileChooserPanel extends JPanel implements
 		profileMap.clear();
 		profileBox.removeAllItems();
 		profileBox.setToolTipText(null);
-		profileBox.addItem("Reading profiles");
+		profileBox.addItem(READING_MSG);
 		profileBox.setEnabled(false);
 		new ProfileUpdater().execute();
 	}
@@ -101,20 +104,19 @@ public class ProfileChooserPanel extends JPanel implements
 
 		Profile chosenProfile = getChosenProfile();
 		ProfileChoiceMessage message = new ProfileChoiceMessage(chosenProfile);
-		for (Observer<ProfileChoiceMessage> o : getObservers()) {
+		for (Observer<ProfileChoiceMessage> o : getObservers())
 			try {
-				o.notify(ProfileChooserPanel.this, message);
+				o.notify(this, message);
 			} catch (Exception e) {
-				logger.error(e);
+				logger.error("failure when notifying about profile choice", e);
 			}
-		}
 	}
 
 	public Profile getChosenProfile() {
 		if (profileBox.getSelectedIndex() < 0)
 			return null;
-		Object selectedItem = profileBox.getSelectedItem();
-		return profileMap.get(selectedItem);
+
+		return profileMap.get(profileBox.getSelectedItem());
 	}
 
 	private class ProfileUpdater extends SwingWorker<String, Object> {
@@ -126,17 +128,17 @@ public class ProfileChooserPanel extends JPanel implements
 			try {
 				componentProfiles = registry.getComponentProfiles();
 			} catch (RegistryException e) {
-				logger.error(e);
+				logger.error("failed to get profiles", e);
 				return null;
 			} catch (NullPointerException e) {
-				logger.error(e);
+				logger.error("failed to get profiles", e);
 				return null;
 			}
-			for (Profile p : componentProfiles)
+			for (Profile profile : componentProfiles)
 				try {
-					profileMap.put(p.getName(), p);
+					profileMap.put(profile.getName(), profile);
 				} catch (NullPointerException e) {
-					logger.error(e);
+					logger.error("failure getting profile name", e);
 				}
 
 			return null;
@@ -157,7 +159,6 @@ public class ProfileChooserPanel extends JPanel implements
 				profileBox.setEnabled(false);
 			}
 		}
-
 	}
 
 	@Override
@@ -168,7 +169,7 @@ public class ProfileChooserPanel extends JPanel implements
 		try {
 			observer.notify(this, message);
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("failure when notifying about profile choice", e);
 		}
 	}
 

@@ -3,6 +3,12 @@
  */
 package net.sf.taverna.t2.component.registry.local;
 
+import static net.sf.taverna.t2.component.registry.local.LocalComponentRegistry.ENC;
+import static org.apache.commons.io.FileUtils.deleteDirectory;
+import static org.apache.commons.io.FileUtils.readFileToString;
+import static org.apache.commons.io.FileUtils.writeStringToFile;
+import static org.apache.log4j.Logger.getLogger;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -13,19 +19,16 @@ import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 /**
  * @author alanrw
  * 
  */
-public class LocalComponentFamily extends ComponentFamily {
-
-	private static Logger logger = Logger.getLogger(LocalComponentFamily.class);
-
-	private static final String UTF_8 = "utf-8";
+class LocalComponentFamily extends ComponentFamily {
+	private static Logger logger = getLogger(LocalComponentFamily.class);
 	private static final String PROFILE = "profile";
+
 	private final File componentFamilyDir;
 
 	public LocalComponentFamily(LocalComponentRegistry parentRegistry,
@@ -34,13 +37,6 @@ public class LocalComponentFamily extends ComponentFamily {
 		this.componentFamilyDir = componentFamilyDir;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * net.sf.taverna.t2.component.registry.ComponentFamily#getComponentProfile
-	 * ()
-	 */
 	@Override
 	protected final Profile internalGetComponentProfile()
 			throws RegistryException {
@@ -50,34 +46,29 @@ public class LocalComponentFamily extends ComponentFamily {
 		File profileFile = new File(componentFamilyDir, PROFILE);
 		String profileName;
 		try {
-			profileName = FileUtils.readFileToString(profileFile, UTF_8);
+			profileName = readFileToString(profileFile, ENC);
 		} catch (IOException e) {
 			throw new RegistryException("Unable to read profile name", e);
 		}
-		for (Profile p : parentRegistry.getComponentProfiles()) {
+		for (Profile p : parentRegistry.getComponentProfiles())
 			if (p.getName().equals(profileName)) {
 				result = p;
 				break;
 			}
-		}
 		return result;
 	}
 
+	@Override
 	protected void populateComponentCache() throws RegistryException {
-
-		for (File subFile : componentFamilyDir.listFiles()) {
+		for (File subFile : componentFamilyDir.listFiles())
 			if (subFile.isDirectory()) {
-				LocalComponent newComponent = new LocalComponent(subFile);
+				LocalComponent newComponent = new LocalComponent(subFile,
+						(LocalComponentRegistry) this.getComponentRegistry(),
+						this);
 				componentCache.put(newComponent.getName(), newComponent);
 			}
-		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.component.registry.ComponentFamily#getName()
-	 */
 	@Override
 	protected final String internalGetName() {
 		return componentFamilyDir.getName();
@@ -87,7 +78,6 @@ public class LocalComponentFamily extends ComponentFamily {
 	protected final Version internalCreateComponentBasedOn(
 			String componentName, String description, Dataflow dataflow)
 			throws RegistryException {
-
 		File newSubFile = new File(componentFamilyDir, componentName);
 		if (newSubFile.exists()) {
 			throw new RegistryException("Component already exists");
@@ -95,20 +85,16 @@ public class LocalComponentFamily extends ComponentFamily {
 		newSubFile.mkdirs();
 		File descriptionFile = new File(newSubFile, "description");
 		try {
-			FileUtils.writeStringToFile(descriptionFile, description, "utf-8");
+			writeStringToFile(descriptionFile, description, ENC);
 		} catch (IOException e) {
 			throw new RegistryException("Could not write out description", e);
 		}
-		LocalComponent newComponent = new LocalComponent(newSubFile);
+		LocalComponent newComponent = new LocalComponent(newSubFile,
+				(LocalComponentRegistry) this.getComponentRegistry(), this);
 
 		return newComponent.addVersionBasedOn(dataflow, "Initial version");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -120,11 +106,6 @@ public class LocalComponentFamily extends ComponentFamily {
 		return result;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -145,12 +126,11 @@ public class LocalComponentFamily extends ComponentFamily {
 	@Override
 	protected final String internalGetDescription() {
 		File descriptionFile = new File(componentFamilyDir, "description");
-		if (descriptionFile.isFile()) {
-			try {
-				return FileUtils.readFileToString(descriptionFile);
-			} catch (IOException e) {
-				logger.error(e);
-			}
+		try {
+			if (descriptionFile.isFile())
+				return readFileToString(descriptionFile);
+		} catch (IOException e) {
+			logger.error("failed to get description from " + descriptionFile, e);
 		}
 		return "";
 	}
@@ -160,12 +140,9 @@ public class LocalComponentFamily extends ComponentFamily {
 			throws RegistryException {
 		File componentDir = new File(componentFamilyDir, component.getName());
 		try {
-			FileUtils.deleteDirectory(componentDir);
-
+			deleteDirectory(componentDir);
 		} catch (IOException e) {
 			throw new RegistryException("Unable to delete component", e);
 		}
-
 	}
-
 }

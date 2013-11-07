@@ -1,13 +1,14 @@
 package net.sf.taverna.t2.component;
 
+import static java.lang.Thread.currentThread;
 import static net.sf.taverna.t2.component.registry.ComponentDataflowCache.getDataflow;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.util.Map;
 
 import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.profile.ExceptionHandling;
-import net.sf.taverna.t2.component.registry.ComponentDataflowCache;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.impl.InvocationContextImpl;
 import net.sf.taverna.t2.reference.ReferenceService;
@@ -34,8 +35,7 @@ public class ComponentActivity extends
 		AbstractAsynchronousActivity<ComponentActivityConfigurationBean>
 		implements AsynchronousActivity<ComponentActivityConfigurationBean>,
 		NestedDataflow {
-	private static final Logger logger = Logger
-			.getLogger(ComponentActivity.class);
+	private static final Logger logger = getLogger(ComponentActivity.class);
 	private static final EditManager em = EditManager.getInstance();
 	private static final Edits EDITS = em.getEdits();
 	private static final AnnotationTools aTools = new AnnotationTools();
@@ -53,27 +53,25 @@ public class ComponentActivity extends
 
 		skeletonDataflow = (DataflowImpl) EDITS.createDataflow();
 		skeletonDataflow.setLocalName(configBean.getComponentName());
-		for (ActivityInputPort aip : this.getInputPorts()) {
-			DataflowInputPort dip = EDITS.createDataflowInputPort(
-					aip.getName(), aip.getDepth(), aip.getDepth(),
-					skeletonDataflow);
+		for (ActivityInputPort aip : getInputPorts())
 			try {
+				DataflowInputPort dip = EDITS.createDataflowInputPort(
+						aip.getName(), aip.getDepth(), aip.getDepth(),
+						skeletonDataflow);
 				EDITS.getAddDataflowInputPortEdit(skeletonDataflow, dip)
 						.doEdit();
 			} catch (EditException e) {
-				logger.error(e);
+				logger.error("failed to add dataflow input", e);
 			}
-		}
-		for (OutputPort aop : this.getOutputPorts()) {
-			DataflowOutputPort dop = EDITS.createDataflowOutputPort(
-					aop.getName(), skeletonDataflow);
+		for (OutputPort aop : getOutputPorts())
 			try {
+				DataflowOutputPort dop = EDITS.createDataflowOutputPort(
+						aop.getName(), skeletonDataflow);
 				EDITS.getAddDataflowOutputPortEdit(skeletonDataflow, dop)
 						.doEdit();
 			} catch (EditException e) {
-				logger.error(e);
+				logger.error("failed to add dataflow output", e);
 			}
-		}
 	}
 
 	@Override
@@ -121,7 +119,7 @@ public class ComponentActivity extends
 
 	@Override
 	public ComponentActivityConfigurationBean getConfiguration() {
-		return this.configBean;
+		return configBean;
 	}
 
 	public DataflowActivity getComponentRealization()
@@ -146,7 +144,7 @@ public class ComponentActivity extends
 						aTools.setAnnotationString(this, c, annotationValue)
 								.doEdit();
 					} catch (EditException e) {
-						logger.error(e);
+						logger.error("failed to set annotation string", e);
 					}
 				}
 
@@ -158,14 +156,14 @@ public class ComponentActivity extends
 	@Override
 	public Dataflow getNestedDataflow() {
 		// FIXME To go when integrated into Taverna properly
-		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+		StackTraceElement[] stackTrace = currentThread().getStackTrace();
 		for (StackTraceElement elem : stackTrace)
 			if (elem.getClassName().contains("GraphController"))
 				return skeletonDataflow;
 		try {
-			return ComponentDataflowCache.getDataflow(configBean);
+			return getDataflow(configBean);
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to get component realization", e);
 		}
 		return skeletonDataflow;
 	}

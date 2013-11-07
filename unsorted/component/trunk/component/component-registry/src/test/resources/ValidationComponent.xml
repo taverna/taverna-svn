@@ -2,7 +2,7 @@
 
 <profile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://ns.taverna.org.uk/2012/component/profile"
-	xsi:schemaLocation="http://ns.taverna.org.uk/2012/component/profile ComponentProfile.xsd">
+	xsi:schemaLocation="http://ns.taverna.org.uk/2012/component/profile http://ns.taverna.org.uk/2012/component/profile/ComponentProfile.xsd">
 
 	<id>eu.scape-project.taverna.component.profile.validation</id>
 	<name>Validation Component</name>

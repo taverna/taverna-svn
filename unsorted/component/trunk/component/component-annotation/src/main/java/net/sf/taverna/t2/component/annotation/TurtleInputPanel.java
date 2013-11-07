@@ -4,6 +4,9 @@
 package net.sf.taverna.t2.component.annotation;
 
 import static com.hp.hpl.jena.rdf.model.ModelFactory.createOntologyModel;
+import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.EAST;
+import static java.awt.BorderLayout.SOUTH;
 import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.populateModelFromString;
 
 import java.awt.BorderLayout;
@@ -37,7 +40,7 @@ public class TurtleInputPanel extends JPanel {
 		this.clazz = clazz;
 
 		this.setLayout(new BorderLayout());
-		this.add(new JScrollPane(turtleTextArea), BorderLayout.CENTER);
+		this.add(new JScrollPane(turtleTextArea), CENTER);
 
 		turtleTextArea.setText("<#changeme> a <" + clazz.getURI() + ">\n\n\n.");
 
@@ -45,14 +48,15 @@ public class TurtleInputPanel extends JPanel {
 		buttonPanel.setLayout(new BorderLayout());
 		JButton validateButton = new DeselectingButton(new AbstractAction(
 				"Validate") {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				getContentAsModel();
 			}
 		});
-		buttonPanel.add(errors, BorderLayout.CENTER);
+		buttonPanel.add(errors, CENTER);
 		errors.setOpaque(false);
-		buttonPanel.add(validateButton, BorderLayout.EAST);
-		this.add(buttonPanel, BorderLayout.SOUTH);
+		buttonPanel.add(validateButton, EAST);
+		this.add(buttonPanel, SOUTH);
 	}
 
 	public OntModel getContentAsModel() {

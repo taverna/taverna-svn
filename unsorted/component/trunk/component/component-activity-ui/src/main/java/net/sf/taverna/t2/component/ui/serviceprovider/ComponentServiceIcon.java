@@ -11,12 +11,14 @@ public class ComponentServiceIcon implements ActivityIconSPI {
 
 	private static Icon icon;
 
+	@Override
 	public int canProvideIconScore(Activity<?> activity) {
 		if (activity instanceof ComponentActivity)
 			return DEFAULT_ICON + 1;
 		return NO_ICON;
 	}
 
+	@Override
 	public Icon getIcon(Activity<?> activity) {
 		return getIcon();
 	}

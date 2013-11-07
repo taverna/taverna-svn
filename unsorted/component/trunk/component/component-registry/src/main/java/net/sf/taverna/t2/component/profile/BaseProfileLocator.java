@@ -5,6 +5,7 @@ package net.sf.taverna.t2.component.profile;
 
 import static org.apache.commons.httpclient.HttpStatus.SC_OK;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,8 +32,7 @@ import org.apache.log4j.Logger;
  * 
  */
 public class BaseProfileLocator {
-	private static final Logger logger = Logger
-			.getLogger(BaseProfileLocator.class);
+	private static final Logger logger = getLogger(BaseProfileLocator.class);
 	private static final String BASE_PROFILE_PATH = "BaseProfile.xml";
 	private static final String BASE_PROFILE_URI = "http://build.mygrid.org.uk/taverna/BaseProfile.xml";
 	private static final int TIMEOUT = 5000;
@@ -53,9 +53,9 @@ public class BaseProfileLocator {
 		return getInstance().getProfile();
 	}
 
-	@SuppressWarnings("unused")
 	private BaseProfileLocator() {
 		File configFile = getBaseProfileFile();
+		@SuppressWarnings("unused")
 		boolean load = false;
 		long noticeTime = -1;
 		long lastCheckedTime = -1;

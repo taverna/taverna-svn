@@ -65,6 +65,7 @@ public class Workflow extends Resource {
 	this.version = version;
   }
 
+  @Override
   public User getUploader() {
 	return uploader;
   }
@@ -113,6 +114,7 @@ public class Workflow extends Resource {
 	this.contentUri = contentUri;
   }
 
+  @Override
   public String getVisibleType() {
 	return this.visibleType;
   }
@@ -141,6 +143,7 @@ public class Workflow extends Resource {
 	return tags;
   }
 
+  @Override
   public List<Comment> getComments() {
 	return comments;
   }

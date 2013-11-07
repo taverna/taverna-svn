@@ -1,14 +1,14 @@
 package net.sf.taverna.t2.component.registry.myexperiment;
 
-public class MyExperimentGroupPolicy extends MyExperimentSharingPolicy {
-	
+class MyExperimentGroupPolicy extends MyExperimentSharingPolicy {
+
 	private final String name;
 	private final String id;
 
 	public MyExperimentGroupPolicy(String name, String id) {
 		this.name = name;
 		this.id = id;
-		
+
 	}
 
 	@Override
@@ -24,9 +24,9 @@ public class MyExperimentGroupPolicy extends MyExperimentSharingPolicy {
 	public String getPolicyString() {
 		StringBuilder contentXml = new StringBuilder();
 		contentXml.append("<permissions>");
-			contentXml.append("<group-policy-id>");
-			contentXml.append(getId());
-			contentXml.append("</group-policy-id>");
+		contentXml.append("<group-policy-id>");
+		contentXml.append(getId());
+		contentXml.append("</group-policy-id>");
 		contentXml.append("</permissions>");
 		return contentXml.toString();
 

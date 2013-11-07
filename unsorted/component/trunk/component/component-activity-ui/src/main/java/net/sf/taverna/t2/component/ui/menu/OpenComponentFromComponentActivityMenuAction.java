@@ -28,6 +28,7 @@ public class OpenComponentFromComponentActivityMenuAction extends
 		super(configureSection, 75);
 	}
 
+	@Override
 	public boolean isEnabled() {
 		return (getSelectedActivity() != null);
 	}
@@ -40,21 +41,18 @@ public class OpenComponentFromComponentActivityMenuAction extends
 
 	private ComponentActivity getSelectedActivity() {
 		Object selection = getContextualSelection().getSelection();
-		if (!super.isEnabled()) {
+		if (!super.isEnabled() || !(selection instanceof Processor))
 			return null;
-		}
-		if (!(selection instanceof Processor)) {
-			return null;
-		}
+
 		Processor p = (Processor) selection;
 		List<? extends Activity<?>> activities = p.getActivityList();
-		if (activities.isEmpty()) {
+		if (activities.isEmpty())
 			return null;
-		}
+
 		Activity<?> a = activities.get(0);
-		if (a instanceof ComponentActivity) {
+		if (a instanceof ComponentActivity)
 			return (ComponentActivity) a;
-		}
+
 		return null;
 	}
 }

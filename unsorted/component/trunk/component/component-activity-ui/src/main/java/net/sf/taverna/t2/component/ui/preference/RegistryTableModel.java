@@ -16,15 +16,11 @@ import net.sf.taverna.t2.component.api.Registry;
  * 
  */
 public class RegistryTableModel extends DefaultTableModel {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -7789666945764974370L;
 	private SortedMap<String, Registry> registryMap = new TreeMap<String, Registry>();
 
 	public RegistryTableModel() {
-		super(new String[] { "Registry name", "Registry location" }, 0);
+		super(new String[] { "Registry name", "Registry type", "Registry location" }, 0);
 	}
 
 	public void setRegistryMap(SortedMap<String, Registry> registries) {
@@ -35,16 +31,18 @@ public class RegistryTableModel extends DefaultTableModel {
 
 	public void updateRows() {
 		super.setRowCount(0);
-		for (Entry<String, Registry> entry : registryMap.entrySet()) {
+		for (Entry<String, Registry> entry : registryMap.entrySet())
 			super.addRow(new Object[] { entry.getKey(),
-					entry.getValue().getRegistryBase().toExternalForm() });
-		}
+					entry.getValue().getRegistryTypeName(),
+					entry.getValue().getRegistryBaseString() });
 	}
 
+	@Override
 	public boolean isCellEditable(int row, int column) {
 		return false;
 	}
 
+	@Override
 	public void removeRow(int row) {
 		String key = (String) super.getValueAt(row, 0);
 		registryMap.remove(key);

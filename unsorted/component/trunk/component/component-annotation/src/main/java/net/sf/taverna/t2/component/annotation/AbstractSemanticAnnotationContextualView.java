@@ -3,10 +3,13 @@
  */
 package net.sf.taverna.t2.component.annotation;
 
+import static java.awt.GridBagConstraints.HORIZONTAL;
+import static java.awt.GridBagConstraints.NORTHWEST;
 import static java.lang.String.CASE_INSENSITIVE_ORDER;
 import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.createBaseResource;
 import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.createSemanticAnnotation;
 import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.getDisplayName;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -48,8 +51,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
 public abstract class AbstractSemanticAnnotationContextualView extends
 		ContextualView {
 	private static final long serialVersionUID = 3567849347002793442L;
-	private static final Logger logger = Logger
-			.getLogger(SemanticAnnotationContextualView.class);
+	private static final Logger logger = getLogger(SemanticAnnotationContextualView.class);
 	private static final EditManager editManager = EditManager.getInstance();
 	private static final FileManager fileManager = FileManager.getInstance();
 	private static final Edits edits = editManager.getEdits();
@@ -167,23 +169,22 @@ public abstract class AbstractSemanticAnnotationContextualView extends
 	private void populatePanel(JPanel panel) {
 		panel.removeAll();
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.anchor = GridBagConstraints.NORTHWEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = NORTHWEST;
+		gbc.fill = HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		gbc.insets = new Insets(5, 5, 5, 5);
 		panel.add(new JLabel("Reading semantic annotations"), gbc);
-		AbstractSemanticAnnotationContextualView.this.revalidate();
-		AbstractSemanticAnnotationContextualView.this.initView();
+		revalidate();
+		initView();
 		new StatementsReader().execute();
 	}
 
 	private Set<Statement> listStatements(OntProperty predicate) {
-		return model.listStatements(subject, predicate, (RDFNode) null)
-				.toSet();
+		return model.listStatements(subject, predicate, (RDFNode) null).toSet();
 	}
-	
+
 	private class StatementsReader extends SwingWorker<String, Object> {
 		private Map<SemanticAnnotationProfile, Set<Statement>> profileStatements;
 		private Set<Statement> statements;
@@ -194,7 +195,7 @@ public abstract class AbstractSemanticAnnotationContextualView extends
 			try {
 				parseStatements();
 			} catch (Exception e) {
-				logger.error(e);
+				logger.error("failed to parse annotation statements", e);
 			}
 			return null;
 		}
@@ -223,8 +224,8 @@ public abstract class AbstractSemanticAnnotationContextualView extends
 		protected void done() {
 			panel.removeAll();
 			GridBagConstraints gbc = new GridBagConstraints();
-			gbc.anchor = GridBagConstraints.NORTHWEST;
-			gbc.fill = GridBagConstraints.HORIZONTAL;
+			gbc.anchor = NORTHWEST;
+			gbc.fill = HORIZONTAL;
 			gbc.gridx = 0;
 			gbc.weightx = 1;
 			gbc.weighty = 0;

@@ -11,9 +11,9 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 public class ComponentContextViewFactory implements
 		ContextualViewFactory<Dataflow> {
-
 	private static final FileManager fileManager = FileManager.getInstance();
 
+	@Override
 	public boolean canHandle(Object selection) {
 		if (selection instanceof Dataflow) {
 			Object dataflowSource = fileManager
@@ -23,6 +23,7 @@ public class ComponentContextViewFactory implements
 		return false;
 	}
 
+	@Override
 	public List<ContextualView> getViews(Dataflow selection) {
 		Object dataflowSource = fileManager
 				.getDataflowSource((Dataflow) selection);

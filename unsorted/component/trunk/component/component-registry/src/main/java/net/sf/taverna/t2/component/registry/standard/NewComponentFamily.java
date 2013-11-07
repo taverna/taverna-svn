@@ -13,15 +13,15 @@ import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.registry.ComponentFamily;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
-import uk.org.taverna.component.api.ComponentFamilyDescription;
 import uk.org.taverna.component.api.ComponentFamilyType;
+import uk.org.taverna.component.api.Description;
 
 /**
  * A family of components in the new-interface registry.
  * 
  * @author Donal Fellows
  */
-public class NewComponentFamily extends ComponentFamily {
+class NewComponentFamily extends ComponentFamily {
 	static final String ELEMENTS = "title,description";
 
 	private final NewComponentRegistry registry;
@@ -30,9 +30,10 @@ public class NewComponentFamily extends ComponentFamily {
 	private final String name;
 	private final String description;
 	private final String uri;
+	private final String resource;
 
 	NewComponentFamily(NewComponentRegistry componentRegistry,
-			NewComponentProfile profile, ComponentFamilyDescription familyDesc)
+			NewComponentProfile profile, Description familyDesc)
 			throws RegistryException {
 		super(componentRegistry);
 		uri = familyDesc.getUri();
@@ -41,17 +42,19 @@ public class NewComponentFamily extends ComponentFamily {
 		id = familyDesc.getId().trim();
 		name = getElementString(familyDesc, "title");
 		description = getElementString(familyDesc, "description");
+		resource = familyDesc.getResource();
 	}
 
 	public NewComponentFamily(NewComponentRegistry componentRegistry,
-			NewComponentProfile profile, ComponentFamilyType post) {
+			NewComponentProfile profile, ComponentFamilyType cft) {
 		super(componentRegistry);
-		uri = post.getUri();
+		uri = cft.getUri();
 		registry = componentRegistry;
 		this.profile = profile;
-		id = post.getId();
-		name = post.getTitle();
-		description = post.getDescription();
+		id = cft.getId();
+		name = cft.getTitle();
+		description = cft.getDescription();
+		resource = cft.getResource();
 	}
 
 	@Override
@@ -123,5 +126,9 @@ public class NewComponentFamily extends ComponentFamily {
 	@Override
 	public int hashCode() {
 		return BASEHASH ^ registry.hashCode() ^ id.hashCode();
+	}
+
+	public String getResourceLocation() {
+		return resource;
 	}
 }

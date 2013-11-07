@@ -1,11 +1,17 @@
 package net.sf.taverna.t2.component.ui.preference;
 
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.CENTER;
+import static java.awt.GridBagConstraints.HORIZONTAL;
+import static java.awt.GridBagConstraints.WEST;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN;
 import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
 import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateRegistry;
+import static net.sf.taverna.t2.component.ui.util.Utils.URL_PATTERN;
 import static net.sf.taverna.t2.workbench.helper.Helper.showHelp;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -18,7 +24,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.AbstractAction;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -28,13 +33,23 @@ import javax.swing.border.EmptyBorder;
 import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.preference.ComponentPreference;
-import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.ui.DeselectingButton;
 import net.sf.taverna.t2.lang.ui.ValidatingUserInputDialog;
 
 import org.apache.log4j.Logger;
 
 public class ComponentPreferencePanel extends JPanel {
+	private static final String BAD_URL_MESSAGE = "Invalid URL";
+	private static final String SET_URL_MESSAGE = "Set the URL of the profile";
+	private static final String HELP_LABEL = "Help";
+	private static final String RESET_LABEL = "Reset";
+	private static final String APPLY_LABEL = "Apply";
+	private static final String ADD_REMOTE_TITLE = "Add Remote Component Registry";
+	private static final String ADD_LOCAL_TITLE = "Add Local Component Registry";
+	private static final String ADD_REMOTE_LABEL = "Add remote registry";
+	private static final String ADD_LOCAL_LABEL = "Add local registry";
+	private static final String REMOVE_LABEL = "Remove registry";
+	private static final String TITLE = "Component registry management";
 	private static final String VALIDATION_MESSAGE = "Set the registry name";
 	private static final String EXCEPTION_MESSAGE = "Unable to access registry at ";
 	private static final String EXCEPTION_TITLE = "Component registry problem";
@@ -42,8 +57,7 @@ public class ComponentPreferencePanel extends JPanel {
 	private static final String DUPLICATE = "Duplicate registry name";
 	private static final long serialVersionUID = 1310173658718093383L;
 
-	private final Logger logger = Logger
-			.getLogger(ComponentPreferencePanel.class);
+	private final Logger logger = getLogger(ComponentPreferencePanel.class);
 
 	private RegistryTableModel tableModel = new RegistryTableModel();
 
@@ -55,26 +69,24 @@ public class ComponentPreferencePanel extends JPanel {
 	}
 
 	private void initialize() {
-
-		this.setLayout(new GridBagLayout());
+		setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
 
 		// Title describing what kind of settings we are configuring here
-		JTextArea descriptionText = new JTextArea(
-				"Component registry management");
+		JTextArea descriptionText = new JTextArea(TITLE);
 		descriptionText.setLineWrap(true);
 		descriptionText.setWrapStyleWord(true);
 		descriptionText.setEditable(false);
 		descriptionText.setFocusable(false);
 		descriptionText.setBorder(new EmptyBorder(10, 10, 10, 10));
-		gbc.anchor = GridBagConstraints.WEST;
+		gbc.anchor = WEST;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.gridwidth = 1;
 		gbc.weightx = 1.0;
 		gbc.weighty = 0.0;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.fill = HORIZONTAL;
 		this.add(descriptionText, gbc);
 
 		gbc.gridy++;
@@ -87,7 +99,7 @@ public class ComponentPreferencePanel extends JPanel {
 		// registryTable.setFillsViewportHeight(true);
 
 		gbc.weighty = 1.0;
-		gbc.fill = GridBagConstraints.BOTH;
+		gbc.fill = BOTH;
 
 		this.add(scrollPane, gbc);
 
@@ -97,8 +109,8 @@ public class ComponentPreferencePanel extends JPanel {
 		gbc.weightx = 0.0;
 		gbc.weighty = 0.0;
 		gbc.gridwidth = 1;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.fill = HORIZONTAL;
+		gbc.anchor = CENTER;
 		gbc.insets = new Insets(10, 0, 0, 0);
 		this.add(createRegistryButtonPanel(), gbc);
 
@@ -108,108 +120,133 @@ public class ComponentPreferencePanel extends JPanel {
 		gbc.weightx = 0.0;
 		gbc.weighty = 0.0;
 		gbc.gridwidth = 1;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.fill = HORIZONTAL;
+		gbc.anchor = CENTER;
 		gbc.insets = new Insets(10, 0, 0, 0);
 		this.add(createButtonPanel(), gbc);
 
 		setFields();
-
 	}
 
+	/**
+	 * Create the buttons for managing the list of registries.
+	 * @return
+	 */
+	@SuppressWarnings("serial")
 	private Component createRegistryButtonPanel() {
-		final JPanel panel = new JPanel();
-
-		JButton removeButton = new DeselectingButton(new AbstractAction(
-				"Remove registry") {
-			private static final long serialVersionUID = 1506913889704140541L;
-
+		JPanel panel = new JPanel();
+		panel.add(new DeselectingButton(new AbstractAction(REMOVE_LABEL) {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				int selectedRow = registryTable.getSelectedRow();
-				if (selectedRow != -1) {
-					tableModel.removeRow(selectedRow);
-				}
+				remove();
 			}
-		});
-		panel.add(removeButton);
-
-		JButton addLocalButton = new DeselectingButton(new AbstractAction(
-				"Add local registry") {
-			private static final long serialVersionUID = 855395154244911211L;
-
+		}));
+		panel.add(new DeselectingButton(new AbstractAction(ADD_LOCAL_LABEL) {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				LocalRegistryPanel inputPanel = new LocalRegistryPanel();
-
-				ValidatingUserInputDialog vuid = new ValidatingUserInputDialog(
-						"Add Local Component Registry", inputPanel);
-				vuid.addTextComponentValidation(
-						inputPanel.getRegistryNameField(), VALIDATION_MESSAGE,
-						tableModel.getRegistryMap().keySet(), DUPLICATE,
-						"[\\p{L}\\p{Digit}_.]+", INVALID_NAME);
-				vuid.setSize(new Dimension(400, 250));
-				if (vuid.show(ComponentPreferencePanel.this)) {
-					String location = inputPanel.getLocationField().getText();
-					File newDir = new File(location);
-					try {
-						tableModel.insertRegistry(inputPanel
-								.getRegistryNameField().getText(),
-								getLocalRegistry(newDir));
-					} catch (MalformedURLException e) {
-						showMessageDialog(null, EXCEPTION_MESSAGE + location,
-								EXCEPTION_TITLE, ERROR_MESSAGE);
-						logger.error(e);
-					} catch (RegistryException e) {
-						showMessageDialog(null, EXCEPTION_MESSAGE + location,
-								EXCEPTION_TITLE, ERROR_MESSAGE);
-						logger.error(e);
-					}
-				}
+				addLocal();
 			}
-		});
-		panel.add(addLocalButton);
-
-		/**
-		 * The applyButton applies the shown field values to the
-		 * {@link HttpProxyConfiguration} and saves them for future.
-		 */
-		JButton addRemoteButton = new DeselectingButton(new AbstractAction(
-				"Add remote registry") {
-			private static final long serialVersionUID = 7790264169310979116L;
-
+		}));
+		panel.add(new DeselectingButton(new AbstractAction(ADD_REMOTE_LABEL) {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				RemoteRegistryPanel inputPanel = new RemoteRegistryPanel();
-
-				ValidatingUserInputDialog vuid = new ValidatingUserInputDialog(
-						"Add Remote Component Registry", inputPanel);
-				vuid.addTextComponentValidation(
-						inputPanel.getRegistryNameField(), VALIDATION_MESSAGE,
-						tableModel.getRegistryMap().keySet(), DUPLICATE,
-						"[\\p{L}\\p{Digit}_.]+", INVALID_NAME);
-				vuid.addTextComponentValidation(inputPanel.getLocationField(),
-						"Set the URL of the profile", null, "",
-						Utils.URL_PATTERN, "Invalid URL");
-				vuid.setSize(new Dimension(400, 250));
-				if (vuid.show(ComponentPreferencePanel.this)) {
-					String location = inputPanel.getLocationField().getText();
-					try {
-						tableModel.insertRegistry(inputPanel
-								.getRegistryNameField().getText(),
-								getRemoteRegistry(location));
-					} catch (MalformedURLException e) {
-						showMessageDialog(null, EXCEPTION_MESSAGE + location,
-								EXCEPTION_TITLE, ERROR_MESSAGE);
-						logger.error(e);
-					} catch (RegistryException e) {
-						showMessageDialog(null, EXCEPTION_MESSAGE + location,
-								EXCEPTION_TITLE, ERROR_MESSAGE);
-						logger.error(e);
-					}
-				}
+				addRemote();
 			}
-		});
-		panel.add(addRemoteButton);
-
+		}));
 		return panel;
+	}
+
+	/**
+	 * Create the panel to contain the buttons
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("serial")
+	private JPanel createButtonPanel() {
+		final JPanel panel = new JPanel();
+		panel.add(new DeselectingButton(new AbstractAction(HELP_LABEL) {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				showHelp(panel);
+			}
+		}));
+		panel.add(new DeselectingButton(new AbstractAction(RESET_LABEL) {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				setFields();
+			}
+		}));
+		panel.add(new DeselectingButton(new AbstractAction(APPLY_LABEL) {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				applySettings();
+				setFields();
+			}
+		}));
+		return panel;
+	}
+
+	void remove() {
+		int selectedRow = registryTable.getSelectedRow();
+		if (selectedRow != -1)
+			tableModel.removeRow(selectedRow);
+	}
+
+	void addLocal() {
+		// Run the GUI
+		LocalRegistryPanel inputPanel = new LocalRegistryPanel();
+		ValidatingUserInputDialog vuid = new ValidatingUserInputDialog(
+				ADD_LOCAL_TITLE, inputPanel);
+		vuid.addTextComponentValidation(inputPanel.getRegistryNameField(),
+				VALIDATION_MESSAGE, tableModel.getRegistryMap().keySet(),
+				DUPLICATE, "[\\p{L}\\p{Digit}_.]+", INVALID_NAME);
+		vuid.setSize(new Dimension(400, 250));
+		if (!vuid.show(ComponentPreferencePanel.this))
+			return;
+
+		// Add the local registry
+		String location = inputPanel.getLocationField().getText();
+		File newDir = new File(location);
+		try {
+			tableModel.insertRegistry(inputPanel.getRegistryNameField()
+					.getText(), getLocalRegistry(newDir));
+		} catch (MalformedURLException e) {
+			logger.error("bad url provided by user", e);
+			showMessageDialog(null, EXCEPTION_MESSAGE + location,
+					EXCEPTION_TITLE, ERROR_MESSAGE);
+		} catch (RegistryException e) {
+			logger.error("problem creating local registry", e);
+			showMessageDialog(null, EXCEPTION_MESSAGE + location,
+					EXCEPTION_TITLE, ERROR_MESSAGE);
+		}
+	}
+
+	void addRemote() {
+		RemoteRegistryPanel inputPanel = new RemoteRegistryPanel();
+		ValidatingUserInputDialog vuid = new ValidatingUserInputDialog(
+				ADD_REMOTE_TITLE, inputPanel);
+		vuid.addTextComponentValidation(inputPanel.getRegistryNameField(),
+				VALIDATION_MESSAGE, tableModel.getRegistryMap().keySet(),
+				DUPLICATE, "[\\p{L}\\p{Digit}_.]+", INVALID_NAME);
+		vuid.addTextComponentValidation(inputPanel.getLocationField(),
+				SET_URL_MESSAGE, null, "", URL_PATTERN, BAD_URL_MESSAGE);
+		vuid.setSize(new Dimension(400, 250));
+		if (!vuid.show(ComponentPreferencePanel.this))
+			return;
+
+		String location = inputPanel.getLocationField().getText();
+		try {
+			tableModel.insertRegistry(inputPanel.getRegistryNameField()
+					.getText(), getRemoteRegistry(location));
+		} catch (MalformedURLException e) {
+			logger.error("bad url provided by user", e);
+			showMessageDialog(null, EXCEPTION_MESSAGE + location,
+					EXCEPTION_TITLE, ERROR_MESSAGE);
+		} catch (RegistryException e) {
+			showMessageDialog(null, EXCEPTION_MESSAGE + location,
+					EXCEPTION_TITLE, ERROR_MESSAGE);
+			logger.error("problem creating remote registry", e);
+		}
 	}
 
 	Registry getLocalRegistry(File location) throws RegistryException,
@@ -226,59 +263,11 @@ public class ComponentPreferencePanel extends JPanel {
 		return calculateRegistry(url);
 	}
 
-	/**
-	 * Create the panel to contain the buttons
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("serial")
-	private JPanel createButtonPanel() {
-		final JPanel panel = new JPanel();
-
-		/**
-		 * The helpButton shows help about the current component
-		 */
-		JButton helpButton = new DeselectingButton(new AbstractAction("Help") {
-			public void actionPerformed(ActionEvent arg0) {
-				showHelp(panel);
-			}
-		});
-		panel.add(helpButton);
-
-		/**
-		 * The resetButton changes the property values shown to those
-		 * corresponding to the configuration currently applied.
-		 */
-		JButton resetButton = new DeselectingButton(
-				new AbstractAction("Reset") {
-					public void actionPerformed(ActionEvent arg0) {
-						setFields();
-					}
-				});
-		panel.add(resetButton);
-
-		/**
-		 * The applyButton applies the shown field values to the
-		 * {@link HttpProxyConfiguration} and saves them for future.
-		 */
-		JButton applyButton = new DeselectingButton(
-				new AbstractAction("Apply") {
-					public void actionPerformed(ActionEvent arg0) {
-						applySettings();
-						setFields();
-					}
-				});
-		panel.add(applyButton);
-
-		return panel;
-	}
-
 	private void applySettings() {
 		ComponentPreference pref = ComponentPreference.getInstance();
 		pref.setRegistryMap(tableModel.getRegistryMap());
-		if (validateFields()) {
+		if (validateFields())
 			saveSettings();
-		}
 	}
 
 	private void setFields() {
@@ -294,5 +283,4 @@ public class ComponentPreferencePanel extends JPanel {
 		ComponentPreference pref = ComponentPreference.getInstance();
 		pref.store();
 	}
-
 }

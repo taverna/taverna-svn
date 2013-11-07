@@ -8,17 +8,18 @@ import static net.sf.taverna.t2.component.registry.standard.Utils.getValue;
 
 import java.lang.ref.SoftReference;
 
+import net.sf.taverna.t2.component.api.Family;
 import net.sf.taverna.t2.component.api.License;
+import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.SharingPolicy;
 import net.sf.taverna.t2.component.registry.Component;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
-import uk.org.taverna.component.api.ComponentDescription;
 import uk.org.taverna.component.api.ComponentType;
 import uk.org.taverna.component.api.Description;
 
-public class NewComponent extends Component {
+class NewComponent extends Component {
 	static final String ELEMENTS = "title,description";
 	static final String EXTRA = "license-type,permissions";
 
@@ -27,15 +28,17 @@ public class NewComponent extends Component {
 	private final String id;
 	private final String title;
 	private final String description;
+	private final String resource;
 
 	NewComponent(NewComponentRegistry registry, NewComponentFamily family,
-			ComponentDescription cd) throws RegistryException {
+			Description cd) throws RegistryException {
 		super(cd.getUri());
 		this.registry = registry;
 		this.family = family;
 		id = cd.getId().trim();
 		title = getElementString(cd, "title");
 		description = getElementString(cd, "description");
+		resource = cd.getResource();
 	}
 
 	NewComponent(NewComponentRegistry registry, NewComponentFamily family,
@@ -46,6 +49,7 @@ public class NewComponent extends Component {
 		id = ct.getId().trim();
 		title = ct.getTitle().trim();
 		description = ct.getDescription().trim();
+		resource = ct.getResource();
 	}
 
 	public ComponentType getCurrent(String elements) throws RegistryException {
@@ -66,7 +70,7 @@ public class NewComponent extends Component {
 	protected void populateComponentVersionMap() {
 		try {
 			for (Description d : getCurrent("versions").getVersions()
-					.getVersion())
+					.getWorkflow())
 				versionMap.put(d.getVersion(), new Version(d.getVersion(),
 						getValue(d)));
 		} catch (RegistryException e) {
@@ -103,6 +107,10 @@ public class NewComponent extends Component {
 		return false;
 	}
 
+	public String getResourceLocation() {
+		return resource;
+	}
+
 	private static final int BASEHASH = NewComponent.class.hashCode();
 
 	@Override
@@ -113,13 +121,14 @@ public class NewComponent extends Component {
 	class Version extends ComponentVersion {
 		private int version;
 		private String description;
-		SoftReference<Dataflow> dataflow;
+		private String dataflowUri;
+		private SoftReference<Dataflow> dataflowRef;
 
 		protected Version(Integer version, String description, Dataflow dataflow) {
 			super(NewComponent.this);
 			this.version = version;
 			this.description = description;
-			this.dataflow = new SoftReference<Dataflow>(dataflow);
+			this.dataflowRef = new SoftReference<Dataflow>(dataflow);
 		}
 
 		protected Version(Integer version, String description) {
@@ -154,22 +163,38 @@ public class NewComponent extends Component {
 			return description;
 		}
 
+		private String getDataflowUri() throws RegistryException {
+			if (dataflowUri == null)
+				dataflowUri = registry.getComponentById(id, version,
+						"content-uri").getContentUri();
+			return dataflowUri;
+		}
+
 		@Override
 		protected synchronized Dataflow internalGetDataflow()
 				throws RegistryException {
-			if (dataflow == null || dataflow.get() == null) {
-				String contentUri = registry.getComponentById(id, version,
-						"content-uri").getContentUri();
+			if (dataflowRef == null || dataflowRef.get() == null) {
+				String contentUri = getDataflowUri();
 				try {
-					dataflow = new SoftReference<Dataflow>(
-							getDataflowFromUri(contentUri + "?version="
-									+ version));
+					Dataflow result = getDataflowFromUri(contentUri
+							+ "?version=" + version);
+					dataflowRef = new SoftReference<Dataflow>(result);
+					return result;
 				} catch (Exception e) {
-					logger.error(e);
 					throw new RegistryException("Unable to open dataflow", e);
 				}
 			}
-			return dataflow.get();
+			return dataflowRef.get();
 		}
+	}
+
+	@Override
+	public Registry getRegistry() {
+		return registry;
+	}
+
+	@Override
+	public Family getFamily() {
+		return family;
 	}
 }

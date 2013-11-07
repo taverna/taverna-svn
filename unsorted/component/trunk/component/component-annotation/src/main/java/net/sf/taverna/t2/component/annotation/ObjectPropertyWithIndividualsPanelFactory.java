@@ -20,6 +20,10 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
+import static java.awt.FlowLayout.RIGHT;
+import static java.awt.GridBagConstraints.EAST;
+import static java.awt.GridBagConstraints.NORTHWEST;
+import static java.lang.Integer.MIN_VALUE;
 import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
 import static javax.swing.JOptionPane.OK_OPTION;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
@@ -49,12 +53,11 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
- * 
- * 
  * @author David Withers
  * @author Alan Williams
  */
-public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFactorySPI {
+public class ObjectPropertyWithIndividualsPanelFactory extends
+		PropertyPanelFactorySPI {
 	/*
 	 * TODO Consider what sort of sharing model is appropriate for the local
 	 * world
@@ -65,10 +68,13 @@ public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFact
 	public int getRatingForSemanticAnnotation(
 			SemanticAnnotationProfile semanticAnnotationProfile) {
 		OntProperty property = semanticAnnotationProfile.getPredicate();
-		if (property.isObjectProperty())
-//			if (!semanticAnnotationProfile.getIndividuals().isEmpty())
-				return 100;
-		return Integer.MIN_VALUE;
+		if (property.isObjectProperty() /*
+										 * &&
+										 * !semanticAnnotationProfile.getIndividuals
+										 * ().isEmpty()
+										 */)
+			return 100;
+		return MIN_VALUE;
 	}
 
 	@Override
@@ -79,7 +85,8 @@ public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFact
 	}
 
 	@Override
-	public RDFNode getNewTargetNode(Statement originalStatement, JComponent component) {
+	public RDFNode getNewTargetNode(Statement originalStatement,
+			JComponent component) {
 		ComboBoxWithAdd panel = (ComboBoxWithAdd) component;
 		RDFNode newNode = panel.getSelectedItem();
 		if ((originalStatement == null)
@@ -87,7 +94,7 @@ public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFact
 			return newNode;
 		return null;
 	}
-	
+
 	private static class ComboBoxWithAdd extends JPanel {
 		private static final long serialVersionUID = -9156213096428945270L;
 		OntClass rangeClass = null;
@@ -103,7 +110,7 @@ public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFact
 			GridBagConstraints gbc = new GridBagConstraints();
 			gbc.gridx = 0;
 			gbc.gridy = 0;
-			gbc.anchor = GridBagConstraints.NORTHWEST;
+			gbc.anchor = NORTHWEST;
 			List<Individual> individuals = semanticAnnotationProfile
 					.getIndividuals();
 			if (rangeClass != null)
@@ -122,7 +129,7 @@ public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFact
 
 			gbc.gridy++;
 
-			JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+			JPanel buttonPanel = new JPanel(new FlowLayout(RIGHT));
 			buttonPanel.add(new DeselectingButton("Add external",
 					new ActionListener() {
 						@Override
@@ -137,7 +144,7 @@ public class ObjectPropertyWithIndividualsPanelFactory extends PropertyPanelFact
 							addLocal();
 						}
 					}));
-			gbc.anchor = GridBagConstraints.EAST;
+			gbc.anchor = EAST;
 			this.add(buttonPanel, gbc);
 		}
 

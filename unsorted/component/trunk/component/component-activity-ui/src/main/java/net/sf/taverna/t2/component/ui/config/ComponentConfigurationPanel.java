@@ -1,5 +1,10 @@
 package net.sf.taverna.t2.component.ui.config;
 
+import static java.awt.event.ItemEvent.SELECTED;
+import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateComponent;
+import static net.sf.taverna.t2.component.ui.util.Utils.SHORT_STRING;
+import static org.apache.log4j.Logger.getLogger;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.Insets;
@@ -15,10 +20,8 @@ import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
 import net.sf.taverna.t2.component.api.Component;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.Version;
-import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.ui.panel.ComponentListCellRenderer;
-import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityConfigurationPanel;
 
 import org.apache.log4j.Logger;
@@ -27,9 +30,7 @@ import org.apache.log4j.Logger;
 public class ComponentConfigurationPanel
 		extends
 		ActivityConfigurationPanel<ComponentActivity, ComponentActivityConfigurationBean> {
-
-	private static Logger logger = Logger
-			.getLogger(ComponentConfigurationPanel.class);
+	private static Logger logger = getLogger(ComponentConfigurationPanel.class);
 
 	private ComponentActivity activity;
 	private ComponentActivityConfigurationBean configBean;
@@ -38,7 +39,7 @@ public class ComponentConfigurationPanel
 
 	public ComponentConfigurationPanel(ComponentActivity activity) {
 		this.activity = activity;
-		componentVersionChoice.setPrototypeDisplayValue(Utils.SHORT_STRING);
+		componentVersionChoice.setPrototypeDisplayValue(SHORT_STRING);
 		configBean = activity.getConfiguration();
 		initGui();
 	}
@@ -49,13 +50,10 @@ public class ComponentConfigurationPanel
 
 		componentVersionChoice.setRenderer(new ComponentListCellRenderer());
 		componentVersionChoice.addItemListener(new ItemListener() {
-
 			@Override
-			public void itemStateChanged(ItemEvent arg0) {
-				if (arg0.getStateChange() == ItemEvent.SELECTED) {
+			public void itemStateChanged(ItemEvent event) {
+				if (event.getStateChange() == SELECTED)
 					updateToolTipText();
-				}
-
 			}
 		});
 		updateComponentVersionChoice();
@@ -100,7 +98,7 @@ public class ComponentConfigurationPanel
 	public boolean isConfigurationChanged() {
 		Integer version = ((Version) componentVersionChoice.getSelectedItem())
 				.getVersionNumber();
-		return (!version.equals(configBean.getComponentVersion()));
+		return !version.equals(configBean.getComponentVersion());
 	}
 
 	/**
@@ -132,9 +130,9 @@ public class ComponentConfigurationPanel
 		componentVersionChoice.removeAllItems();
 		componentVersionChoice.setToolTipText(null);
 		try {
-			component = ComponentUtil.calculateComponent(configBean);
+			component = calculateComponent(configBean);
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to get component", e);
 			return;
 		}
 		SortedMap<Integer, Version> componentVersionMap = component
@@ -152,5 +150,4 @@ public class ComponentConfigurationPanel
 				.getSelectedItem();
 		componentVersionChoice.setToolTipText(selectedVersion.getDescription());
 	}
-
 }

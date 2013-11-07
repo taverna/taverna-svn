@@ -46,6 +46,8 @@ import java.util.Locale;
 import java.util.Properties;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
+import net.sf.taverna.t2.component.registry.ClientVersion;
+import net.sf.taverna.t2.component.registry.myexperiment.client.utils.Base64;
 import net.sf.taverna.t2.security.credentialmanager.CMException;
 import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 import net.sf.taverna.t2.security.credentialmanager.UsernamePassword;
@@ -63,7 +65,7 @@ public class MyExperimentClient {
   // CONSTANTS
   public static final String DEFAULT_BASE_URL = "http://www.myexperiment.org";
   public static final String PLUGIN_USER_AGENT = "Taverna2-myExperiment-plugin/"
-      + "0.2beta"
+      + ClientVersion.VERSION
       + " Java/"
       + System.getProperty("java.version");
   private static final String INI_FILE_NAME = "myexperiment-plugin.ini";
@@ -342,11 +344,11 @@ public class MyExperimentClient {
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     conn.setRequestProperty("User-Agent", PLUGIN_USER_AGENT);
     if (LOGGED_IN) {
-    	logger.info("It is logged in");
+    	logger.debug("It is logged in");
       // if the user has "logged in", also add authentication details
       conn.setRequestProperty("Authorization", "Basic " + AUTH_STRING);
     } else {
-       	logger.info("It is not logged in");
+       	logger.warn("It is not logged in");
            	
     }
 

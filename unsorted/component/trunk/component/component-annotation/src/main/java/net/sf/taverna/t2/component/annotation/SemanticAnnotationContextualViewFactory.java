@@ -41,6 +41,7 @@ public class SemanticAnnotationContextualViewFactory implements
 		ContextualViewFactory<Annotated<?>> {
 	private static final FileManager fileManager = FileManager.getInstance();
 
+	@Override
 	public boolean canHandle(Object selection) {
 		Object dataflowSource = fileManager.getDataflowSource(fileManager
 				.getCurrentDataflow());
@@ -49,6 +50,7 @@ public class SemanticAnnotationContextualViewFactory implements
 				&& !(selection instanceof Activity || selection instanceof ActivityPort);
 	}
 
+	@Override
 	public List<ContextualView> getViews(Annotated<?> selection) {
 		return Arrays.asList(new SemanticAnnotationContextualView(selection),
 				new TurtleContextualView(selection));

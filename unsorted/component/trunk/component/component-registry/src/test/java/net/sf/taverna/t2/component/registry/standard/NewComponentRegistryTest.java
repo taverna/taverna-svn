@@ -20,7 +20,7 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.standard;
 
-import static net.sf.taverna.t2.component.registry.standard.NewComponentRegistry.getComponentRegistry;
+import static net.sf.taverna.t2.component.registry.standard.NewComponentRegistryLocator.getComponentRegistry;
 import static net.sf.taverna.t2.component.registry.standard.Utils.getDataflowFromUri;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -65,7 +65,7 @@ public class NewComponentRegistryTest extends ComponentRegistryTest {
 				"beanshell_test.t2flow");
 		Dataflow dataflow = getDataflowFromUri(dataflowUrl.toString());
 
-		NewComponentRegistry registry = getComponentRegistry(componentRegistryUrl);
+		NewComponentRegistry registry = (NewComponentRegistry) getComponentRegistry(componentRegistryUrl);
 		Version v = registry.createComponentFrom(null, "Test Workflow",
 				"test description", dataflow, null, Policy.PRIVATE);
 		assertEquals("test description", v.getDescription());

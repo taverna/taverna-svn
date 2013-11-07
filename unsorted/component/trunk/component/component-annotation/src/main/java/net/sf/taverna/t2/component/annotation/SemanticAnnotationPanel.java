@@ -1,5 +1,14 @@
 package net.sf.taverna.t2.component.annotation;
 
+import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.NORTH;
+import static java.awt.Color.WHITE;
+import static java.awt.Font.BOLD;
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.EAST;
+import static java.awt.GridBagConstraints.HORIZONTAL;
+import static java.awt.GridBagConstraints.NONE;
+import static java.awt.GridBagConstraints.SOUTHEAST;
 import static java.lang.Integer.MIN_VALUE;
 import static java.lang.String.format;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
@@ -11,7 +20,6 @@ import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.get
 import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.getObjectName;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -74,23 +82,23 @@ public class SemanticAnnotationPanel extends JPanel {
 		// });
 
 		GridBagConstraints c = new GridBagConstraints();
-		c.anchor = GridBagConstraints.SOUTHEAST;
-		c.fill = GridBagConstraints.BOTH;
+		c.anchor = SOUTHEAST;
+		c.fill = BOTH;
 		c.weightx = 1;
 		c.gridx = 0;
 
 		OntProperty predicate = semanticAnnotationProfile.getPredicate();
 		c.gridwidth = 3;
-		JLabel label = new JLabel("Annotation type : "
-				+ getDisplayName(predicate));
+		JLabel label = new JLabel(format("Annotation type : %s",
+				getDisplayName(predicate)));
 		label.setBorder(new EmptyBorder(5, 5, 5, 5));
-		label.setBackground(Color.WHITE);
+		label.setBackground(WHITE);
 		label.setOpaque(true);
 		add(label, c);
 
 		c.insets = new Insets(7, 0, 0, 0);
-		c.anchor = GridBagConstraints.EAST;
-		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = EAST;
+		c.fill = HORIZONTAL;
 		if (statements.isEmpty()) {
 			c.gridwidth = 2;
 			// c.weightx = 1;
@@ -109,7 +117,7 @@ public class SemanticAnnotationPanel extends JPanel {
 					value.setLineWrap(true);
 					value.setWrapStyleWord(true);
 					value.setEditable(false);
-					value.setBackground(Color.WHITE);
+					value.setBackground(WHITE);
 					value.setOpaque(true);
 					value.setBorder(new EmptyBorder(2, 4, 2, 4));
 					add(value, c);
@@ -130,8 +138,8 @@ public class SemanticAnnotationPanel extends JPanel {
 						semanticAnnotationProfile.getMaxOccurs())) {
 			c.gridx = 0;
 			c.gridwidth = 3;
-			c.anchor = GridBagConstraints.SOUTHEAST;
-			c.fill = GridBagConstraints.NONE;
+			c.anchor = SOUTHEAST;
+			c.fill = NONE;
 			add(createAddButton(), c);
 		}
 	}
@@ -180,8 +188,8 @@ public class SemanticAnnotationPanel extends JPanel {
 		}
 
 		if (annotationPanel == null) {
-			showMessageDialog(null, "Unable to handle "
-					+ semanticAnnotationProfile.getPredicateString(),
+			showMessageDialog(null, format("Unable to handle %s",
+					semanticAnnotationProfile.getPredicateString()),
 					"Annotation problem", ERROR_MESSAGE);
 			return;
 		}
@@ -224,14 +232,14 @@ public class SemanticAnnotationPanel extends JPanel {
 		result.setLayout(new BorderLayout());
 		JPanel messagePanel = new JPanel(new BorderLayout());
 		messagePanel.setBorder(new EmptyBorder(5, 5, 0, 0));
-		messagePanel.setBackground(Color.WHITE);
-		result.add(messagePanel, BorderLayout.NORTH);
+		messagePanel.setBackground(WHITE);
+		result.add(messagePanel, NORTH);
 
 		JLabel inputLabel = new JLabel("Enter a value for the annotation");
-		inputLabel.setBackground(Color.WHITE);
+		inputLabel.setBackground(WHITE);
 		Font baseFont = inputLabel.getFont();
-		inputLabel.setFont(baseFont.deriveFont(Font.BOLD));
-		messagePanel.add(inputLabel, BorderLayout.NORTH);
+		inputLabel.setFont(baseFont.deriveFont(BOLD));
+		messagePanel.add(inputLabel, NORTH);
 
 		JTextArea messageText = new JTextArea(format(
 				"Enter a value for the annotation '%s'", displayName));
@@ -240,9 +248,9 @@ public class SemanticAnnotationPanel extends JPanel {
 		messageText.setFont(baseFont.deriveFont(11f));
 		messageText.setEditable(false);
 		messageText.setFocusable(false);
-		messagePanel.add(messageText, BorderLayout.CENTER);
+		messagePanel.add(messageText, CENTER);
 
-		result.add(new JScrollPane(inputComponent), BorderLayout.CENTER);
+		result.add(new JScrollPane(inputComponent), CENTER);
 		return result;
 	}
 }

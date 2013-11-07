@@ -1,9 +1,14 @@
 package net.sf.taverna.t2.component.ui.view;
 
+import static java.awt.Color.GRAY;
+import static java.awt.Color.WHITE;
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.EAST;
+import static java.awt.GridBagConstraints.HORIZONTAL;
+import static java.awt.GridBagConstraints.SOUTHEAST;
 import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.getDisplayName;
 import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.getObjectName;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -44,14 +49,14 @@ public class ComponentActivitySemanticAnnotationPanel extends JPanel {
 			@Override
 			public void paintBorder(Component c, Graphics g, int x, int y,
 					int width, int height) {
-				g.setColor(Color.GRAY);
+				g.setColor(GRAY);
 				g.drawLine(x, y + height - 1, x + width - 1, y + height - 1);
 			}
 		});
 
 		GridBagConstraints c = new GridBagConstraints();
-		c.anchor = GridBagConstraints.SOUTHEAST;
-		c.fill = GridBagConstraints.BOTH;
+		c.anchor = SOUTHEAST;
+		c.fill = BOTH;
 		c.weightx = 1;
 		c.gridx = 0;
 
@@ -60,13 +65,13 @@ public class ComponentActivitySemanticAnnotationPanel extends JPanel {
 		JLabel label = new JLabel("Annotation type : "
 				+ getDisplayName(predicate));
 		label.setBorder(new EmptyBorder(5, 5, 5, 5));
-		label.setBackground(Color.WHITE);
+		label.setBackground(WHITE);
 		label.setOpaque(true);
 		add(label, c);
 
 		c.insets = new Insets(5, 7, 0, 0);
-		c.anchor = GridBagConstraints.EAST;
-		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = EAST;
+		c.fill = HORIZONTAL;
 		if (statements.isEmpty()) {
 			c.gridwidth = 2;
 			// c.weightx = 1;
@@ -78,7 +83,7 @@ public class ComponentActivitySemanticAnnotationPanel extends JPanel {
 				c.gridx = 0;
 				c.weightx = 1;
 				JTextArea value = new JTextArea(getObjectName(statement));
-				value.setBackground(Color.WHITE);
+				value.setBackground(WHITE);
 				value.setOpaque(true);
 				value.setBorder(new EmptyBorder(2, 4, 2, 4));
 				add(value, c);

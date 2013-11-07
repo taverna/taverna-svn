@@ -62,4 +62,10 @@ public interface Component extends NamedItem {
 	 * @return a SortedMap of version number to ComponentVersion.
 	 */
 	SortedMap<Integer, Version> getComponentVersionMap();
+
+	Registry getRegistry();
+
+	Family getFamily();
+
+	void delete() throws RegistryException;
 }

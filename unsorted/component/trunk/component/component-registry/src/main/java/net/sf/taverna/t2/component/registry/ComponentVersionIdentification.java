@@ -5,7 +5,10 @@ package net.sf.taverna.t2.component.registry;
 
 import java.net.URL;
 
+import net.sf.taverna.t2.component.api.Family;
+import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.api.Version;
+import net.sf.taverna.t2.component.api.Version.ID;
 
 /**
  * @author alanrw
@@ -13,6 +16,7 @@ import net.sf.taverna.t2.component.api.Version;
  */
 public class ComponentVersionIdentification implements
 		net.sf.taverna.t2.component.api.Version.ID {
+	private static final long serialVersionUID = 1768548650702925916L;
 	private URL registryBase;
 	private String familyName;
 	private String componentName;
@@ -25,6 +29,11 @@ public class ComponentVersionIdentification implements
 		this.familyName = familyName;
 		this.componentName = componentName;
 		this.componentVersion = componentVersion;
+	}
+
+	public ComponentVersionIdentification(Registry registry, Family family,
+			net.sf.taverna.t2.component.api.Component component, Integer version) {
+		this(registry.getRegistryBase(), family.getName(), component.getName(), version);
 	}
 
 	public ComponentVersionIdentification(Version.ID toBeCopied) {
@@ -98,11 +107,6 @@ public class ComponentVersionIdentification implements
 		this.componentName = componentName;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -119,11 +123,6 @@ public class ComponentVersionIdentification implements
 		return result;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -151,14 +150,47 @@ public class ComponentVersionIdentification implements
 		if (registryBase == null) {
 			if (other.registryBase != null)
 				return false;
-		} else if (!registryBase.equals(other.registryBase))
+		} else if (!registryBase.toString().equals(other.registryBase.toString()))
 			return false;
 		return true;
 	}
 
+	@Override
 	public String toString() {
 		return getComponentName() + " V. " + getComponentVersion()
 				+ " in family " + getFamilyName() + " on "
 				+ getRegistryBase().toExternalForm();
+	}
+
+	@Override
+	public boolean mostlyEqualTo(ID id) {
+		if (this == id)
+			return true;
+		if (id == null)
+			return false;
+		if (getClass() != id.getClass())
+			return false;
+		ComponentVersionIdentification other = (ComponentVersionIdentification) id;
+		if (componentName == null) {
+			if (other.componentName != null)
+				return false;
+		} else if (!componentName.equals(other.componentName))
+			return false;
+		if (familyName == null) {
+			if (other.familyName != null)
+				return false;
+		} else if (!familyName.equals(other.familyName))
+			return false;
+		if (registryBase == null) {
+			if (other.registryBase != null)
+				return false;
+		} else if (!registryBase.toString().equals(other.registryBase.toString()))
+			return false;
+		return true;
+	}
+
+	@Override
+	public boolean mostlyEqualTo(net.sf.taverna.t2.component.api.Component c) {
+		return mostlyEqualTo(new ComponentVersionIdentification(c.getRegistry(), c.getFamily(), c, 0));
 	}
 }

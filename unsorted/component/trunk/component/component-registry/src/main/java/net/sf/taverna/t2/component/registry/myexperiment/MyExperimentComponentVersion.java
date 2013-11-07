@@ -20,6 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
+import static org.apache.log4j.Logger.getLogger;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -41,12 +43,8 @@ import org.jdom.Element;
  *
  * @author David Withers
  */
-public class MyExperimentComponentVersion extends ComponentVersion {
-	
-	private static Logger logger = Logger.getLogger(MyExperimentComponentVersion.class);
-
-
-
+class MyExperimentComponentVersion extends ComponentVersion {
+	private static final Logger logger = getLogger(MyExperimentComponentVersion.class);
 	private static final T2FlowFileType T2_FLOW_FILE_TYPE = new T2FlowFileType();
 
 	private final MyExperimentComponentRegistry componentRegistry;
@@ -66,25 +64,25 @@ public class MyExperimentComponentVersion extends ComponentVersion {
 	protected final Integer internalGetVersionNumber() {
 		if (versionNumber == null) {
 			Element resource = componentRegistry.getResource(uri);
-			if (resource != null) {
-				versionNumber = new Integer(resource.getAttributeValue("version"));
-			}
+			if (resource != null)
+				versionNumber = new Integer(
+						resource.getAttributeValue("version"));
 		}
 		return versionNumber;
 	}
 
 	@Override
 	protected final String internalGetDescription() {
-		logger.info("Getting workflow from myExperiment");
 		if (description == null) {
+			logger.info("Getting workflow from myExperiment");
 			try {
 				Element workflowElement = componentRegistry.getPackItem(uri, "workflow");
 				String resourceUri = workflowElement.getAttributeValue("uri");
 				Element descriptionElement = componentRegistry.getResourceElement(resourceUri, "description");
 				description = descriptionElement.getTextTrim();
 			} catch (RegistryException e) {
-				logger.error(e);
-				return ("");
+				logger.error("failed to get description", e);
+				return "";
 			}
 		}
 		return description;
@@ -103,10 +101,8 @@ public class MyExperimentComponentVersion extends ComponentVersion {
 			try {
 				info = opener.openDataflow(T2_FLOW_FILE_TYPE, new URL(downloadUri));
 			} catch (OpenException e) {
-				logger.error(e);
 				throw new RegistryException("Unable to open dataflow", e);
 			} catch (MalformedURLException e) {
-				logger.error(e);
 				throw new RegistryException("Unable to open dataflow", e);
 			}
 
@@ -131,17 +127,14 @@ public class MyExperimentComponentVersion extends ComponentVersion {
 		Element workflowElement = null;
 		try {
 			workflowElement = componentRegistry.getPackItem(uri, "workflow");
-			if (workflowElement == null) {
+			if (workflowElement == null)
 				return false;
-			}
-		}
-		catch (RegistryException e) {
-			logger.error(e);
+		} catch (RegistryException e) {
+			logger.error("failed to get workflow address", e);
 			return false;
 		}
 		String wfUri = workflowElement.getAttributeValue("resource");
 		wfUri = StringUtils.substringBeforeLast(wfUri, "?");
 		return wfUri.equals(resourceUri);
 	}
-
 }

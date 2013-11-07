@@ -20,7 +20,9 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.annotation;
 
+import static java.lang.String.format;
 import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateRegistry;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.util.ArrayList;
 
@@ -49,8 +51,7 @@ public class SemanticAnnotationContextualView extends
 	private static final long serialVersionUID = -322165507536778154L;
 	public static final String VIEW_TITLE = "Semantic Annotations";
 	private static FileManager fileManager = FileManager.getInstance();
-	private static Logger logger = Logger
-			.getLogger(SemanticAnnotationContextualView.class);
+	private static Logger logger = getLogger(SemanticAnnotationContextualView.class);
 
 	private Profile componentProfile;
 
@@ -58,28 +59,26 @@ public class SemanticAnnotationContextualView extends
 		super(true);
 		super.setAnnotated(selection);
 		componentProfile = getComponentProfile();
-		if (componentProfile != null) {
-			try {
-				if (selection instanceof Dataflow) {
-					super.setSemanticAnnotationProfiles(componentProfile
-							.getSemanticAnnotationProfiles());
-				} else if (selection instanceof DataflowInputPort) {
-					super.setSemanticAnnotationProfiles(componentProfile
-							.getInputSemanticAnnotationProfiles());
-				} else if (selection instanceof DataflowOutputPort) {
-					super.setSemanticAnnotationProfiles(componentProfile
-							.getOutputSemanticAnnotationProfiles());
-				} else if (selection instanceof Processor) {
-					super.setSemanticAnnotationProfiles(componentProfile
-							.getActivitySemanticAnnotationProfiles());
-				} else {
-					super.setSemanticAnnotationProfiles(new ArrayList<SemanticAnnotationProfile>());
-				}
-			} catch (RegistryException e) {
-				logger.error(e);
-			}
-		} else {
-			super.setSemanticAnnotationProfiles(new ArrayList<SemanticAnnotationProfile>());
+		try {
+			if (componentProfile == null)
+				super.setSemanticAnnotationProfiles(new ArrayList<SemanticAnnotationProfile>());
+			else if (selection instanceof Dataflow)
+				super.setSemanticAnnotationProfiles(componentProfile
+						.getSemanticAnnotationProfiles());
+			else if (selection instanceof DataflowInputPort)
+				super.setSemanticAnnotationProfiles(componentProfile
+						.getInputSemanticAnnotationProfiles());
+			else if (selection instanceof DataflowOutputPort)
+				super.setSemanticAnnotationProfiles(componentProfile
+						.getOutputSemanticAnnotationProfiles());
+			else if (selection instanceof Processor)
+				super.setSemanticAnnotationProfiles(componentProfile
+						.getActivitySemanticAnnotationProfiles());
+			else
+				super.setSemanticAnnotationProfiles(new ArrayList<SemanticAnnotationProfile>());
+
+		} catch (RegistryException e) {
+			logger.error("failed to look up semantic annotations", e);
 		}
 
 		super.initialise();
@@ -91,16 +90,16 @@ public class SemanticAnnotationContextualView extends
 		if (dataflowSource instanceof Version.ID) {
 			Version.ID identification = (Version.ID) dataflowSource;
 			try {
-				Registry componentRegistry = calculateRegistry(identification.getRegistryBase());
+				Registry componentRegistry = calculateRegistry(identification
+						.getRegistryBase());
 				Family componentFamily = componentRegistry
 						.getComponentFamily(identification.getFamilyName());
 				return componentFamily.getComponentProfile();
 			} catch (RegistryException e) {
 				logger.warn(
-						"No component profile found for component family "
-								+ identification.getFamilyName()
-								+ " at component registry "
-								+ identification.getRegistryBase(), e);
+						format("No component profile found for component family %s at component registry %s",
+								identification.getFamilyName(),
+								identification.getRegistryBase()), e);
 			}
 		}
 		return null;
@@ -111,24 +110,35 @@ public class SemanticAnnotationContextualView extends
 		return VIEW_TITLE;
 	}
 
-	/*
-	 * public static void main(String[] args) throws Exception { JFrame frame =
-	 * new JFrame(); frame.setSize(400, 200); ComponentVersionIdentification
-	 * identification = new ComponentVersionIdentification( new
-	 * URL("http://sandbox.myexperiment.org"),
-	 * "SCAPE Migration Action Components", "Image To Tiff", 2); Dataflow
-	 * dataflow = fileManager.openDataflow(new ComponentFileType(),
-	 * identification);
-	 * 
-	 * Processor processor = edits.createProcessor("processor"); try {
-	 * editManager.doDataflowEdit(dataflow, edits.getAddProcessorEdit(dataflow,
-	 * processor)); } catch (EditException e) { e.printStackTrace(); } final
-	 * SemanticAnnotationContextualView view = new
-	 * SemanticAnnotationContextualView( processor); editManager.addObserver(new
-	 * Observer<EditManager.EditManagerEvent>() {
-	 * 
-	 * @Override public void notify(Observable<EditManagerEvent> arg0,
-	 * EditManagerEvent arg1) throws Exception { view.refreshView();
-	 * view.repaint(); } }); frame.add(view); frame.setVisible(true); }
-	 */
+/*
+	public static void main(String[] args) throws Exception {
+		JFrame frame = new JFrame();
+		frame.setSize(400, 200);
+		ComponentVersionIdentification identification = new ComponentVersionIdentification(
+				new URL("http://sandbox.myexperiment.org"),
+				"SCAPE Migration Action Components", "Image To Tiff", 2);
+		Dataflow dataflow = fileManager.openDataflow(new ComponentFileType(),
+				identification);
+
+		Processor processor = edits.createProcessor("processor");
+		try {
+			editManager.doDataflowEdit(dataflow,
+					edits.getAddProcessorEdit(dataflow, processor));
+		} catch (EditException e) {
+			e.printStackTrace();
+		}
+		final SemanticAnnotationContextualView view = new SemanticAnnotationContextualView(
+				processor);
+		editManager.addObserver(new Observer<EditManager.EditManagerEvent>() {
+			@Override
+			public void notify(Observable<EditManagerEvent> arg0,
+					EditManagerEvent arg1) throws Exception {
+				view.refreshView();
+				view.repaint();
+			}
+		});
+		frame.add(view);
+		frame.setVisible(true);
+	}
+*/
 }

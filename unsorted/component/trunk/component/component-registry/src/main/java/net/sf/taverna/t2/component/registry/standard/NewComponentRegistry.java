@@ -3,16 +3,14 @@ package net.sf.taverna.t2.component.registry.standard;
 import static net.sf.taverna.t2.component.registry.standard.Policy.PRIVATE;
 import static net.sf.taverna.t2.component.registry.standard.Utils.getElementString;
 import static net.sf.taverna.t2.component.registry.standard.Utils.serializeDataflow;
+import static org.apache.log4j.Logger.getLogger;
 
-import java.io.Serializable;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
@@ -27,16 +25,14 @@ import net.sf.taverna.t2.component.api.SharingPolicy;
 import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.api.Version.ID;
 import net.sf.taverna.t2.component.registry.ComponentRegistry;
+import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.apache.log4j.Logger;
 
-import uk.org.taverna.component.api.ComponentDescription;
 import uk.org.taverna.component.api.ComponentDescriptionList;
-import uk.org.taverna.component.api.ComponentFamilyDescription;
 import uk.org.taverna.component.api.ComponentFamilyList;
 import uk.org.taverna.component.api.ComponentFamilyType;
-import uk.org.taverna.component.api.ComponentProfileDescription;
 import uk.org.taverna.component.api.ComponentProfileList;
 import uk.org.taverna.component.api.ComponentProfileType;
 import uk.org.taverna.component.api.ComponentType;
@@ -48,9 +44,10 @@ import uk.org.taverna.component.api.ObjectFactory;
 import uk.org.taverna.component.api.Permissions;
 import uk.org.taverna.component.api.PolicyList;
 
-public class NewComponentRegistry extends ComponentRegistry {
-	private static final Map<String, NewComponentRegistry> componentRegistries = new HashMap<String, NewComponentRegistry>();
-	static final Logger logger = Logger.getLogger(NewComponentRegistry.class);
+class NewComponentRegistry extends ComponentRegistry {
+	private static final String PROFILE_MIME_TYPE = "application/vnd.taverna.component-profile+xml";
+	private static final String T2FLOW_MIME_TYPE = "application/vnd.taverna.t2flow+xml";
+	static final Logger logger = getLogger(NewComponentRegistry.class);
 	static final JAXBContext jaxbContext;
 	static final Charset utf8;
 	private static final ObjectFactory objectFactory = new ObjectFactory();
@@ -93,24 +90,17 @@ public class NewComponentRegistry extends ComponentRegistry {
 	protected NewComponentRegistry(URL registryBase) throws RegistryException {
 		super(registryBase);
 		try {
-			client = new Client(jaxbContext, logger, registryBase);
+			client = new Client(jaxbContext, registryBase);
 		} catch (Exception e) {
-			logger.error(e);
 			throw new RegistryException("Unable to access registry", e);
 		}
 	}
 
-	@Override
-	protected void populateFamilyCache() throws RegistryException {
-		for (Profile pr : getComponentProfiles()) {
-			NewComponentProfile p = (NewComponentProfile) pr;
-			for (ComponentFamilyDescription cfd : client.get(
-					ComponentFamilyList.class, COMPONENT_FAMILY_LIST,
-					"component-profile=" + p.getUri(),
-					"elements=" + NewComponentFamily.ELEMENTS).getPack())
-				familyCache.put(getElementString(cfd, "title"),
-						new NewComponentFamily(this, p, cfd));
-		}
+	private List<Description> listComponentFamilies(String profileUri)
+			throws RegistryException {
+		return client.get(ComponentFamilyList.class, COMPONENT_FAMILY_LIST,
+				"component-profile=" + profileUri,
+				"elements=" + NewComponentFamily.ELEMENTS).getPack();
 	}
 
 	ComponentType getComponentById(String id, Integer version, String elements)
@@ -122,16 +112,27 @@ public class NewComponentRegistry extends ComponentRegistry {
 				"elements=" + elements);
 	}
 
-	ComponentFamilyType getComponentFamilyById(String id, String elements)
-			throws RegistryException {
+	@SuppressWarnings("unused")
+	private ComponentFamilyType getComponentFamilyById(String id,
+			String elements) throws RegistryException {
 		return client.get(ComponentFamilyType.class, PACK_SERVICE, "id=" + id,
 				"elements=" + elements);
 	}
 
-	ComponentProfileType getComponentProfileById(String id, String elements)
-			throws RegistryException {
+	private ComponentProfileType getComponentProfileById(String id,
+			String elements) throws RegistryException {
 		return client.get(ComponentProfileType.class, FILE_SERVICE, "id=" + id,
 				"elements=" + elements);
+	}
+
+	@Override
+	protected void populateFamilyCache() throws RegistryException {
+		for (Profile pr : getComponentProfiles()) {
+			NewComponentProfile p = (NewComponentProfile) pr;
+			for (Description cfd : listComponentFamilies(p.getResourceLocation()))
+				familyCache.put(getElementString(cfd, "title"),
+						new NewComponentFamily(this, p, cfd));
+		}
 	}
 
 	@Override
@@ -157,8 +158,8 @@ public class NewComponentRegistry extends ComponentRegistry {
 
 	@Override
 	protected void populateProfileCache() throws RegistryException {
-		for (ComponentProfileDescription cpd : client.get(
-				ComponentProfileList.class, COMPONENT_PROFILE_LIST,
+		for (Description cpd : client.get(ComponentProfileList.class,
+				COMPONENT_PROFILE_LIST,
 				"elements=" + NewComponentProfile.ELEMENTS).getFile())
 			if (cpd.getUri() != null && !cpd.getUri().isEmpty())
 				profileCache.add(new NewComponentProfile(this, cpd));
@@ -173,8 +174,7 @@ public class NewComponentRegistry extends ComponentRegistry {
 		try {
 			if (componentProfile instanceof NewComponentProfile) {
 				NewComponentProfile profile = (NewComponentProfile) componentProfile;
-				if (profile.getComponentRegistry().getRegistryBase()
-						.equals(getRegistryBase()))
+				if (profile.getComponentRegistry().equals(this))
 					return new NewComponentProfile(this,
 							getComponentProfileById(profile.getId(),
 									NewComponentProfile.ELEMENTS));
@@ -206,9 +206,7 @@ public class NewComponentRegistry extends ComponentRegistry {
 		profile.setFilename(title + ".xml");
 		profile.setTitle(title);
 		profile.setTitle(description);
-		profile.setType(new Description());
-		profile.getType().getContent().add("XML");
-		profile.setContentType("application/vnd.taverna.component-profile+xml");
+		profile.setContentType(PROFILE_MIME_TYPE);
 		profile.setContent(new Content());
 		profile.getContent().setEncoding("base64");
 		profile.getContent().setType("binary");
@@ -228,7 +226,7 @@ public class NewComponentRegistry extends ComponentRegistry {
 			throws RegistryException {
 		ComponentFamilyType familyDoc = new ComponentFamilyType();
 
-		familyDoc.setComponentProfile(profile.getLocation());
+		familyDoc.setComponentProfile(profile.getResourceLocation());
 		familyDoc.setDescription(description);
 		familyDoc.setTitle(familyName);
 		if (license == null)
@@ -249,8 +247,8 @@ public class NewComponentRegistry extends ComponentRegistry {
 		comp.setTitle(title);
 		comp.setDescription(description);
 		if (family != null)
-			comp.setComponentFamily(family.getUri());
-		comp.setContentType("application/vnd.taverna.t2flow+xml");
+			comp.setComponentFamily(family.getResourceLocation());
+		comp.setContentType(T2FLOW_MIME_TYPE);
 		comp.setContent(new Content());
 		comp.getContent().setEncoding("base64");
 		comp.getContent().setType("binary");
@@ -311,72 +309,46 @@ public class NewComponentRegistry extends ComponentRegistry {
 		return PRIVATE;
 	}
 
+	private List<Description> listComponents(String query, String prefixes)
+			throws RegistryException {
+		return client.get(ComponentDescriptionList.class, COMPONENT_LIST,
+				"query=" + query, "prefixes=" + prefixes,
+				"elements=" + NewComponent.ELEMENTS).getWorkflow();
+	}
+
 	@Override
 	public Set<ID> searchForComponents(String prefixes, String text)
 			throws RegistryException {
 		HashSet<ID> versions = new HashSet<ID>();
-		for (ComponentDescription cd : client.get(
-				ComponentDescriptionList.class, COMPONENT_LIST,
-				"query=" + text, "prefixes=" + prefixes,
-				"elements=" + NewComponent.ELEMENTS).getWorkflow()) {
+		for (Description cd : listComponents(text, prefixes)) {
 			NewComponent nc = null;
 			for (Family f : getComponentFamilies()) {
-				if (!(f instanceof NewComponentFamily))
-					continue;
 				nc = (NewComponent) ((NewComponentFamily) f)
 						.getComponent(getElementString(cd, "title"));
 				if (nc != null)
 					break;
 			}
 			if (nc != null)
-				versions.add(new VersionId(nc, cd.getVersion()));
+				versions.add(new ComponentVersionIdentification(
+						getRegistryBase(), nc.getFamily().getName(), nc
+								.getName(), cd.getVersion()));
 			else
 				logger.warn("could not construct component for " + cd.getUri());
 		}
 		return versions;
 	}
 
-	static class VersionId implements ID, Serializable {
-		private static final long serialVersionUID = 398785161396817963L;
-		private URL registry;
-		private String family, name;
-		private int version;
-
-		VersionId(NewComponent component, Integer version) {
-			registry = component.registry.getRegistryBase();
-			family = component.family.getName();
-			name = component.getName();
-			this.version = version;
-		}
-
-		@Override
-		public String getFamilyName() {
-			return family;
-		}
-
-		@Override
-		public URL getRegistryBase() {
-			return registry;
-		}
-
-		@Override
-		public String getComponentName() {
-			return name;
-		}
-
-		@Override
-		public Integer getComponentVersion() {
-			return version;
-		}
+	private List<Description> listComponents(String familyUri)
+			throws RegistryException {
+		return client.get(ComponentDescriptionList.class, COMPONENT_LIST,
+				"component-family=" + familyUri,
+				"elements=" + NewComponent.ELEMENTS).getWorkflow();
 	}
 
 	protected List<Component> listComponents(NewComponentFamily family)
 			throws RegistryException {
 		List<Component> result = new ArrayList<Component>();
-		for (ComponentDescription cd : client.get(
-				ComponentDescriptionList.class, COMPONENT_LIST,
-				"component-family=" + family.getUri(),
-				"elements=" + NewComponent.ELEMENTS).getWorkflow())
+		for (Description cd : listComponents(family.getResourceLocation()))
 			result.add(new NewComponent(this, family, cd));
 		return result;
 	}
@@ -411,24 +383,6 @@ public class NewComponentRegistry extends ComponentRegistry {
 		return component.new Version(ct.getVersion(), description, dataflow);
 	}
 
-	public static synchronized NewComponentRegistry getComponentRegistry(
-			URL registryBase) throws RegistryException {
-		if (!componentRegistries.containsKey(registryBase.toExternalForm()))
-			componentRegistries.put(registryBase.toExternalForm(),
-					new NewComponentRegistry(registryBase));
-		return componentRegistries.get(registryBase.toExternalForm());
-	}
-
-	public static boolean verifyBase(URL registryBase) {
-		try {
-			return new Client(jaxbContext, logger, registryBase).verify();
-		} catch (Exception e) {
-			logger.info("failed to construct connection client to "
-					+ registryBase, e);
-			return false;
-		}
-	}
-
 	public License getLicense(String name) throws RegistryException {
 		for (License l : getLicenses())
 			if (l.getAbbreviation().equals(name))
@@ -438,9 +392,11 @@ public class NewComponentRegistry extends ComponentRegistry {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof NewComponentRegistry) {
+		// Careful! Java's URL equality IS BROKEN!
+		if (o != null && o instanceof NewComponentRegistry) {
 			NewComponentRegistry other = (NewComponentRegistry) o;
-			return getRegistryBase().equals(other.getRegistryBase());
+			return getRegistryBaseString()
+					.equals(other.getRegistryBaseString());
 		}
 		return false;
 	}
@@ -449,6 +405,11 @@ public class NewComponentRegistry extends ComponentRegistry {
 
 	@Override
 	public int hashCode() {
-		return BASEHASH ^ getRegistryBase().hashCode();
+		return BASEHASH ^ getRegistryBaseString().hashCode();
+	}
+
+	@Override
+	public String getRegistryTypeName() {
+		return "Component API";
 	}
 }

@@ -45,6 +45,7 @@
 				minOccurs="0" />
 			<xs:element name="permissions" type="Permissions"
 				minOccurs="0" />
+			<xs:element name="content-uri" type="xs:string" minOccurs="0" />
 		</xs:all>
 		<xs:attributeGroup ref="LocationAttributes" />
 	</xs:complexType>
@@ -119,7 +120,7 @@
 	</xs:complexType>
 	<xs:complexType name="Versions">
 		<xs:sequence>
-			<xs:element name="version" type="Description" maxOccurs="unbounded" />
+			<xs:element name="workflow" type="Description" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 
@@ -391,26 +392,16 @@
 		</xs:all>
 	</xs:complexType>
 
-	<xs:complexType name="ComponentDescription">
-		<xs:complexContent>
-			<xs:restriction base="Description" />
-		</xs:complexContent>
-	</xs:complexType>
 	<xs:complexType name="ComponentDescriptionList">
 		<xs:sequence>
-			<xs:element name="workflow" type="ComponentDescription"
+			<xs:element name="workflow" type="Description"
 				minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="ComponentFamilyDescription">
-		<xs:complexContent>
-			<xs:restriction base="Description" />
-		</xs:complexContent>
-	</xs:complexType>
 	<xs:complexType name="ComponentFamilyList">
 		<xs:sequence>
-			<xs:element name="pack" type="ComponentFamilyDescription"
+			<xs:element name="pack" type="Description"
 				minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
@@ -446,18 +437,14 @@
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="ComponentProfileDescription">
-		<xs:complexContent>
-			<xs:restriction base="Description"></xs:restriction>
-		</xs:complexContent>
-	</xs:complexType>
 	<xs:complexType name="ComponentProfileList">
 		<xs:sequence>
-			<xs:element name="file" type="ComponentProfileDescription"
+			<xs:element name="file" type="Description"
 				minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 
+	<xs:element name="content-uri" type="xs:string" />
 	<xs:element name="component-profiles" type="ComponentProfileList" />
 	<xs:element name="component-families" type="ComponentFamilyList" />
 	<xs:element name="workflows" type="ComponentDescriptionList" />

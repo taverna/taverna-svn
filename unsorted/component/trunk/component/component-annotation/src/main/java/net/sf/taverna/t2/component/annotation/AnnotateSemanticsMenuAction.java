@@ -3,6 +3,10 @@
  */
 package net.sf.taverna.t2.component.annotation;
 
+import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.SOUTH;
+import static java.awt.FlowLayout.TRAILING;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -54,32 +58,35 @@ public class AnnotateSemanticsMenuAction extends AbstractContextualMenuAction {
 	@Override
 	protected Action createAction() {
 		return new AbstractAction(ANNOTATE_SEMANTICS) {
+			@Override
 			public void actionPerformed(ActionEvent e) {
-				SemanticAnnotationContextualView view = new SemanticAnnotationContextualView(
-						(Annotated<?>) getContextualSelection().getSelection());
-
-				final JDialog dialog = new JDialog((Frame) null,
-						"Annotate semantics");
-				dialog.setLayout(new BorderLayout());
-
-				dialog.add(new JScrollPane(view), BorderLayout.CENTER);
-
-				JPanel buttonPanel = new JPanel(new FlowLayout(
-						FlowLayout.TRAILING));
-
-				buttonPanel.add(new DeselectingButton("OK",
-						new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								dialog.setVisible(false);
-							}
-						}));
-
-				dialog.add(buttonPanel, BorderLayout.SOUTH);
-				dialog.setSize(new Dimension(400, 300));
-				dialog.setLocationRelativeTo(null);
-				dialog.setModal(true);
-				dialog.setVisible(true);
+				showAnnotateSemanticsPanel();
 			}
 		};
+	}
+
+	private void showAnnotateSemanticsPanel() {
+		SemanticAnnotationContextualView view = new SemanticAnnotationContextualView(
+				(Annotated<?>) getContextualSelection().getSelection());
+
+		final JDialog dialog = new JDialog((Frame) null, "Annotate semantics");
+		dialog.setLayout(new BorderLayout());
+
+		dialog.add(new JScrollPane(view), CENTER);
+
+		JPanel buttonPanel = new JPanel(new FlowLayout(TRAILING));
+
+		buttonPanel.add(new DeselectingButton("OK", new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dialog.setVisible(false);
+			}
+		}));
+
+		dialog.add(buttonPanel, SOUTH);
+		dialog.setSize(new Dimension(400, 300));
+		dialog.setLocationRelativeTo(null);
+		dialog.setModal(true);
+		dialog.setVisible(true);
 	}
 }

@@ -20,10 +20,11 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry;
 
+import static java.util.Collections.synchronizedSortedMap;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -47,6 +48,10 @@ public abstract class Component implements
 	 */
 	protected SortedMap<Integer, Version> versionMap = new TreeMap<Integer, Version>();
 
+	protected Component(URL url) {
+		this.url = url;
+	}
+	
 	protected Component(String url) {
 		try {
 			this.url = new URL(url);
@@ -65,9 +70,8 @@ public abstract class Component implements
 
 	@Override
 	public final synchronized String getName() {
-		if (name == null) {
+		if (name == null)
 			name = internalGetName();
-		}
 		return name;
 	}
 
@@ -80,9 +84,8 @@ public abstract class Component implements
 
 	@Override
 	public final synchronized String getDescription() {
-		if (description == null) {
+		if (description == null)
 			description = internalGetDescription();
-		}
 		return description;
 	}
 
@@ -98,14 +101,13 @@ public abstract class Component implements
 	public final SortedMap<Integer, Version> getComponentVersionMap() {
 		synchronized (versionMap) {
 			checkComponentVersionMap();
-			return Collections.synchronizedSortedMap(versionMap);
+			return synchronizedSortedMap(versionMap);
 		}
 	}
 
 	private void checkComponentVersionMap() {
-		if (versionMap.isEmpty()) {
+		if (versionMap.isEmpty())
 			populateComponentVersionMap();
-		}
 	}
 
 	/**
@@ -148,7 +150,12 @@ public abstract class Component implements
 			String revisionComment) throws RegistryException;
 
 	@Override
-	public final synchronized URL getComponentURL() {
+	public final URL getComponentURL() {
 		return url;
+	}
+
+	@Override
+	public void delete() throws RegistryException {
+		getFamily().removeComponent(this);
 	}
 }

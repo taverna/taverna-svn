@@ -20,6 +20,8 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment;
 
+import static org.apache.log4j.Logger.getLogger;
+
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -50,10 +52,8 @@ import org.jdom.output.XMLOutputter;
  * 
  * @author David Withers
  */
-public final class MyExperimentComponentFamily extends ComponentFamily {
-
-	private static Logger logger = Logger
-			.getLogger(MyExperimentComponentFamily.class);
+final class MyExperimentComponentFamily extends ComponentFamily {
+	private static Logger logger = getLogger(MyExperimentComponentFamily.class);
 
 	private final String uri;
 	private final AnnotationTools annotationTools;
@@ -199,7 +199,7 @@ public final class MyExperimentComponentFamily extends ComponentFamily {
 					String tagText = tag.getTextTrim();
 					if ("component".equals(tagText)) {
 						MyExperimentComponent newComponent = new MyExperimentComponent(
-								componentRegistry, license, permissionsString,
+								componentRegistry, this, license, permissionsString,
 								packUri);
 						componentCache
 								.put(newComponent.getName(), newComponent);
@@ -246,7 +246,7 @@ public final class MyExperimentComponentFamily extends ComponentFamily {
 				description, this.license, this.permissionsString);
 		componentRegistry.tagResource("component",
 				componentPack.getAttributeValue("resource"));
-		component = new MyExperimentComponent(componentRegistry, this.license,
+		component = new MyExperimentComponent(componentRegistry, this, this.license,
 				this.permissionsString, componentPack.getAttributeValue("uri"));
 
 		// add the component to the family

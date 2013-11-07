@@ -2,6 +2,7 @@ package net.sf.taverna.t2.component;
 
 import static net.sf.taverna.t2.component.registry.ComponentDataflowCache.getDataflow;
 import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateFamily;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,8 +32,7 @@ public class ComponentActivityConfigurationBean extends
 	public static final List<String> ignorableNames = Arrays
 			.asList(ERROR_CHANNEL);
 	private static final long serialVersionUID = 5774901665863468058L;
-	private static final Logger logger = Logger
-			.getLogger(ComponentActivity.class);
+	private static final Logger logger = getLogger(ComponentActivity.class);
 
 	private transient ActivityPortsDefinitionBean ports = null;
 	private transient ExceptionHandling eh;
@@ -61,7 +61,7 @@ public class ComponentActivityConfigurationBean extends
 			if (eh != null)
 				outputs.add(makeOutputDefinition(1, ERROR_CHANNEL));
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to get exception handling for family", e);
 		}
 		return result;
 	}
@@ -96,7 +96,7 @@ public class ComponentActivityConfigurationBean extends
 			if (ports == null)
 				ports = getPortsDefinition(getDataflow(this));
 		} catch (RegistryException e) {
-			logger.error(e);
+			logger.error("failed to get component realization", e);
 		}
 		return ports;
 	}

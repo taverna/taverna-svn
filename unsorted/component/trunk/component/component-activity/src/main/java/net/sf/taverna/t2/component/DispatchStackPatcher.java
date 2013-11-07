@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.component;
 
 import static net.sf.taverna.t2.visit.VisitReport.findAncestor;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.util.List;
 
@@ -15,17 +16,20 @@ import org.apache.log4j.Logger;
 
 public class DispatchStackPatcher implements HealthChecker<ComponentActivity> {
 
-	private static Logger logger = Logger.getLogger(DispatchStackPatcher.class);
+	private static Logger logger = getLogger(DispatchStackPatcher.class);
 
+	@Override
 	public boolean canVisit(Object o) {
 		return false;
 		// return o instanceof ComponentActivity;
 	}
 
+	@Override
 	public boolean isTimeConsuming() {
 		return false;
 	}
 
+	@Override
 	public VisitReport visit(ComponentActivity a, List<Object> ancestry) {
 		Processor p = (Processor) findAncestor(ancestry, Processor.class);
 		DispatchStackImpl ds = (DispatchStackImpl) p.getDispatchStack();
@@ -41,7 +45,7 @@ public class DispatchStackPatcher implements HealthChecker<ComponentActivity> {
 				ds.addLayer(new PatchedInvoke(), oldIndex);
 			}
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("failed to patch invoke layer", e);
 		}
 		return null;
 	}

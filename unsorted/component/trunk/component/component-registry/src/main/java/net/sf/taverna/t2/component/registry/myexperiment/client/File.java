@@ -65,6 +65,7 @@ private int accessType;
 	return tags;
   }
 
+  @Override
   public User getUploader() {
 	return uploader;
   }
@@ -97,6 +98,7 @@ private int accessType;
 	this.contentType = contentType;
   }
 
+  @Override
   public String getVisibleType() {
 	return this.visibleType;
   }
@@ -105,6 +107,7 @@ private int accessType;
 	this.visibleType = visibleType;
   }
 
+  @Override
   public List<Comment> getComments() {
 	return this.comments;
   }

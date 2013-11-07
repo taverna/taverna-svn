@@ -130,4 +130,8 @@ public interface Registry {
 	 */
 	Family getComponentFamily(String familyName) throws RegistryException;
 
+	/**
+	 * @return A description of the type of registry this is.
+	 */
+	String getRegistryTypeName();
 }

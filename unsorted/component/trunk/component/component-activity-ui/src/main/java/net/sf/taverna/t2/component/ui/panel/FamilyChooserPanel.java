@@ -3,7 +3,12 @@
  */
 package net.sf.taverna.t2.component.ui.panel;
 
+import static java.awt.GridBagConstraints.BOTH;
+import static java.awt.GridBagConstraints.NONE;
+import static java.awt.GridBagConstraints.WEST;
 import static java.awt.event.ItemEvent.SELECTED;
+import static net.sf.taverna.t2.component.ui.util.Utils.LONG_STRING;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -23,7 +28,6 @@ import net.sf.taverna.t2.component.api.Family;
 import net.sf.taverna.t2.component.api.Profile;
 import net.sf.taverna.t2.component.api.Registry;
 import net.sf.taverna.t2.component.api.RegistryException;
-import net.sf.taverna.t2.component.ui.util.Utils;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 
@@ -36,37 +40,32 @@ import org.apache.log4j.Logger;
 @SuppressWarnings({ "rawtypes" })
 public class FamilyChooserPanel extends JPanel implements Observer,
 		Observable<FamilyChoiceMessage> {
+	private static final String FAMILY_LABEL = "Component family:";
+	private static final String READING_MSG = "Reading families";
 	private static final long serialVersionUID = -2608831126562927778L;
+	private static Logger logger = getLogger(FamilyChooserPanel.class);
 
-	private static Logger logger = Logger.getLogger(FamilyChooserPanel.class);
-
-	private List<Observer<FamilyChoiceMessage>> observers = new ArrayList<Observer<FamilyChoiceMessage>>();
-
-	private JComboBox familyBox = new JComboBox();
-
+	private final List<Observer<FamilyChoiceMessage>> observers = new ArrayList<Observer<FamilyChoiceMessage>>();
+	private final JComboBox familyBox = new JComboBox();
 	// private JTextArea familyDescription = new JTextArea(10,60);
-
-	private SortedMap<String, Family> familyMap = new TreeMap<String, Family>();
-
+	private final SortedMap<String, Family> familyMap = new TreeMap<String, Family>();
 	private Registry chosenRegistry = null;
-
 	private Profile profileFilter = null;
 
 	public FamilyChooserPanel() {
-		super();
-		familyBox.setPrototypeDisplayValue(Utils.LONG_STRING);
-		this.setLayout(new GridBagLayout());
+		familyBox.setPrototypeDisplayValue(LONG_STRING);
+		setLayout(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
 
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.fill = GridBagConstraints.NONE;
-		this.add(new JLabel("Component family:"), gbc);
+		gbc.anchor = WEST;
+		gbc.fill = NONE;
+		this.add(new JLabel(FAMILY_LABEL), gbc);
 		gbc.gridx = 1;
 		gbc.weightx = 1;
-		gbc.fill = GridBagConstraints.BOTH;
+		gbc.fill = BOTH;
 		this.add(familyBox, gbc);
 		familyBox.addItemListener(new ItemListener() {
 			@Override
@@ -79,7 +78,6 @@ public class FamilyChooserPanel extends JPanel implements Observer,
 		});
 
 		familyBox.setEditable(false);
-
 	}
 
 	protected void updateDescription() {
@@ -100,12 +98,12 @@ public class FamilyChooserPanel extends JPanel implements Observer,
 				this.profileFilter = ((ProfileChoiceMessage) message)
 						.getChosenProfile();
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("failed to notify about registry choice", e);
 		}
 		try {
 			this.updateList();
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("failed to update list after registry choice", e);
 		}
 	}
 
@@ -114,7 +112,7 @@ public class FamilyChooserPanel extends JPanel implements Observer,
 		familyBox.removeAllItems();
 		familyBox.setToolTipText(null);
 		notifyObservers();
-		familyBox.addItem("Reading families");
+		familyBox.addItem(READING_MSG);
 		familyBox.setEnabled(false);
 		new FamilyUpdater().execute();
 	}
@@ -124,9 +122,10 @@ public class FamilyChooserPanel extends JPanel implements Observer,
 		FamilyChoiceMessage message = new FamilyChoiceMessage(chosenFamily);
 		for (Observer<FamilyChoiceMessage> o : getObservers())
 			try {
-				o.notify(FamilyChooserPanel.this, message);
+				o.notify(this, message);
 			} catch (Exception e) {
-				logger.error(e);
+				logger.error("failed to notify about change of state of panel",
+						e);
 			}
 	}
 
@@ -145,7 +144,7 @@ public class FamilyChooserPanel extends JPanel implements Observer,
 		try {
 			observer.notify(this, message);
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("failed to notify about family choice", e);
 		}
 	}
 
@@ -165,15 +164,14 @@ public class FamilyChooserPanel extends JPanel implements Observer,
 			try {
 				componentProfile = f.getComponentProfile();
 			} catch (Exception e) {
-				logger.error(e);
+				logger.error("failed to get profile of component", e);
 			}
 			if (componentProfile != null) {
 				String id = componentProfile.getId();
 				if ((profileFilter == null) || id.equals(profileFilter.getId()))
 					familyMap.put(f.getName(), f);
-			} else {
+			} else
 				logger.info("Ignoring " + f.getName());
-			}
 		}
 	}
 
@@ -200,5 +198,4 @@ public class FamilyChooserPanel extends JPanel implements Observer,
 			familyBox.setEnabled(!familyMap.isEmpty());
 		}
 	}
-
 }

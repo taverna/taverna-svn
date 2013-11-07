@@ -23,11 +23,11 @@ package net.sf.taverna.t2.component.registry.myexperiment;
 import net.sf.taverna.t2.component.api.SharingPolicy;
 
 /**
- *
- *
+ * 
+ * 
  * @author Alan Williams
  */
-public abstract class MyExperimentSharingPolicy implements SharingPolicy {
+abstract class MyExperimentSharingPolicy implements SharingPolicy {
 
 	public abstract String getPolicyString();
 

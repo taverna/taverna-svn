@@ -52,7 +52,8 @@ private User admin;
     super();
     this.setItemType(Resource.GROUP);
   }
-  
+
+  @Override
   public User getAdmin() {
     return admin;
   }
@@ -65,6 +66,7 @@ private User admin;
     return this.tags;
   }
   
+  @Override
   public List<Comment> getComments()
   {
     return this.comments;
@@ -117,108 +119,110 @@ private User admin;
     
     return (strElements);
   }
-  
-  
-  public static Group buildFromXML(Document doc, Logger logger)
-  {
-    // if no XML document was supplied, return NULL
-    if(doc == null) return(null);
-    
-    // call main method which parses XML document starting from root element
-    return (Group.buildFromXML(doc.getRootElement(), logger));
-  }
-  
-  
-  //class method to build a group instance from XML
-  @SuppressWarnings("unchecked")
-  public static Group buildFromXML(Element docRootElement, Logger logger)
-  {
-    // return null to indicate an error if XML document contains no root element
-    if(docRootElement == null) return(null);
-    
-    Group g = new Group();
 
-    try {
-      // URI
-      g.setURI(docRootElement.getAttributeValue("uri"));
-      
-      // Resource URI
-      g.setResource(docRootElement.getAttributeValue("resource"));
-      
-      // Id
-      String id = docRootElement.getChildText("id");
-      if (id == null || id.equals("")) {
-        id = "API Error - No group ID supplied";
-        logger.error("Error while parsing group XML data - no ID provided for group with title: \"" + docRootElement.getChildText("title") + "\"");
-      }
-      g.setID(Integer.parseInt(id));
-      
-      // Title
-      g.setTitle(docRootElement.getChildText("title"));
-      
-      // Description
-      g.setDescription(docRootElement.getChildText("description"));
-      
-      // Owner
-      Element ownerElement = docRootElement.getChild("owner");
-      g.setAdmin(Util.instantiatePrimitiveUserFromElement(ownerElement));
-      
-      // Created at
-      String createdAt = docRootElement.getChildText("created-at");
-      if (createdAt != null && !createdAt.equals("")) {
-        g.setCreatedAt(MyExperimentClient.parseDate(createdAt));
-      }
-      
-      // Updated at
-      String updatedAt = docRootElement.getChildText("updated-at");
-      if (updatedAt != null && !updatedAt.equals("")) {
-        g.setUpdatedAt(MyExperimentClient.parseDate(updatedAt));
-      }
-      
-      
-      // Tags
-      g.tags = new ArrayList<Tag>();
-      g.getTags().addAll(Util.retrieveTags(docRootElement));
-      
-      // Comments
-      g.comments = new ArrayList<Comment>();
-      g.getComments().addAll(Util.retrieveComments(docRootElement, g));
-      
-      // Members
-      g.members = new ArrayList<User>();
-      
-      Element membersElement = docRootElement.getChild("members");
-      if (membersElement != null) {
-        List<Element> memberNodes = membersElement.getChildren();
-        for (Element e : memberNodes) {
-          g.getMembers().add(Util.instantiatePrimitiveUserFromElement(e));
-        }
-      }
-      // sort the items after all items have been added
-      Collections.sort(g.getMembers());
-      
-      
-      // Shared Items
-      g.sharedItems = new ArrayList<Resource>();
-      
-      Element sharedItemsElement = docRootElement.getChild("shared-items");
-      if (sharedItemsElement != null) {
-        List<Element> itemsNodes = sharedItemsElement.getChildren();
-        for (Element e : itemsNodes) {
-          g.getSharedItems().add(Util.instantiatePrimitiveResourceFromElement(e));
-        }
-      }
-      // sort the items after all items have been added
-      Collections.sort(g.getSharedItems());
-      
-      
-      logger.debug("Found information for group with ID: " + g.getID() + ", Title: " + g.getTitle());
-    }
-    catch (Exception e) {
-      logger.error("Failed midway through creating group object from XML", e);
-    }
-    
-    // return created group instance
-    return(g);
-  }
+	public static Group buildFromXML(Document doc, Logger logger) {
+		// if no XML document was supplied, return NULL
+		if (doc == null)
+			return (null);
+
+		// call main method which parses XML document starting from root element
+		return (Group.buildFromXML(doc.getRootElement(), logger));
+	}
+
+	// class method to build a group instance from XML
+	public static Group buildFromXML(Element docRootElement, Logger logger) {
+		// return null to indicate an error if XML document contains no root
+		// element
+		if (docRootElement == null)
+			return (null);
+
+		Group g = new Group();
+
+		try {
+			// URI
+			g.setURI(docRootElement.getAttributeValue("uri"));
+
+			// Resource URI
+			g.setResource(docRootElement.getAttributeValue("resource"));
+
+			// Id
+			String id = docRootElement.getChildText("id");
+			if (id == null || id.equals("")) {
+				id = "API Error - No group ID supplied";
+				logger.error("Error while parsing group XML data - no ID provided for group with title: \""
+						+ docRootElement.getChildText("title") + "\"");
+			}
+			g.setID(Integer.parseInt(id));
+
+			// Title
+			g.setTitle(docRootElement.getChildText("title"));
+
+			// Description
+			g.setDescription(docRootElement.getChildText("description"));
+
+			// Owner
+			Element ownerElement = docRootElement.getChild("owner");
+			g.setAdmin(Util.instantiatePrimitiveUserFromElement(ownerElement));
+
+			// Created at
+			String createdAt = docRootElement.getChildText("created-at");
+			if (createdAt != null && !createdAt.equals("")) {
+				g.setCreatedAt(MyExperimentClient.parseDate(createdAt));
+			}
+
+			// Updated at
+			String updatedAt = docRootElement.getChildText("updated-at");
+			if (updatedAt != null && !updatedAt.equals("")) {
+				g.setUpdatedAt(MyExperimentClient.parseDate(updatedAt));
+			}
+
+			// Tags
+			g.tags = new ArrayList<Tag>();
+			g.getTags().addAll(Util.retrieveTags(docRootElement));
+
+			// Comments
+			g.comments = new ArrayList<Comment>();
+			g.getComments().addAll(Util.retrieveComments(docRootElement, g));
+
+			// Members
+			g.members = new ArrayList<User>();
+
+			Element membersElement = docRootElement.getChild("members");
+			if (membersElement != null) {
+				@SuppressWarnings("unchecked")
+				List<Element> memberNodes = membersElement.getChildren();
+				for (Element e : memberNodes) {
+					g.getMembers().add(
+							Util.instantiatePrimitiveUserFromElement(e));
+				}
+			}
+			// sort the items after all items have been added
+			Collections.sort(g.getMembers());
+
+			// Shared Items
+			g.sharedItems = new ArrayList<Resource>();
+
+			Element sharedItemsElement = docRootElement
+					.getChild("shared-items");
+			if (sharedItemsElement != null) {
+				@SuppressWarnings("unchecked")
+				List<Element> itemsNodes = sharedItemsElement.getChildren();
+				for (Element e : itemsNodes) {
+					g.getSharedItems().add(
+							Util.instantiatePrimitiveResourceFromElement(e));
+				}
+			}
+			// sort the items after all items have been added
+			Collections.sort(g.getSharedItems());
+
+			logger.debug("Found information for group with ID: " + g.getID()
+					+ ", Title: " + g.getTitle());
+		} catch (Exception e) {
+			logger.error(
+					"Failed midway through creating group object from XML", e);
+		}
+
+		// return created group instance
+		return (g);
+	}
 }

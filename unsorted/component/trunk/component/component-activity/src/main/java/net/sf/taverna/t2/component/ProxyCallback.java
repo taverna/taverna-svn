@@ -8,6 +8,7 @@ import static net.sf.taverna.t2.component.ComponentExceptionFactory.createUnexpe
 import static net.sf.taverna.t2.reference.T2ReferenceType.ErrorDocument;
 import static net.sf.taverna.t2.reference.T2ReferenceType.IdentifiedList;
 import static net.sf.taverna.t2.reference.T2ReferenceType.ReferenceSet;
+import static org.apache.log4j.Logger.getLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ import org.apache.log4j.Logger;
  * 
  */
 public class ProxyCallback implements AsynchronousActivityCallback {
-	private static final Logger logger = Logger.getLogger(ProxyCallback.class);
+	private static final Logger logger = getLogger(ProxyCallback.class);
 
 	private AsynchronousActivityCallback originalCallback;
 	private final ReferenceService referenceService;
@@ -176,9 +177,8 @@ public class ProxyCallback implements AsynchronousActivityCallback {
 								toConsider.add(subDoc);
 						}
 			} catch (Exception e) {
-				logger.error(e);
+				logger.error("failed to locate exception mapping", e);
 			}
-
 		}
 
 		String exceptionMessage = matchingDoc.getExceptionMessage();
@@ -203,18 +203,18 @@ public class ProxyCallback implements AsynchronousActivityCallback {
 			exceptions.add(referenceService.register(matchingDoc, 0, true,
 					context));
 			return replacement;
-		} else {
-			ComponentException newException = createComponentException(
-					exceptionReplacement.getReplacementId(),
-					exceptionReplacement.getReplacementMessage());
-			T2Reference replacement = errorService.registerError(
-					exceptionReplacement.getReplacementMessage(), newException,
-					depth, context).getId();
-			exceptions.add(errorService.registerError(
-					exceptionReplacement.getReplacementMessage(), newException,
-					0, context).getId());
-			return replacement;
 		}
+
+		ComponentException newException = createComponentException(
+				exceptionReplacement.getReplacementId(),
+				exceptionReplacement.getReplacementMessage());
+		T2Reference replacement = errorService.registerError(
+				exceptionReplacement.getReplacementMessage(), newException,
+				depth, context).getId();
+		exceptions.add(errorService.registerError(
+				exceptionReplacement.getReplacementMessage(), newException, 0,
+				context).getId());
+		return replacement;
 	}
 
 	private Set<T2Reference> getErrors(T2Reference ref) {
