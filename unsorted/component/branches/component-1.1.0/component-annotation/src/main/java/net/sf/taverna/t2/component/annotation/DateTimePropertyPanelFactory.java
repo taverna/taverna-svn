@@ -66,7 +66,8 @@ public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI {
 
 		/*
 		 * Suggested hack from
-		 * http://www.coderanch.com/t/345684/GUI/java/JSpinner-DateEditor-Set-default-focus
+		 * http://www.coderanch.com/t/345684/GUI/java/JSpinner
+		 * -DateEditor-Set-default-focus
 		 */
 
 		de.getTextField().setCaret(new DefaultCaret() {
@@ -118,7 +119,8 @@ public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI {
 	public int getRatingForSemanticAnnotation(
 			SemanticAnnotationProfile semanticAnnotationProfile) {
 		OntProperty property = semanticAnnotationProfile.getPredicate();
-		if (property.isDatatypeProperty()
+		if (property != null
+				&& property.isDatatypeProperty()
 				&& DateTimeString.equals(semanticAnnotationProfile
 						.getClassString()))
 			return 200;
