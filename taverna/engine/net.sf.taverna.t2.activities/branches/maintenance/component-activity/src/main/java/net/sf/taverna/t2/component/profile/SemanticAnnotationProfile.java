@@ -76,7 +76,13 @@ public class SemanticAnnotationProfile {
 	 */
 	public OntProperty getPredicate() {
 		OntModel ontology = getOntology();
+		if (ontology == null) {
+			return null;
+		}
 		String predicate = semanticAnnotation.getPredicate();
+		if (predicate == null) {
+			return null;
+		}
 		if (predicate.contains("foaf")) {
 			StringWriter sw = new StringWriter();
 			ontology.writeAll(sw, null, "RDF/XML");
@@ -86,19 +92,9 @@ public class SemanticAnnotationProfile {
 			} catch (IOException e) {
 				log.info("failed to write foaf ontology to temporary file", e);
 			}
-			// FIXME What on earth is this code doing???
-			for (Iterator<OntProperty> i = ontology.listOntProperties(); i
-					.hasNext();) {
-				OntProperty p = i.next();
-				String fred = p.getURI();
-				@SuppressWarnings("unused")
-				String bob = fred;
-			}
 		}
-		if (ontology == null || predicate == null)
-			return null;
-		OntProperty ontProperty = ontology.getOntProperty(predicate);
-		return ontProperty;
+
+		return ontology.getOntProperty(predicate);
 	}
 
 	public String getPredicateString() {
@@ -132,9 +128,14 @@ public class SemanticAnnotationProfile {
 	 */
 	public List<Individual> getIndividuals() {
 		OntModel ontology = getOntology();
-		OntResource range = getPredicate().getRange();
-		if (ontology == null || range == null)
+		OntProperty prop = getPredicate();
+		if (ontology == null || prop == null) {
 			return new ArrayList<Individual>();
+		}
+		OntResource range = prop.getRange();
+		if (range == null) {
+			return new ArrayList<Individual>();
+		}
 		return ontology.listIndividuals(range).toList();
 	}
 
@@ -162,9 +163,14 @@ public class SemanticAnnotationProfile {
 		if (clazz != null)
 			return componentProfile.getClass(clazz);
 
-		OntResource range = getPredicate().getRange();
-		if ((range != null) && range.isClass())
+		OntProperty prop = getPredicate();
+		if (prop == null) {
+			return null;
+		}
+		OntResource range = prop.getRange();
+		if (range != null && range.isClass()) {
 			return range.asClass();
+		}
 		return null;
 	}
 }

@@ -367,8 +367,6 @@ class Client {
 			conn.setRequestMethod(method);
 			if (method.equals("POST") || method.equals("PUT"))
 				conn.setDoOutput(true);
-			if (method.equals("HEAD") || method.equals("DELETE"))
-				conn.setDoInput(false);
 			conn.setRequestProperty("User-Agent", PLUGIN_USER_AGENT);
 			if (authString != null)
 				conn.setRequestProperty("Authorization", "Basic " + authString);

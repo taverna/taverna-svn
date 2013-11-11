@@ -244,6 +244,10 @@ public class ComponentProfile implements
 		return model;
 	}
 
+	private boolean isAccessible(String ontologyURI) {
+		return contactEndpoint(null, ontologyURI).getResultId() == NO_PROBLEM;
+	}
+
 	@Override
 	public OntModel getOntology(String ontologyId) {
 		String ontologyURI = getOntologyLocation(ontologyId);
@@ -253,8 +257,14 @@ public class ComponentProfile implements
 		}
 
 		// Drop out of critical section while we do I/O
-		if (contactEndpoint(null, ontologyURI).getResultId() != NO_PROBLEM)
-			return null;
+		if (!isAccessible(ontologyURI)) {
+			logger.warn("catastrophic problem contacting ontology source");
+			// Catastrophic problem?!
+			synchronized(ontologyModels) {
+				ontologyModels.put(ontologyURI, null);
+			}
+ 			return null;
+		}
 		OntModel model = readOntologyFromURI(ontologyId, ontologyURI);
 
 		synchronized (ontologyModels) {
@@ -357,11 +367,13 @@ public class ComponentProfile implements
 			List<SemanticAnnotationProfile> semanticAnnotationProfiles) {
 		List<SemanticAnnotationProfile> uniqueSemanticAnnotations = new ArrayList<SemanticAnnotationProfile>();
 		Set<OntProperty> predicates = new HashSet<OntProperty>();
-		for (SemanticAnnotationProfile semanticAnnotationProfile : semanticAnnotationProfiles)
-			if (!predicates.contains(semanticAnnotationProfile.getPredicate())) {
-				predicates.add(semanticAnnotationProfile.getPredicate());
-				uniqueSemanticAnnotations.add(semanticAnnotationProfile);
-			}
+		for (SemanticAnnotationProfile semanticAnnotationProfile : semanticAnnotationProfiles) {
+			OntProperty prop = semanticAnnotationProfile.getPredicate();
+			if (prop != null && !predicates.contains(prop)) {
+				predicates.add(prop);
+ 				uniqueSemanticAnnotations.add(semanticAnnotationProfile);
+ 			}
+		}
 		return uniqueSemanticAnnotations;
 	}
 

@@ -6,6 +6,7 @@ import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.EAST;
 import static java.awt.GridBagConstraints.HORIZONTAL;
 import static java.awt.GridBagConstraints.SOUTHEAST;
+import static java.lang.String.format;
 import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.getDisplayName;
 import static net.sf.taverna.t2.component.annotation.SemanticAnnotationUtils.getObjectName;
 
@@ -29,6 +30,8 @@ import com.hp.hpl.jena.rdf.model.Statement;
 
 public class ComponentActivitySemanticAnnotationPanel extends JPanel {
 	private static final long serialVersionUID = 3599768150252711758L;
+	private static final String ANNTYPE_MSG = "Annotation type : %s";
+	private static final String NONE_MSG = "No semantic annotations";	
 	private SemanticAnnotationProfile semanticAnnotationProfile;
 	private final Set<Statement> statements;
 
@@ -62,8 +65,7 @@ public class ComponentActivitySemanticAnnotationPanel extends JPanel {
 
 		OntProperty predicate = semanticAnnotationProfile.getPredicate();
 		c.gridwidth = 2;
-		JLabel label = new JLabel("Annotation type : "
-				+ getDisplayName(predicate));
+		JLabel label = new JLabel(format(ANNTYPE_MSG, getDisplayName(predicate)));
 		label.setBorder(new EmptyBorder(5, 5, 5, 5));
 		label.setBackground(WHITE);
 		label.setOpaque(true);
@@ -76,7 +78,7 @@ public class ComponentActivitySemanticAnnotationPanel extends JPanel {
 			c.gridwidth = 2;
 			// c.weightx = 1;
 			// c.gridy++;
-			add(new JLabel("No semantic annotations"), c);
+			add(new JLabel(NONE_MSG), c);
 		} else {
 			c.gridwidth = 1;
 			for (Statement statement : statements) {
@@ -89,7 +91,5 @@ public class ComponentActivitySemanticAnnotationPanel extends JPanel {
 				add(value, c);
 			}
 		}
-
 	}
-
 }

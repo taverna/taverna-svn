@@ -118,7 +118,7 @@ public class DateTimePropertyPanelFactory extends PropertyPanelFactorySPI {
 	public int getRatingForSemanticAnnotation(
 			SemanticAnnotationProfile semanticAnnotationProfile) {
 		OntProperty property = semanticAnnotationProfile.getPredicate();
-		if (property.isDatatypeProperty()
+		if ((property != null) && property.isDatatypeProperty()
 				&& DateTimeString.equals(semanticAnnotationProfile
 						.getClassString()))
 			return 200;

@@ -42,8 +42,7 @@ public class ComponentDataflowHealthChecker implements HealthChecker<Dataflow> {
 	@Override
 	public boolean canVisit(Object o) {
 		try {
-			getSource(o);
-			return true;
+			return (getSource(o) != null);
 		} catch (IllegalArgumentException e) {
 			// Not open?
 		} catch (ClassCastException e) {

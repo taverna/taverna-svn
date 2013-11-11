@@ -14,6 +14,7 @@ import static org.apache.log4j.Logger.getLogger;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -111,13 +112,17 @@ public abstract class AbstractSemanticAnnotationContextualView extends
 
 	public void changeStatement(Statement origStatement, OntProperty predicate,
 			RDFNode node) {
-		model.remove(origStatement);
+		if (predicate == null)
+			return;
+ 		model.remove(origStatement);
 		model.add(subject, predicate, node);
 		// populatePanel(panel);
 		updateSemanticAnnotation();
 	}
 
 	public void addStatement(OntProperty predicate, RDFNode node) {
+		if (predicate == null)
+			return;
 		model.add(subject, predicate, node);
 		// populatePanel(panel);
 		updateSemanticAnnotation();
@@ -182,6 +187,8 @@ public abstract class AbstractSemanticAnnotationContextualView extends
 	}
 
 	private Set<Statement> listStatements(OntProperty predicate) {
+		if (predicate == null)
+			return Collections.emptySet();
 		return model.listStatements(subject, predicate, (RDFNode) null).toSet();
 	}
 

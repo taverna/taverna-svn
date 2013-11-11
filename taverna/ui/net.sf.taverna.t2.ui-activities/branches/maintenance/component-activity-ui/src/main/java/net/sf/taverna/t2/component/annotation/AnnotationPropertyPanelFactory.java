@@ -60,7 +60,7 @@ public class AnnotationPropertyPanelFactory extends PropertyPanelFactorySPI {
 	public int getRatingForSemanticAnnotation(
 			SemanticAnnotationProfile semanticAnnotationProfile) {
 		OntProperty property = semanticAnnotationProfile.getPredicate();
-		if (property.isAnnotationProperty())
+		if ((property != null) && property.isAnnotationProperty())
 			return 100;
 		return MIN_VALUE;
 	}

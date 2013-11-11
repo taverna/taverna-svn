@@ -193,6 +193,9 @@ final class MyExperimentComponentFamily extends ComponentFamily {
 				Element resource = componentRegistry.getResource(resourceUri
 						+ ".xml");
 				logger.info("Getting resource " + resourceUri + ".xml");
+				if (resource == null) {
+					continue;
+				}
 				String packUri = resource.getAttributeValue("uri");
 				for (Element tag : componentRegistry.getResourceElements(
 						packUri, "tags")) {
