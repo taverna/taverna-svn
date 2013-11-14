@@ -3,14 +3,9 @@
  */
 package net.sf.taverna.t2.component.ui.preference;
 
-import static net.sf.taverna.t2.component.preference.ComponentDefaults.getDefaultProperties;
-
-import java.util.Map;
-
 import javax.swing.JPanel;
 
 import net.sf.taverna.t2.component.preference.ComponentPreference;
-import net.sf.taverna.t2.workbench.configuration.AbstractConfigurable;
 import net.sf.taverna.t2.workbench.configuration.Configurable;
 import net.sf.taverna.t2.workbench.configuration.ConfigurationUIFactory;
 
@@ -18,7 +13,7 @@ import net.sf.taverna.t2.workbench.configuration.ConfigurationUIFactory;
  * @author alanrw
  * 
  */
-public class ComponentPreferenceUIFactory extends AbstractConfigurable
+public class ComponentPreferenceUIFactory
 		implements ConfigurationUIFactory {
 
 	public static final String DISPLAY_NAME = "Components";
@@ -37,7 +32,7 @@ public class ComponentPreferenceUIFactory extends AbstractConfigurable
 
 	@Override
 	public Configurable getConfigurable() {
-		return this;
+		return pref;
 	}
 
 	@Override
@@ -45,28 +40,4 @@ public class ComponentPreferenceUIFactory extends AbstractConfigurable
 		return this.configPanel;
 	}
 
-	@Override
-	public String getCategory() {
-		return "general";
-	}
-
-	@Override
-	public Map<String, String> getDefaultPropertyMap() {
-		return getDefaultProperties();
-	}
-
-	@Override
-	public String getDisplayName() {
-		return DISPLAY_NAME;
-	}
-
-	@Override
-	public String getFilePrefix() {
-		return pref.getFilePrefix();
-	}
-
-	@Override
-	public String getUUID() {
-		return pref.getUUID();
-	}
 }

@@ -266,8 +266,6 @@ public class ComponentPreferencePanel extends JPanel {
 	private void applySettings() {
 		ComponentPreference pref = ComponentPreference.getInstance();
 		pref.setRegistryMap(tableModel.getRegistryMap());
-		if (validateFields())
-			saveSettings();
 	}
 
 	private void setFields() {
@@ -275,12 +273,4 @@ public class ComponentPreferencePanel extends JPanel {
 		tableModel.setRegistryMap(pref.getRegistryMap());
 	}
 
-	private boolean validateFields() {
-		return true;
-	}
-
-	private void saveSettings() {
-		ComponentPreference pref = ComponentPreference.getInstance();
-		pref.store();
-	}
 }
