@@ -3,6 +3,8 @@
  */
 package net.sf.taverna.t2.component.ui.preference;
 
+import static java.lang.String.format;
+
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -42,9 +44,8 @@ public class RegistryTableModel extends DefaultTableModel {
 	}
 
 	public String getRowTooltipText(int row) {
-		String key = (String) getValueAt(row, 0);
-		return "This is a <b>" + registryMap.get(key).getRegistryTypeName()
-				+ "</b> registry";
+		Registry registry = registryMap.get(getValueAt(row, 0));
+		return format("This is a %s registry.", registry.getRegistryTypeName());
 	}
 
 	@Override
