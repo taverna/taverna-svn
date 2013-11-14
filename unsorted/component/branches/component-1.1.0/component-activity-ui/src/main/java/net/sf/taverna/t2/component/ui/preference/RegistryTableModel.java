@@ -43,7 +43,8 @@ public class RegistryTableModel extends DefaultTableModel {
 
 	public String getRowTooltipText(int row) {
 		String key = (String) getValueAt(row, 0);
-		return "<b>Registry:</b> " + registryMap.get(key).getRegistryTypeName();
+		return "This is a <b>" + registryMap.get(key).getRegistryTypeName()
+				+ "</b> registry";
 	}
 
 	@Override

@@ -66,7 +66,10 @@ public class ComponentPreferencePanel extends JPanel {
 	private JTable registryTable = new JTable(tableModel) {
 		@Override
 		public String getToolTipText(MouseEvent me) {
-			return tableModel.getRowTooltipText(rowAtPoint(me.getPoint()));
+			int row = rowAtPoint(me.getPoint());
+			if (row >= 0)
+				return tableModel.getRowTooltipText(row);
+			return super.getToolTipText(me);
 		}
 	};
 
