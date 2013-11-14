@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -123,6 +124,7 @@ public class ComponentPreference extends AbstractConfigurable {
 			super.setProperty(key, entry.getValue()
 					.getRegistryBaseString());
 		}
+		Collections.sort(keyList);
 		String registryNamesConcatenated = StringUtils.join(keyList, ",");
 		super.setProperty(REGISTRY_NAMES, registryNamesConcatenated);
 	}
