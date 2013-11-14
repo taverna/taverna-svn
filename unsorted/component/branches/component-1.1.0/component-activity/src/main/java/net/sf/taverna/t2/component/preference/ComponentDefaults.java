@@ -13,7 +13,7 @@ import net.sf.taverna.raven.appconfig.ApplicationRuntime;
  * 
  */
 public class ComponentDefaults {
-	public static final String REGISTRY_LIST = "registry list";
+	public static final String REGISTRY_LIST = "REGISTRY_NAMES";
 	private static final String LOCAL_NAME = "local registry";
 	private static final String MYEXPERIMENT_NAME = "myExperiment";
 	private static final String MYEXPERIMENT_SITE = "http://www.myexperiment.org";
