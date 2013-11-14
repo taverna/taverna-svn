@@ -85,9 +85,9 @@ public abstract class ComponentFamily implements
 			componentProfile = internalGetComponentProfile();
 		if (componentProfile == null) {
 			Profile baseProfile = getBaseProfile();
-			if ((baseProfile != null)
-					&& componentProfile.getName().equals(baseProfile.getName()))
+			if (baseProfile != null) {
 				return baseProfile;
+			}
 		}
 		return componentProfile;
 	}
