@@ -49,7 +49,12 @@ public class ComponentActivity extends
 			throws ActivityConfigurationException {
 		this.configBean = configBean;
 
-		configurePorts(configBean.getPorts());
+		try {
+			configurePorts(configBean.getPorts());
+		} catch (RegistryException e) {
+			throw new ActivityConfigurationException(
+					"failed to get component realization", e);
+		}
 
 		skeletonDataflow = (DataflowImpl) EDITS.createDataflow();
 		skeletonDataflow.setLocalName(configBean.getComponentName());
