@@ -3,6 +3,8 @@
  */
 package net.sf.taverna.t2.component.preference;
 
+import static net.sf.taverna.t2.component.preference.ComponentDefaults.DEFAULT_REGISTRY_LIST;
+import static net.sf.taverna.t2.component.preference.ComponentDefaults.REGISTRY_LIST;
 import static net.sf.taverna.t2.component.preference.ComponentDefaults.getDefaultProperties;
 import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateRegistry;
 import static org.apache.log4j.Logger.getLogger;
@@ -14,7 +16,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Collections;
 import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -34,7 +39,7 @@ public class ComponentPreference {
 
 	private static ComponentPreference instance = null;
 
-	private final Properties properties;
+	private final Properties properties = new Properties();
 	private final SortedMap<String, Registry> registryMap = new TreeMap<String, Registry>();
 
 	public static ComponentPreference getInstance() {
@@ -45,28 +50,27 @@ public class ComponentPreference {
 
 	private ComponentPreference() {
 		File configFile = getConfigFile();
-		properties = new Properties();
-		if (configFile.exists()) {
-			try {
+		fillDefaultProperties();
+		try {
+			if (configFile.exists()) {
 				FileReader reader = new FileReader(configFile);
 				properties.load(reader);
 				reader.close();
-			} catch (FileNotFoundException e) {
-				logger.error("configuration file (" + configFile
-						+ ") disappeared", e);
-			} catch (IOException e) {
-				logger.error("configuration file (" + configFile
-						+ ") was not read correctly", e);
 			}
-		} else {
-			fillDefaultProperties();
+		} catch (FileNotFoundException e) {
+			logger.error("configuration file (" + configFile + ") disappeared",
+					e);
+		} catch (IOException e) {
+			logger.error("configuration file (" + configFile
+					+ ") was not read correctly", e);
 		}
 		updateRegistryMap();
 	}
 
 	private void updateRegistryMap() {
 		registryMap.clear();
-		for (Object key : properties.keySet())
+		for (String key : properties.getProperty(REGISTRY_LIST,
+				DEFAULT_REGISTRY_LIST).split(","))
 			try {
 				registryMap.put((String) key, calculateRegistry(new URL(
 						(String) properties.get(key))));
@@ -93,9 +97,16 @@ public class ComponentPreference {
 
 	public void store() {
 		properties.clear();
-		for (Entry<String, Registry> entry : registryMap.entrySet())
-			properties.put(entry.getKey(), entry.getValue()
-					.getRegistryBaseString());
+		StringBuilder sb = new StringBuilder();
+		String sep = "";
+		List<String> keys = new ArrayList<String>(registryMap.keySet());
+		Collections.sort(keys);
+		for (String key : keys) {
+			properties.put(key, registryMap.get(key).getRegistryBaseString());
+			sb.append(sep).append(key);
+			sep = ",";
+		}
+		properties.put(REGISTRY_LIST, sb.toString());
 
 		try {
 			FileOutputStream out = new FileOutputStream(getConfigFile());
