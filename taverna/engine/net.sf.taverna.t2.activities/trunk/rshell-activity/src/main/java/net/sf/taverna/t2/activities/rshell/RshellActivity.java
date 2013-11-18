@@ -394,12 +394,12 @@ public class RshellActivity extends AbstractAsynchronousActivity<JsonNode> {
     }
 
     public RshellConnectionSettings getConnectionSettings() {
-        JsonNode connectionSettings = configurationBean.get("connection");
+        JsonNode connectionSettings = configurationBean.path("connection");
         RshellConnectionSettings settings = new RshellConnectionSettings();
-        settings.setHost(connectionSettings.get("hostname").textValue());
-        settings.setPort(connectionSettings.get("port").intValue());
-        settings.setKeepSessionAlive(connectionSettings.get("keepSessionAlive")
-                .booleanValue());
+        settings.setHost(connectionSettings.path("hostname").textValue());
+        settings.setPort(connectionSettings.path("port").asInt(RshellConnectionSettings.DEFAULT_PORT));
+        settings.setKeepSessionAlive(connectionSettings.path("keepSessionAlive")
+                .asBoolean(RshellConnectionSettings.DEFAULT_KEEP_SESSION_ALIVE));
         return settings;
     }
 

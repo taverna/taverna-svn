@@ -43,7 +43,7 @@ public class RshellConnectionSettings implements Serializable {
 
     public static final int DEFAULT_PORT = 6311;
 
-    private static final boolean DEFAULT_KEEP_SESSION_ALIVE = false;
+    public static final boolean DEFAULT_KEEP_SESSION_ALIVE = false;
 
     private static final String DEFAULT_USERNAME = "";
 

@@ -26,7 +26,7 @@
 					"title": "Host",
         		    "description": "The host name for the R server",
 		            "type": "string",
-		            "required": true,
+		            "required": false,
         		    "default": "localhost"
         		},
         		"port": {
@@ -35,14 +35,14 @@
 		            "type": "integer",
 		            "minimum" : 0,
 		            "maximum" : 65535,
-		            "required": true,
+		            "required": false,
         		    "default": "6311"
         		},
          		"keepSessionAlive": {
 					"title": "Keep Session Alive",
         		    "description": "If the session should be kept alive",
 		            "type": "boolean",
-		            "required": true,
+		            "required": false,
         		    "default": false
         		}
              }
