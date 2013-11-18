@@ -39,11 +39,17 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class RshellTemplateService extends AbstractTemplateService {
 
-	public static final URI ACTIVITY_TYPE = URI.create("http://ns.taverna.org.uk/2010/activity/rshell");
+	public static final boolean DEFAULT_KEEP_SESSION_ALIVE = false;
+
+	public static final String DEFAULT_HOST = "localhost";
+
+	public static final int DEFAULT_PORT = 6311;
+
+    public static final URI ACTIVITY_TYPE = URI.create("http://ns.taverna.org.uk/2010/activity/rshell");
 
 	private static final String RSHELL = "Rshell";
 
-	private static final URI providerId = URI
+	public static final URI providerId = URI
 	.create("http://taverna.sf.net/2010/service-provider/rshell");
 
 	@Override
@@ -59,9 +65,9 @@ public class RshellTemplateService extends AbstractTemplateService {
 		json.put("script", "");
 
 		ObjectNode connection = json.objectNode();
-		connection.put("hostname", "localhost");
-		connection.put("port", 6311);
-		connection.put("keepSessionAlive", false);
+		connection.put("hostname", DEFAULT_HOST);
+		connection.put("port", DEFAULT_PORT);
+		connection.put("keepSessionAlive", DEFAULT_KEEP_SESSION_ALIVE);
 		json.put("connection", connection);
 		return configuration;
 	}

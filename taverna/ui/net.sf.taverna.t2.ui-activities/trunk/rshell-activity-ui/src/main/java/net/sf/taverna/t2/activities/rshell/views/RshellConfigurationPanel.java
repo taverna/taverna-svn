@@ -42,6 +42,7 @@ import javax.swing.event.DocumentListener;
 
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes;
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes.DataTypes;
+import net.sf.taverna.t2.activities.rshell.servicedescriptions.RshellTemplateService;
 import net.sf.taverna.t2.lang.ui.EditorKeySetUtil;
 import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 import net.sf.taverna.t2.workbench.ui.credentialmanager.CredentialManagerUI;
@@ -117,7 +118,10 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 		try {
 			connection.put("port", Integer.parseInt(portField.getText()));
 		} catch (NumberFormatException e) {
-			connection.put("port", json.get("connection").get("port").asInt());
+            connection.put(
+                    "port",
+                    json.path("connection").path("port")
+                            .asInt(RshellTemplateService.DEFAULT_PORT));
 		}
 		connection.put("keepSessionAlive", keepSessionAliveCheckBox.isSelected());
 		json.put("connection", connection);
@@ -230,16 +234,17 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 		hostnameField.setSize(dimension);
 		hostnameLabel.setSize(dimension);
 		hostnameLabel.setLabelFor(hostnameField);
-		JsonNode connectionSettings = getJson().get("connection");
+		JsonNode connectionSettings = getJson().path("connection");
 
-		hostnameField.setText(connectionSettings.get("hostname").textValue());
+		hostnameField.setText(connectionSettings.path("hostname").asText());
 
 		portField = new JTextField();
 		JLabel portLabel = new JLabel("Port");
 		portField.setSize(dimension);
 		portLabel.setSize(dimension);
 		portLabel.setLabelFor(portField);
-		portField.setText(connectionSettings.get("port").asText());
+        portField.setText(Integer.toString(connectionSettings.path("port")
+                .asInt(RshellTemplateService.DEFAULT_PORT)));
 
 		// "Set username and password" button
 		ActionListener usernamePasswordListener = new ActionListener() {
@@ -255,8 +260,9 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 		setHttpUsernamePasswordButton.addActionListener(usernamePasswordListener);
 
 		keepSessionAliveCheckBox = new JCheckBox("Keep Session Alive");
-		keepSessionAliveCheckBox.setSelected(connectionSettings
-					.path("keepSessionAlive").booleanValue());
+        keepSessionAliveCheckBox.setSelected(connectionSettings.path(
+                "keepSessionAlive").asBoolean(
+                RshellTemplateService.DEFAULT_KEEP_SESSION_ALIVE));
 
 		settingsPanel.add(hostnameLabel, labelConstraints);
 		labelConstraints.gridy++;
@@ -279,18 +285,18 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 	}
 
 	private DataTypes getInputDataType(String name) {
-		for (JsonNode jsonNode : getJson().get("inputTypes")) {
-			if (jsonNode.get("port").textValue().equals(name)) {
-				return DataTypes.valueOf(jsonNode.get("dataType").textValue());
+		for (JsonNode jsonNode : getJson().path("inputTypes")) {
+			if (jsonNode.path("port").asText().equals(name)) {
+				return DataTypes.valueOf(jsonNode.path("dataType").asText());
 			}
 		}
 		return null;
 	}
 
 	private DataTypes getOutputDataType(String name) {
-		for (JsonNode jsonNode : getJson().get("outputTypes")) {
-			if (jsonNode.get("port").textValue().equals(name)) {
-				return DataTypes.valueOf(jsonNode.get("dataType").textValue());
+		for (JsonNode jsonNode : getJson().path("outputTypes")) {
+			if (jsonNode.path("port").asText().equals(name)) {
+				return DataTypes.valueOf(jsonNode.path("dataType").asText());
 			}
 		}
 		return null;

@@ -34,6 +34,7 @@ import javax.swing.Action;
 import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes.DataTypes;
 import net.sf.taverna.t2.activities.rshell.actions.RshellActivityConfigurationAction;
+import net.sf.taverna.t2.activities.rshell.servicedescriptions.RshellTemplateService;
 import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescriptionRegistry;
 import net.sf.taverna.t2.workbench.activityicons.ActivityIconManager;
@@ -116,7 +117,8 @@ public class RshellActivityContextualView extends HTMLBasedActivityContextualVie
 		if (connection != null) {
 			String host = connection.get("hostname").textValue();
 			if (host != null) {
-				String port = connection.get("port").asText();
+                String port = Integer.toString(connection.path("port").asInt(
+                        RshellTemplateService.DEFAULT_PORT));
 				String keepSessionAlive = connection.path("keepSessionAlive").asText();
 				html.append("<tr><td>Host</td><td>" + host + "</td></tr>");
 				html.append("<tr><td>Port</td><td>" + port + "</td></tr>");
@@ -142,5 +144,4 @@ public class RshellActivityContextualView extends HTMLBasedActivityContextualVie
 	public int getPreferredPosition() {
 		return 100;
 	}
-
 }
