@@ -117,7 +117,7 @@ public class RshellActivityContextualView extends HTMLBasedActivityContextualVie
 			String host = connection.get("hostname").textValue();
 			if (host != null) {
 				String port = connection.get("port").asText();
-				String keepSessionAlive = connection.get("keepSessionAlive").asText();
+				String keepSessionAlive = connection.path("keepSessionAlive").asText();
 				html.append("<tr><td>Host</td><td>" + host + "</td></tr>");
 				html.append("<tr><td>Port</td><td>" + port + "</td></tr>");
 				html.append("<tr><td>Keep Session Alive</td><td>" + keepSessionAlive + "</td></tr>");

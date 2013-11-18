@@ -256,7 +256,7 @@ public class RshellConfigurationPanel extends MultiPageActivityConfigurationPane
 
 		keepSessionAliveCheckBox = new JCheckBox("Keep Session Alive");
 		keepSessionAliveCheckBox.setSelected(connectionSettings
-					.get("keepSessionAlive").booleanValue());
+					.path("keepSessionAlive").booleanValue());
 
 		settingsPanel.add(hostnameLabel, labelConstraints);
 		labelConstraints.gridy++;
