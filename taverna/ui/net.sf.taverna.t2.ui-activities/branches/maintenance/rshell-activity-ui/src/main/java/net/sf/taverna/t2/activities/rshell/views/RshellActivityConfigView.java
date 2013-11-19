@@ -271,7 +271,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 			
 		});
 		
-		JButton editRScriptButton = new JButton("Edit script");
+/*		JButton editRScriptButton = new JButton("Edit script");
 		editRScriptButton.setToolTipText("Edit the R script in a local editor");
 		editRScriptButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -291,7 +291,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 					logger.error(e1);
 				}
 			}
-		});		
+		});		*/
 		JButton loadRScriptButton = new JButton("Load script");
 		loadRScriptButton.setToolTipText("Load an R script from a file");
 		loadRScriptButton.addActionListener(new ActionListener() {
@@ -339,7 +339,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		buttonPanel.setLayout(new FlowLayout());
 //		buttonPanel.add(rVersionCheck);
 //		buttonPanel.add(checkScriptButton);
-		buttonPanel.add(editRScriptButton);
+/*		buttonPanel.add(editRScriptButton);*/
 		buttonPanel.add(loadRScriptButton);
 		buttonPanel.add(saveRScriptButton);
 		buttonPanel.add(clearScriptButton);
