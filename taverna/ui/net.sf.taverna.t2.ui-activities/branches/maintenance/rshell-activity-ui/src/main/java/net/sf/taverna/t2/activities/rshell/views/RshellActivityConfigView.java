@@ -209,7 +209,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 //				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
 //				javax.swing.border.TitledBorder.DEFAULT_POSITION,
 //				new java.awt.Font("Lucida Grande", 1, 12)));
-		setSize(500, 500);
+//		setSize(500, 500);
 		final RshellActivityConfigurationBean configBean = activity
 				.getConfiguration();
 
@@ -230,7 +230,7 @@ public class RshellActivityConfigView extends ActivityConfigurationPanel<RshellA
 		scriptTextArea.setText(configBean.getScript());
 
 		scriptTextArea.setCaretPosition(0);
-		scriptTextArea.setPreferredSize(new Dimension(200, 100));
+//		scriptTextArea.setPreferredSize(new Dimension(200, 100));
 
 		for (ActivityInputPortDefinitionBean ip : configuration.getInputPortDefinitions()) {
 			String name = ip.getName();
