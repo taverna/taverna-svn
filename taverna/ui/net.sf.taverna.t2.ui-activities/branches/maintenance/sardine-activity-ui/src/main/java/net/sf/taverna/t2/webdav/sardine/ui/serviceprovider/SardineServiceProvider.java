@@ -34,7 +34,7 @@ import net.sf.taverna.t2.workflowmodel.serialization.xml.ActivityXMLDeserializer
 
 public class SardineServiceProvider implements ServiceDescriptionProvider {
 	
-	private static final String LOCALWORKER_NAMES = "/localworker_names";
+	private static final String LOCALWORKER_NAMES = "/sardineworker_names";
 	
 	private static final String LOCALWORKER_SERVICE = "Local service";
 
