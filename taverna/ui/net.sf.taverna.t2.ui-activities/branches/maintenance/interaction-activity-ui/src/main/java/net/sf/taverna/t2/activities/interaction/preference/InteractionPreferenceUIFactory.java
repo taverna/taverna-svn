@@ -3,6 +3,7 @@
  */
 package net.sf.taverna.t2.activities.interaction.preference;
 
+import java.util.Collections;
 import java.util.Map;
 
 import javax.swing.JPanel;
@@ -68,7 +69,7 @@ public class InteractionPreferenceUIFactory extends AbstractConfigurable
 
 	@Override
 	public Map<String, String> getDefaultPropertyMap() {
-		return null;
+		return Collections.emptyMap();
 	}
 
 	@Override
