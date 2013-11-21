@@ -100,8 +100,9 @@
 			<name>myGrid Repository</name>
 			<url>http://www.mygrid.org.uk/maven/repository</url>
 		</repository>
+		<!-- The VPH -->
+		<!-- 
 		<repository>
-			<!-- The VPH -->
 			<releases />
 			<snapshots>
 				<enabled>true</enabled>
@@ -110,6 +111,7 @@
 			<name>VPH Repository</name>
 			<url>http://54.228.194.171:8081/nexus/content/repositories/snapshots/</url>
 		</repository>
+		 -->
 	</repositories>
 
 	<pluginRepositories>
