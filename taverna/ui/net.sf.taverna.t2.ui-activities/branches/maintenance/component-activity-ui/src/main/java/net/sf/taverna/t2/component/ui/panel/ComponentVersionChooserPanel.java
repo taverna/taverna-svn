@@ -97,8 +97,8 @@ public class ComponentVersionChooserPanel extends JPanel implements
 	public Version getChosenComponentVersion() {
 		if (componentVersionMap.isEmpty())
 			return null;
-		return componentVersionMap
-				.get(componentVersionChoice.getSelectedItem());
+        return componentVersionMap.get(new Integer(componentVersionChoice
+                .getSelectedItem().toString()));
 	}
 
 	@Override

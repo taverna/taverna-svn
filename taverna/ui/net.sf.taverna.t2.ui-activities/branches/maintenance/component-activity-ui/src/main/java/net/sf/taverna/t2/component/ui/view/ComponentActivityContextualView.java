@@ -102,6 +102,7 @@ public class ComponentActivityContextualView extends
 			logger.error("failed to get component version description", e);
 		}
 
+		try {
 		List<ActivityInputPortDefinitionBean> inputPortDefinitions = getConfigBean()
 				.getPorts().getInputPortDefinitions();
 		if (!inputPortDefinitions.isEmpty()) {
@@ -116,7 +117,10 @@ public class ComponentActivityContextualView extends
 			for (ActivityOutputPortDefinitionBean bean : outputPortDefinitions)
 				appendPlainRow(html, bean.getName(), bean.getDepth());
 		}
-		return html.toString();
+		} catch (RegistryException e) {
+			logger.error("failed to get component port description", e);
+		}
+			return html.toString();
 	}
 
 	private void appendRow(StringBuilder html, Object label, Object value) {

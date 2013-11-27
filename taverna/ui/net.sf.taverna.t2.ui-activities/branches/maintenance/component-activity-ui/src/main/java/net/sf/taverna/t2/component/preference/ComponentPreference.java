@@ -3,6 +3,8 @@
  */
 package net.sf.taverna.t2.component.preference;
 
+import static net.sf.taverna.t2.component.preference.ComponentDefaults.DEFAULT_REGISTRY_LIST;
+import static net.sf.taverna.t2.component.preference.ComponentDefaults.REGISTRY_LIST;
 import static net.sf.taverna.t2.component.preference.ComponentDefaults.getDefaultProperties;
 import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateRegistry;
 import static org.apache.log4j.Logger.getLogger;
@@ -44,8 +46,6 @@ public class ComponentPreference extends AbstractConfigurable {
 	private static ComponentPreference instance = null;
 
 	private final SortedMap<String, Registry> registryMap = new TreeMap<String, Registry>();
-	
-	public static final String REGISTRY_NAMES = "REGISTRY_NAMES";
 
 	public static ComponentPreference getInstance() {
 		if (instance == null)
@@ -56,10 +56,10 @@ public class ComponentPreference extends AbstractConfigurable {
 	private ComponentPreference() {
 		super();
 
-		recoverRegistryMap();
+		updateRegistryMap();
 	}
 
-	private void recoverRegistryMap() {
+	private void updateRegistryMap() {
 		registryMap.clear();
 
 		for (String key : getRegistryKeys()) {
@@ -78,7 +78,7 @@ public class ComponentPreference extends AbstractConfigurable {
 	}
 	
 	private String[] getRegistryKeys() {
-		String registryNamesConcatenated = super.getProperty(REGISTRY_NAMES);
+		String registryNamesConcatenated = super.getProperty(REGISTRY_LIST);
 		if (registryNamesConcatenated == null) {
 			return (String[])getDefaultPropertyMap().keySet().toArray(new String[]{});
 		} else {
@@ -126,7 +126,7 @@ public class ComponentPreference extends AbstractConfigurable {
 		}
 		Collections.sort(keyList);
 		String registryNamesConcatenated = StringUtils.join(keyList, ",");
-		super.setProperty(REGISTRY_NAMES, registryNamesConcatenated);
+		super.setProperty(REGISTRY_LIST, registryNamesConcatenated);
 	}
 
 	@Override

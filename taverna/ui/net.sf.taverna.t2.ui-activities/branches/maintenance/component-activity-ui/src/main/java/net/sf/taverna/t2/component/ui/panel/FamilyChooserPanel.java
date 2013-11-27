@@ -160,6 +160,10 @@ public class FamilyChooserPanel extends JPanel implements Observer,
 
 	private void updateFamiliesFromRegistry() throws RegistryException {
 		for (Family f : chosenRegistry.getComponentFamilies()) {
+			if (profileFilter == null) {
+				familyMap.put(f.getName(), f);
+				continue;
+			}
 			Profile componentProfile = null;
 			try {
 				componentProfile = f.getComponentProfile();
