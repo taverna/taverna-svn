@@ -39,6 +39,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -133,6 +134,7 @@ public class ComponentProfile implements
 		Runnable r = new Runnable() {
 			@Override
 			public void run() {
+				Date start = new Date();
 				try {
 					profile.profileDoc = jaxbContext.createUnmarshaller()
 							.unmarshal(source, Profile.class).getValue();
@@ -143,7 +145,10 @@ public class ComponentProfile implements
 					profile.loaded = true;
 					profile.lock.notifyAll();
 				}
-				logger.info("loaded profile in " + identityHashCode(this));
+				Date end = new Date();
+				logger.info("loaded profile in " + identityHashCode(profile)
+						+ " (in " + (end.getTime() - start.getTime())
+						+ " msec)");
 			}
 		};
 		if (baseProfile == null)
