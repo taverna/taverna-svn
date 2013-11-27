@@ -37,7 +37,9 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -49,8 +51,6 @@ import java.util.TreeMap;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.transform.Source;
-import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
 import net.sf.taverna.t2.component.api.Registry;
@@ -58,7 +58,6 @@ import net.sf.taverna.t2.component.api.RegistryException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.xml.sax.InputSource;
 
 import uk.org.taverna.ns._2012.component.profile.Activity;
 import uk.org.taverna.ns._2012.component.profile.Ontology;
@@ -116,8 +115,17 @@ public class ComponentProfile implements
 			throws RegistryException {
 		logger.info("loading profile in " + identityHashCode(this) + " from "
 				+ profileURL);
-		loadProfile(this,
-				new SAXSource(new InputSource(profileURL.toExternalForm())));
+		try {
+			URL url = profileURL;
+			if (url.getProtocol().startsWith("http"))
+				url = new URI(url.getProtocol(), url.getAuthority(),
+						url.getPath(), url.getQuery(), url.getRef()).toURL();
+			loadProfile(this, url);
+		} catch (MalformedURLException e) {
+			logger.warn("malformed URL? " + profileURL);
+		} catch (URISyntaxException e) {
+			logger.warn("malformed URL? " + profileURL);
+		}
 		parentRegistry = registry;
 	}
 
@@ -125,20 +133,45 @@ public class ComponentProfile implements
 			throws RegistryException {
 		logger.info("loading profile in " + identityHashCode(this)
 				+ " from string");
-		loadProfile(this, new StreamSource(new StringReader(profileString)));
+		loadProfile(this, profileString);
 		this.parentRegistry = registry;
 	}
 
 	private static void loadProfile(final ComponentProfile profile,
-			final Source source) {
+			final Object source) {
 		Runnable r = new Runnable() {
 			@Override
 			public void run() {
 				Date start = new Date();
 				try {
-					profile.profileDoc = jaxbContext.createUnmarshaller()
-							.unmarshal(source, Profile.class).getValue();
-				} catch (JAXBException e) {
+					String content;
+					if (source instanceof URL) {
+						URLConnection conn = ((URL) source).openConnection();
+						try {
+							conn.addRequestProperty("Accept",
+									"application/xml,*/*;q=0.1");
+						} catch (Exception e) {
+						}
+						InputStream is = conn.getInputStream();
+						content = IOUtils.toString(is, "UTF-8");
+						is.close();
+						Date loaded = new Date();
+						logger.info("downloaded profile in "
+								+ identityHashCode(profile) + " (in "
+								+ (loaded.getTime() - start.getTime())
+								+ " msec)");
+					} else if (source instanceof String)
+						content = (String) source;
+					else
+						throw new IllegalArgumentException(
+								"bad type of profile source: "
+										+ source.getClass());
+					profile.profileDoc = jaxbContext
+							.createUnmarshaller()
+							.unmarshal(
+									new StreamSource(new StringReader(content)),
+									Profile.class).getValue();
+				} catch (Exception e) {
 					logger.warn("failed to load profile", e);
 				}
 				synchronized (profile.lock) {
