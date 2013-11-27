@@ -113,32 +113,24 @@ public class ComponentProfile implements
 
 	public ComponentProfile(Registry registry, URL profileURL)
 			throws RegistryException {
-		try {
-			logger.info("loading profile in " + identityHashCode(this)
-					+ " from " + profileURL);
-			loadProfile(this,
-					new SAXSource(new InputSource(profileURL.toExternalForm())));
-			parentRegistry = registry;
-		} catch (JAXBException e) {
-			throw new RegistryException("Unable to read profile", e);
-		}
+		logger.info("loading profile in " + identityHashCode(this) + " from "
+				+ profileURL);
+		loadProfile(this,
+				new SAXSource(new InputSource(profileURL.toExternalForm())));
+		parentRegistry = registry;
 	}
 
 	public ComponentProfile(Registry registry, String profileString)
 			throws RegistryException {
-		try {
-			logger.info("loading profile in " + identityHashCode(this)
-					+ " from string");
-			loadProfile(this, new StreamSource(new StringReader(profileString)));
-			this.parentRegistry = registry;
-		} catch (JAXBException e) {
-			throw new RegistryException("Unable to read profile", e);
-		}
+		logger.info("loading profile in " + identityHashCode(this)
+				+ " from string");
+		loadProfile(this, new StreamSource(new StringReader(profileString)));
+		this.parentRegistry = registry;
 	}
 
 	private static void loadProfile(final ComponentProfile profile,
-			final Source source) throws JAXBException {
-		new Thread() {
+			final Source source) {
+		Runnable r = new Runnable() {
 			@Override
 			public void run() {
 				try {
@@ -153,7 +145,12 @@ public class ComponentProfile implements
 				}
 				logger.info("loaded profile in " + identityHashCode(this));
 			}
-		}.start();
+		};
+		if (baseProfile == null)
+			// Must load the base profile synchronously, to avoid deadlock
+			r.run();
+		else
+			new Thread(r).start();
 	}
 
 	@Override
@@ -175,15 +172,15 @@ public class ComponentProfile implements
 
 	@Override
 	public Profile getProfileDocument() {
-		synchronized (lock) {
-			while (!loaded) {
-				try {
+		try {
+			synchronized (lock) {
+				while (!loaded)
 					lock.wait();
-				} catch (InterruptedException e) {
-					logger.info("interrupted during wait for lock", e);
-				}
+				return profileDoc;
 			}
-			return profileDoc;
+		} catch (InterruptedException e) {
+			logger.info("interrupted during wait for lock", e);
+			return null;
 		}
 	}
 
@@ -253,7 +250,8 @@ public class ComponentProfile implements
 	}
 
 	private OntModel readOntologyFromURI(String ontologyId, String ontologyURI) {
-		logger.info("reading ontology for " + ontologyId + " from " + ontologyURI);
+		logger.info("reading ontology for " + ontologyId + " from "
+				+ ontologyURI);
 		OntModel model = createOntologyModel();
 		InputStream in = null;
 		try {
