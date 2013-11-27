@@ -118,7 +118,10 @@ public class ComponentChooserPanel extends JPanel implements
 	public Component getChosenComponent() {
 		if (componentMap.isEmpty())
 			return null;
-		return componentMap.get(componentChoice.getSelectedItem());
+		Object item = componentChoice.getSelectedItem();
+		if (item == null)
+			return null;
+		return componentMap.get(item);
 	}
 
 	@Override
