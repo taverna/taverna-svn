@@ -21,6 +21,7 @@
 package net.sf.taverna.t2.component.profile;
 
 import static com.hp.hpl.jena.rdf.model.ModelFactory.createOntologyModel;
+import static java.lang.System.identityHashCode;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static net.sf.taverna.t2.component.profile.BaseProfileLocator.getBaseProfile;
@@ -36,8 +37,11 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -47,8 +51,6 @@ import java.util.TreeMap;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.transform.Source;
-import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
 import net.sf.taverna.t2.component.api.Registry;
@@ -56,7 +58,6 @@ import net.sf.taverna.t2.component.api.RegistryException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.xml.sax.InputSource;
 
 import uk.org.taverna.ns._2012.component.profile.Activity;
 import uk.org.taverna.ns._2012.component.profile.Ontology;
@@ -94,6 +95,8 @@ public class ComponentProfile implements
 	private Profile profileDoc;
 	private ExceptionHandling exceptionHandling;
 	private Registry parentRegistry = null;
+	private final Object lock = new Object();
+	protected volatile boolean loaded = false;
 
 	public ComponentProfile(URL profileURL) throws RegistryException {
 		this(null, profileURL);
@@ -110,29 +113,82 @@ public class ComponentProfile implements
 
 	public ComponentProfile(Registry registry, URL profileURL)
 			throws RegistryException {
+		logger.info("loading profile in " + identityHashCode(this) + " from "
+				+ profileURL);
 		try {
-			profileDoc = getProfile(new SAXSource(new InputSource(
-					profileURL.toExternalForm())));
-			parentRegistry = registry;
-		} catch (JAXBException e) {
-			throw new RegistryException("Unable to read profile", e);
+			URL url = profileURL;
+			if (url.getProtocol().startsWith("http"))
+				url = new URI(url.getProtocol(), url.getAuthority(),
+						url.getPath(), url.getQuery(), url.getRef()).toURL();
+			loadProfile(this, url);
+		} catch (MalformedURLException e) {
+			logger.warn("malformed URL? " + profileURL);
+		} catch (URISyntaxException e) {
+			logger.warn("malformed URL? " + profileURL);
 		}
+		parentRegistry = registry;
 	}
 
 	public ComponentProfile(Registry registry, String profileString)
 			throws RegistryException {
-		try {
-			profileDoc = getProfile(new StreamSource(new StringReader(
-					profileString)));
-			this.parentRegistry = registry;
-		} catch (JAXBException e) {
-			throw new RegistryException("Unable to read profile", e);
-		}
+		logger.info("loading profile in " + identityHashCode(this)
+				+ " from string");
+		loadProfile(this, profileString);
+		this.parentRegistry = registry;
 	}
 
-	private static Profile getProfile(Source source) throws JAXBException {
-		return jaxbContext.createUnmarshaller()
-				.unmarshal(source, Profile.class).getValue();
+	private static void loadProfile(final ComponentProfile profile,
+			final Object source) {
+		Runnable r = new Runnable() {
+			@Override
+			public void run() {
+				Date start = new Date();
+				try {
+					String content;
+					if (source instanceof URL) {
+						URLConnection conn = ((URL) source).openConnection();
+						try {
+							conn.addRequestProperty("Accept",
+									"application/xml,*/*;q=0.1");
+						} catch (Exception e) {
+						}
+						InputStream is = conn.getInputStream();
+						content = IOUtils.toString(is, "UTF-8");
+						is.close();
+						Date loaded = new Date();
+						logger.info("downloaded profile in "
+								+ identityHashCode(profile) + " (in "
+								+ (loaded.getTime() - start.getTime())
+								+ " msec)");
+					} else if (source instanceof String)
+						content = (String) source;
+					else
+						throw new IllegalArgumentException(
+								"bad type of profile source: "
+										+ source.getClass());
+					profile.profileDoc = jaxbContext
+							.createUnmarshaller()
+							.unmarshal(
+									new StreamSource(new StringReader(content)),
+									Profile.class).getValue();
+				} catch (Exception e) {
+					logger.warn("failed to load profile", e);
+				}
+				synchronized (profile.lock) {
+					profile.loaded = true;
+					profile.lock.notifyAll();
+				}
+				Date end = new Date();
+				logger.info("loaded profile in " + identityHashCode(profile)
+						+ " (in " + (end.getTime() - start.getTime())
+						+ " msec)");
+			}
+		};
+		if (baseProfile == null)
+			// Must load the base profile synchronously, to avoid deadlock
+			r.run();
+		else
+			new Thread(r).start();
 	}
 
 	@Override
@@ -144,7 +200,8 @@ public class ComponentProfile implements
 	public String getXML() throws RegistryException {
 		try {
 			StringWriter stringWriter = new StringWriter();
-			jaxbContext.createMarshaller().marshal(profileDoc, stringWriter);
+			jaxbContext.createMarshaller().marshal(getProfileDocument(),
+					stringWriter);
 			return stringWriter.toString();
 		} catch (JAXBException e) {
 			throw new RegistryException("Unable to serialize profile", e);
@@ -153,22 +210,31 @@ public class ComponentProfile implements
 
 	@Override
 	public Profile getProfileDocument() {
-		return profileDoc;
+		try {
+			synchronized (lock) {
+				while (!loaded)
+					lock.wait();
+				return profileDoc;
+			}
+		} catch (InterruptedException e) {
+			logger.info("interrupted during wait for lock", e);
+			return null;
+		}
 	}
 
 	@Override
 	public String getId() {
-		return profileDoc.getId();
+		return getProfileDocument().getId();
 	}
 
 	@Override
 	public String getName() {
-		return profileDoc.getName();
+		return getProfileDocument().getName();
 	}
 
 	@Override
 	public String getDescription() {
-		return profileDoc.getDescription();
+		return getProfileDocument().getDescription();
 	}
 
 	/**
@@ -181,10 +247,11 @@ public class ComponentProfile implements
 	private synchronized net.sf.taverna.t2.component.api.Profile parent()
 			throws RegistryException {
 		if (parent == null) {
-			if (!isBase() && profileDoc.getExtends() != null
+			if (!isBase() && getProfileDocument().getExtends() != null
 					&& parentRegistry != null) {
-				parent = parentRegistry.getComponentProfile(profileDoc
-						.getExtends().getProfileId());
+				parent = parentRegistry
+						.getComponentProfile(getProfileDocument().getExtends()
+								.getProfileId());
 				if (parent != null)
 					return parent;
 			}
@@ -196,7 +263,7 @@ public class ComponentProfile implements
 	@Override
 	public String getOntologyLocation(String ontologyId) {
 		String ontologyURI = null;
-		for (Ontology ontology : profileDoc.getOntology())
+		for (Ontology ontology : getProfileDocument().getOntology())
 			if (ontology.getId().equals(ontologyId))
 				ontologyURI = ontology.getValue();
 		if ((ontologyURI == null) && !isBase())
@@ -206,7 +273,7 @@ public class ComponentProfile implements
 
 	private Map<String, String> internalGetPrefixMap() throws RegistryException {
 		Map<String, String> result = new TreeMap<String, String>();
-		for (Ontology ontology : profileDoc.getOntology())
+		for (Ontology ontology : getProfileDocument().getOntology())
 			result.put(ontology.getId(), ontology.getValue());
 		result.putAll(parent().getPrefixMap());
 		return result;
@@ -221,6 +288,8 @@ public class ComponentProfile implements
 	}
 
 	private OntModel readOntologyFromURI(String ontologyId, String ontologyURI) {
+		logger.info("reading ontology for " + ontologyId + " from "
+				+ ontologyURI);
 		OntModel model = createOntologyModel();
 		InputStream in = null;
 		try {
@@ -229,10 +298,11 @@ public class ComponentProfile implements
 			// CRITICAL: must be retrieved as correct content type
 			conn.addRequestProperty("Accept",
 					"application/rdf+xml,application/xml;q=0.9");
-			in = conn.getInputStream();	
+			in = conn.getInputStream();
 			// TODO Consider whether the encoding is handled right
 			// ontologyModel.read(in, url.toString());
-			model.read(new StringReader(IOUtils.toString(in, "UTF-8")), url.toString());
+			model.read(new StringReader(IOUtils.toString(in, "UTF-8")),
+					url.toString());
 		} catch (MalformedURLException e) {
 			logger.error("Problem reading ontology " + ontologyId, e);
 			return null;
@@ -244,8 +314,7 @@ public class ComponentProfile implements
 			logger.error("Problem reading ontology " + ontologyId, e);
 			model = createOntologyModel();
 		} finally {
-			if (in != null)
-				closeQuietly(in);
+			closeQuietly(in);
 		}
 		return model;
 	}
@@ -266,10 +335,10 @@ public class ComponentProfile implements
 		if (!isAccessible(ontologyURI)) {
 			logger.warn("catastrophic problem contacting ontology source");
 			// Catastrophic problem?!
-			synchronized(ontologyModels) {
+			synchronized (ontologyModels) {
 				ontologyModels.put(ontologyURI, null);
 			}
- 			return null;
+			return null;
 		}
 		OntModel model = readOntologyFromURI(ontologyId, ontologyURI);
 
@@ -284,7 +353,7 @@ public class ComponentProfile implements
 	@Override
 	public List<PortProfile> getInputPortProfiles() {
 		List<PortProfile> portProfiles = new ArrayList<PortProfile>();
-		for (Port port : profileDoc.getComponent().getInputPort())
+		for (Port port : getProfileDocument().getComponent().getInputPort())
 			portProfiles.add(new PortProfile(this, port));
 		if (!isBase())
 			portProfiles.addAll(baseProfile.getInputPortProfiles());
@@ -307,7 +376,7 @@ public class ComponentProfile implements
 	@Override
 	public List<PortProfile> getOutputPortProfiles() {
 		List<PortProfile> portProfiles = new ArrayList<PortProfile>();
-		for (Port port : profileDoc.getComponent().getOutputPort())
+		for (Port port : getProfileDocument().getComponent().getOutputPort())
 			portProfiles.add(new PortProfile(this, port));
 		if (!isBase())
 			portProfiles.addAll(baseProfile.getOutputPortProfiles());
@@ -331,7 +400,8 @@ public class ComponentProfile implements
 	@Override
 	public List<ActivityProfile> getActivityProfiles() {
 		List<ActivityProfile> activityProfiles = new ArrayList<ActivityProfile>();
-		for (Activity activity : profileDoc.getComponent().getActivity())
+		for (Activity activity : getProfileDocument().getComponent()
+				.getActivity())
 			activityProfiles.add(new ActivityProfile(this, activity));
 		return activityProfiles;
 	}
@@ -362,8 +432,8 @@ public class ComponentProfile implements
 
 	private List<SemanticAnnotationProfile> getComponentProfiles() {
 		List<SemanticAnnotationProfile> saProfiles = new ArrayList<SemanticAnnotationProfile>();
-		for (SemanticAnnotation semanticAnnotation : profileDoc.getComponent()
-				.getSemanticAnnotation())
+		for (SemanticAnnotation semanticAnnotation : getProfileDocument()
+				.getComponent().getSemanticAnnotation())
 			saProfiles.add(new SemanticAnnotationProfile(this,
 					semanticAnnotation));
 		return saProfiles;
@@ -377,8 +447,8 @@ public class ComponentProfile implements
 			OntProperty prop = semanticAnnotationProfile.getPredicate();
 			if (prop != null && !predicates.contains(prop)) {
 				predicates.add(prop);
- 				uniqueSemanticAnnotations.add(semanticAnnotationProfile);
- 			}
+				uniqueSemanticAnnotations.add(semanticAnnotationProfile);
+			}
 		}
 		return uniqueSemanticAnnotations;
 	}
@@ -386,8 +456,8 @@ public class ComponentProfile implements
 	@Override
 	public ExceptionHandling getExceptionHandling() {
 		if (exceptionHandling == null)
-			if (profileDoc.getComponent().getExceptionHandling() != null)
-				exceptionHandling = new ExceptionHandling(profileDoc
+			if (getProfileDocument().getComponent().getExceptionHandling() != null)
+				exceptionHandling = new ExceptionHandling(getProfileDocument()
 						.getComponent().getExceptionHandling());
 		return exceptionHandling;
 	}
@@ -417,13 +487,15 @@ public class ComponentProfile implements
 		if (getClass() != obj.getClass())
 			return false;
 		ComponentProfile other = (ComponentProfile) obj;
+		if (!loaded || !other.loaded)
+			return false;
 		if (getId() == null)
 			return other.getId() == null;
 		return getId().equals(other.getId());
 	}
 
 	public OntClass getClass(String className) {
-		for (Ontology ontology : profileDoc.getOntology()) {
+		for (Ontology ontology : getProfileDocument().getOntology()) {
 			OntModel ontModel = getOntology(ontology.getId());
 			if (ontModel != null) {
 				OntClass result = ontModel.getOntClass(className);
