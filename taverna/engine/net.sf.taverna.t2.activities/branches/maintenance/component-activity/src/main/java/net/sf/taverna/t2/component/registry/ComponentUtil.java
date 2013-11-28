@@ -42,8 +42,9 @@ public class ComponentUtil {
 				registry = NewComponentRegistryLocator
 						.getComponentRegistry(registryBase);
 			else
-				registry = OldComponentRegistryLocator
-						.getComponentRegistry(registryBase);
+				throw new RegistryException("Unable to establish credentials for " + registryBase.toString());
+//				registry = OldComponentRegistryLocator
+//						.getComponentRegistry(registryBase);
 		} else {
 			registry = LocalComponentRegistryLocator
 					.getComponentRegistry(registryBase);
