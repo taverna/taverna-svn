@@ -26,6 +26,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationE
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
+import net.sf.taverna.t2.workflowmodel.processor.activity.LockedNestedDataflow;
 import net.sf.taverna.t2.workflowmodel.processor.activity.NestedDataflow;
 import net.sf.taverna.t2.workflowmodel.utils.AnnotationTools;
 
@@ -34,7 +35,7 @@ import org.apache.log4j.Logger;
 public class ComponentActivity extends
 		AbstractAsynchronousActivity<ComponentActivityConfigurationBean>
 		implements AsynchronousActivity<ComponentActivityConfigurationBean>,
-		NestedDataflow {
+		LockedNestedDataflow {
 	private static final Logger logger = getLogger(ComponentActivity.class);
 	private static final EditManager em = EditManager.getInstance();
 	private static final Edits EDITS = em.getEdits();
