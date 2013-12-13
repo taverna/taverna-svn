@@ -16,6 +16,7 @@ import static net.sf.taverna.t2.workflowmodel.utils.Tools.getActivityInputPort;
 import static net.sf.taverna.t2.workflowmodel.utils.Tools.getActivityOutputPort;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 
 import net.sf.taverna.t2.component.ComponentActivity;
 import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
@@ -47,6 +49,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.NestedDataflow;
+import net.sf.taverna.t2.workflowmodel.utils.Tools;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -72,18 +75,24 @@ public class ReplaceByComponentAction extends AbstractAction {
 		JPanel overallPanel = new JPanel(new BorderLayout());
 		ComponentChooserPanel panel = new ComponentChooserPanel();
 		overallPanel.add(panel, CENTER);
+		JPanel checkBoxPanel = new JPanel(new FlowLayout());
 		JCheckBox replaceAllCheckBox = new JCheckBox(
 				"Replace all matching services");
-		overallPanel.add(replaceAllCheckBox, SOUTH);
+		checkBoxPanel.add(replaceAllCheckBox);
+		checkBoxPanel.add(new JSeparator());
+		final JCheckBox renameServicesCheckBox = new JCheckBox("Rename service(s)");
+		checkBoxPanel.add(renameServicesCheckBox);
+		renameServicesCheckBox.setSelected(true);
+		overallPanel.add(checkBoxPanel, SOUTH);
 		int answer = showConfirmDialog(null, overallPanel, "Component choice",
 				OK_CANCEL_OPTION);
 		if (answer == OK_OPTION)
 			doReplace(panel.getChosenRegistry(), panel.getChosenFamily(),
-					replaceAllCheckBox.isSelected(), panel.getChosenComponent());
+					replaceAllCheckBox.isSelected(), renameServicesCheckBox.isSelected(), panel.getChosenComponent());
 	}
 
 	private void doReplace(Registry chosenRegistry, Family chosenFamily,
-			boolean selected, Component chosenComponent) {
+			boolean replaceAll, boolean rename, Component chosenComponent) {
 		Version chosenVersion = chosenComponent.getComponentVersionMap().get(
 				chosenComponent.getComponentVersionMap().lastKey());
 		Version.ID ident = new ComponentVersionIdentification(
@@ -94,15 +103,15 @@ public class ReplaceByComponentAction extends AbstractAction {
 				ident);
 
 		try {
-			if (selected) {
+			if (replaceAll) {
 				Activity<?> baseActivity = selection.getActivityList().get(0);
 				Class<?> activityClass = baseActivity.getClass();
 				String configString = getConfigString(baseActivity);
 
-				replaceAllMatchingActivities(activityClass, cacb, configString,
+				replaceAllMatchingActivities(activityClass, cacb, configString, rename,
 						fileManager.getCurrentDataflow());
 			} else
-				replaceActivity(cacb, selection,
+				replaceActivity(cacb, selection, rename,
 						fileManager.getCurrentDataflow());
 		} catch (ActivityConfigurationException e) {
 			showMessageDialog(
@@ -122,21 +131,21 @@ public class ReplaceByComponentAction extends AbstractAction {
 
 	private void replaceAllMatchingActivities(Class<?> activityClass,
 			ComponentActivityConfigurationBean cacb, String configString,
-			Dataflow d) throws ActivityConfigurationException {
+			boolean rename, Dataflow d) throws ActivityConfigurationException {
 		for (Processor p : d.getProcessors()) {
 			Activity<?> a = p.getActivityList().get(0);
 			if (a.getClass().equals(activityClass)
 					&& getConfigString(a).equals(configString))
-				replaceActivity(cacb, p, d);
+				replaceActivity(cacb, p, rename, d);
 			else if (a instanceof NestedDataflow)
-				replaceAllMatchingActivities(activityClass, cacb, configString,
+				replaceAllMatchingActivities(activityClass, cacb, configString, rename,
 						((NestedDataflow) a).getNestedDataflow());
 
 		}
 	}
 
 	private void replaceActivity(ComponentActivityConfigurationBean cacb,
-			Processor p, Dataflow d) throws ActivityConfigurationException {
+			Processor p, boolean rename, Dataflow d) throws ActivityConfigurationException {
 		final Activity<?> originalActivity = p.getActivityList().get(0);
 
 		ComponentActivity replacementActivity = new ComponentActivity();
@@ -201,6 +210,12 @@ public class ReplaceByComponentAction extends AbstractAction {
 				replacementActivity));
 		currentWorkflowEditList.add(edits.getRemoveActivityEdit(p,
 				originalActivity));
+		
+		if (rename) {
+			String possibleName =  replacementActivity.getConfiguration().getComponentName();
+			String newName = Tools.uniqueProcessorName(Tools.sanitiseName(possibleName), d);
+			currentWorkflowEditList.add(edits.getRenameProcessorEdit(p, newName));
+		}
 		try {
 			em.doDataflowEdit(d, new CompoundEdit(currentWorkflowEditList));
 		} catch (EditException e) {
