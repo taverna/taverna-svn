@@ -3,6 +3,7 @@
  */
 package net.sf.taverna.t2.component.ui.menu;
 
+
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.SOUTH;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
