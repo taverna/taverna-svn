@@ -85,19 +85,28 @@ class NewComponentRegistry extends ComponentRegistry {
 		}
 	}
 
-	final Client client;
+	Client client;
+	private URL registryBase2;
 
 	protected NewComponentRegistry(URL registryBase) throws RegistryException {
 		super(registryBase);
-		try {
-			client = new Client(jaxbContext, registryBase);
-		} catch (Exception e) {
-			throw new RegistryException("Unable to access registry", e);
+
+	}
+	
+	private void checkClientCreated() throws RegistryException {
+		if (client == null) {
+			try {
+				client = new Client(jaxbContext, super.getRegistryBase());
+			} catch (Exception e) {
+				throw new RegistryException("Unable to access registry", e);
+			}			
 		}
 	}
 
+
 	private List<Description> listComponentFamilies(String profileUri)
 			throws RegistryException {
+		checkClientCreated();
 		return client.get(ComponentFamilyList.class, COMPONENT_FAMILY_LIST,
 				"component-profile=" + profileUri,
 				"elements=" + NewComponentFamily.ELEMENTS).getPack();
@@ -105,9 +114,12 @@ class NewComponentRegistry extends ComponentRegistry {
 
 	ComponentType getComponentById(String id, Integer version, String elements)
 			throws RegistryException {
-		if (version != null)
+		checkClientCreated();
+
+		if (version != null) {
 			return client.get(ComponentType.class, WORKFLOW_SERVICE,
 					"id=" + id, "version=" + version, "elements=" + elements);
+		}
 		return client.get(ComponentType.class, WORKFLOW_SERVICE, "id=" + id,
 				"elements=" + elements);
 	}
@@ -115,12 +127,16 @@ class NewComponentRegistry extends ComponentRegistry {
 	@SuppressWarnings("unused")
 	private ComponentFamilyType getComponentFamilyById(String id,
 			String elements) throws RegistryException {
+		checkClientCreated();
+
 		return client.get(ComponentFamilyType.class, PACK_SERVICE, "id=" + id,
 				"elements=" + elements);
 	}
 
 	private ComponentProfileType getComponentProfileById(String id,
 			String elements) throws RegistryException {
+		checkClientCreated();
+
 		return client.get(ComponentProfileType.class, FILE_SERVICE, "id=" + id,
 				"elements=" + elements);
 	}
@@ -141,6 +157,8 @@ class NewComponentRegistry extends ComponentRegistry {
 			SharingPolicy sharingPolicy) throws RegistryException {
 		NewComponentProfile profile = (NewComponentProfile) componentProfile;
 
+		checkClientCreated();
+
 		return new NewComponentFamily(this, profile, client.post(
 				ComponentFamilyType.class,
 				objectFactory.createPack(makeComponentFamilyCreateRequest(
@@ -153,11 +171,15 @@ class NewComponentRegistry extends ComponentRegistry {
 	protected void internalRemoveComponentFamily(Family componentFamily)
 			throws RegistryException {
 		NewComponentFamily ncf = (NewComponentFamily) componentFamily;
+		checkClientCreated();
+
 		client.delete(WORKFLOW_SERVICE, "id=" + ncf.getId());
 	}
 
 	@Override
 	protected void populateProfileCache() throws RegistryException {
+		checkClientCreated();
+
 		for (Description cpd : client.get(ComponentProfileList.class,
 				COMPONENT_PROFILE_LIST,
 				"elements=" + NewComponentProfile.ELEMENTS).getFile())
@@ -182,6 +204,8 @@ class NewComponentRegistry extends ComponentRegistry {
 		} catch (RegistryException e) {
 			// Do nothing but fall through
 		}
+		checkClientCreated();
+
 		return new NewComponentProfile(this, client.post(
 				ComponentProfileType.class, objectFactory
 						.createFile(makeComponentProfileCreateRequest(
@@ -265,6 +289,8 @@ class NewComponentRegistry extends ComponentRegistry {
 	}
 
 	private List<Description> listPolicies() throws RegistryException {
+		checkClientCreated();
+
 		return client.get(PolicyList.class, POLICY_LIST, "type=group")
 				.getPolicy();
 	}
@@ -282,6 +308,8 @@ class NewComponentRegistry extends ComponentRegistry {
 	}
 
 	private List<LicenseType> listLicenses() throws RegistryException {
+		checkClientCreated();
+
 		return client.get(LicenseList.class, LICENSE_LIST,
 				"elements=" + NewComponentLicense.ELEMENTS).getLicense();
 	}
@@ -311,6 +339,8 @@ class NewComponentRegistry extends ComponentRegistry {
 
 	private List<Description> listComponents(String query, String prefixes)
 			throws RegistryException {
+		checkClientCreated();
+
 		return client.get(ComponentDescriptionList.class, COMPONENT_LIST,
 				"query=" + query, "prefixes=" + prefixes,
 				"elements=" + NewComponent.ELEMENTS).getWorkflow();
@@ -340,6 +370,8 @@ class NewComponentRegistry extends ComponentRegistry {
 
 	private List<Description> listComponents(String familyUri)
 			throws RegistryException {
+		checkClientCreated();
+
 		return client.get(ComponentDescriptionList.class, COMPONENT_LIST,
 				"component-family=" + familyUri,
 				"elements=" + NewComponent.ELEMENTS).getWorkflow();
@@ -355,6 +387,8 @@ class NewComponentRegistry extends ComponentRegistry {
 
 	protected void deleteComponent(NewComponent component)
 			throws RegistryException {
+		checkClientCreated();
+
 		client.delete(WORKFLOW_SERVICE, "id=" + component.getId());
 	}
 
@@ -362,6 +396,8 @@ class NewComponentRegistry extends ComponentRegistry {
 			String componentName, String description, Dataflow dataflow,
 			License license, SharingPolicy sharingPolicy)
 			throws RegistryException {
+		checkClientCreated();
+
 		ComponentType ct = client.post(ComponentType.class, objectFactory
 				.createWorkflow(makeComponentVersionCreateRequest(
 						componentName, description, dataflow, family, license,
@@ -375,6 +411,8 @@ class NewComponentRegistry extends ComponentRegistry {
 			String componentName, String description, Dataflow dataflow,
 			License license, SharingPolicy sharingPolicy)
 			throws RegistryException {
+		checkClientCreated();
+
 		ComponentType ct = client.post(ComponentType.class, objectFactory
 				.createWorkflow(makeComponentVersionCreateRequest(
 						componentName, description, dataflow, component.family,

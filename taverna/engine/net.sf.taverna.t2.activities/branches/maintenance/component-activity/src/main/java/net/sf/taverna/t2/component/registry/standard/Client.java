@@ -63,9 +63,13 @@ class Client {
 	private final JAXBContext jaxbContext;
 
 	Client(JAXBContext context, URL repository) throws RegistryException {
+		this(context, repository, true);
+	}
+
+	Client(JAXBContext context, URL repository, boolean tryLogIn) throws RegistryException {
 		this.registryBase = repository;
 		this.jaxbContext = context;
-		this.http = new MyExperimentConnector();
+		this.http = new MyExperimentConnector(tryLogIn);
 		logger.info("instantiated client connection engine to " + repository);
 	}
 
@@ -317,42 +321,48 @@ class Client {
 		// authentication settings (and the current user)
 		private String authString = null;
 
-		MyExperimentConnector() throws RegistryException {
-			// check if the stored credentials are valid
-			ServerResponse response = null;
-			try {
-				String userPass = getCredentials(registryBase.toString());
-				if (userPass == null)
-					throw new RegistryException("no credentials available for "
-							+ registryBase);
-
-				// set the system to the "logged in" state from INI file
-				// properties
-				authString = userPass;
-				response = GET(registryBase.toString() + WHOAMI);
-			} catch (Exception e) {
-				throw new RegistryException(
-						"failed when verifying login credentials", e);
-			}
-
-			if (response == null || response.getCode() != HTTP_OK) {
+		MyExperimentConnector(final boolean tryLogIn) throws RegistryException {
+			if (tryLogIn) {
+				// check if the stored credentials are valid
+				ServerResponse response = null;
 				try {
-					if (response != null)
-						throw new RegistryException("failed to log in: "
-								+ response.getError());
-					else
-						throw new RegistryException("unauthorized");
-				} finally {
+					String userPass = getCredentials(registryBase.toString());
+					if (userPass == null) 
+						logger.debug(
+								"no credentials available for " + registryBase);
+					else {
+						// set the system to the "logged in" state from INI file
+						// properties
+						authString = userPass;
+						response = GET(registryBase.toString() + WHOAMI);
+					}
+				} catch (Exception e) {
+					authString = null;
+					logger.debug(
+							"failed when verifying login credentials", e);
+				}
+
+				if (response == null || response.getCode() != HTTP_OK) {
 					try {
-						authString = null;
-						clearCredentials(registryBase.toString());
-					} catch (Exception e) {
-						throw new RegistryException(
-								"failed to clear credentials", e);
+						if (response != null)
+							throw new RegistryException("failed to log in: "
+									+ response.getError());
+//						else
+//							throw new RegistryException("unauthorized");
+					} finally {
+						try {
+							authString = null;
+							clearCredentials(registryBase.toString());
+						} catch (Exception e) {
+							throw new RegistryException(
+									"failed to clear credentials", e);
+						}
 					}
 				}
+				if (authString != null) {
+					logger.debug("logged in to repository successfully");
+				}
 			}
-			logger.debug("logged in to repository successfully");
 		}
 
 		// getter for the current status
