@@ -9,6 +9,7 @@ import java.util.Map;
 import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.profile.ExceptionHandling;
+import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.impl.InvocationContextImpl;
 import net.sf.taverna.t2.reference.ReferenceService;
@@ -44,6 +45,8 @@ public class ComponentActivity extends
 	private volatile DataflowActivity componentRealization = new DataflowActivity();
 	private ComponentActivityConfigurationBean configBean;
 	private DataflowImpl skeletonDataflow = null;
+	
+	private Dataflow realizingDataflow = null;
 
 	@Override
 	public void configure(ComponentActivityConfigurationBean configBean)
@@ -132,17 +135,22 @@ public class ComponentActivity extends
 			throws ActivityConfigurationException {
 		synchronized (componentRealization) {
 			if (componentRealization.getConfiguration() == null) {
-				Dataflow d;
+//				try {
+//					d = getDataflow(configBean);
+//				} catch (RegistryException e) {
+//					throw new ActivityConfigurationException(
+//							"Unable to read dataflow", e);
+//				}
 				try {
-					d = getDataflow(configBean);
-				} catch (RegistryException e) {
-					throw new ActivityConfigurationException(
-							"Unable to read dataflow", e);
+					checkRealizingDataflow();
+					componentRealization.configure(realizingDataflow);
+				} catch (RegistryException e1) {
+					logger.error("Unable to read dataflow", e1);
+					throw new ActivityConfigurationException("Unable to read dataflow", e1);
 				}
-				componentRealization.configure(d);
 
 				for (Class<?> c : aTools.getAnnotatingClasses(this)) {
-					String annotationValue = aTools.getAnnotationString(d, c,
+					String annotationValue = aTools.getAnnotationString(realizingDataflow, c,
 							null);
 					if (annotationValue == null)
 						continue;
@@ -159,6 +167,12 @@ public class ComponentActivity extends
 		}
 	}
 
+	private void checkRealizingDataflow() throws RegistryException {
+		if (realizingDataflow == null) {
+			realizingDataflow = ComponentUtil.calculateComponentVersion(getConfiguration()).getDataflow();
+		}		
+	}
+	
 	@Override
 	public Dataflow getNestedDataflow() {
 		// FIXME To go when integrated into Taverna properly
@@ -167,7 +181,9 @@ public class ComponentActivity extends
 			if (elem.getClassName().contains("GraphController"))
 				return skeletonDataflow;
 		try {
-			return getDataflow(configBean);
+			checkRealizingDataflow();
+			return realizingDataflow;
+//			return getDataflow(configBean);
 		} catch (RegistryException e) {
 			logger.error("failed to get component realization", e);
 		}
