@@ -6,10 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import javax.swing.ImageIcon;
-
-import net.sf.taverna.t2.component.registry.myexperiment.client.utils.Base64;
-
 import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -28,7 +24,6 @@ private String name;
   private String email;
   private String website;
 
-  private ImageIcon avatar;
   private String avatar_uri;
   private String avatar_resource;
 
@@ -94,22 +89,7 @@ private String name;
 	this.avatar_uri = avatar_uri;
   }
 
-  public ImageIcon getAvatar() {
-	return avatar;
-  }
-
   // creates avatar from the XML of it
-  public void setAvatar(Document doc) {
-	Element root = doc.getRootElement();
-	String strAvatarData = root.getChild("data").getText();
-
-	this.avatar = new ImageIcon(Base64.decode(strAvatarData));
-  }
-
-  public void setAvatar(ImageIcon avatar) {
-	this.avatar = avatar;
-  }
-
   public String getAvatarResource() {
 	return avatar_resource;
   }

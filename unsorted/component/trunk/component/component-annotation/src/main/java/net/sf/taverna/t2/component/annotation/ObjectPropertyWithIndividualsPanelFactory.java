@@ -68,11 +68,10 @@ public class ObjectPropertyWithIndividualsPanelFactory extends
 	public int getRatingForSemanticAnnotation(
 			SemanticAnnotationProfile semanticAnnotationProfile) {
 		OntProperty property = semanticAnnotationProfile.getPredicate();
-		if (property.isObjectProperty() /*
-										 * &&
-										 * !semanticAnnotationProfile.getIndividuals
-										 * ().isEmpty()
-										 */)
+		if (property != null && property.isObjectProperty())
+			/*
+			 * && !semanticAnnotationProfile.getIndividuals().isEmpty()
+			 */
 			return 100;
 		return MIN_VALUE;
 	}

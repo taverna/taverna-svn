@@ -22,7 +22,7 @@ package net.sf.taverna.t2.component.registry.myexperiment;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.URLEncoder.encode;
-import static net.sf.taverna.t2.component.registry.myexperiment.client.utils.Base64.encodeBytes;
+import static javax.xml.bind.DatatypeConverter.printBase64Binary;
 import static org.apache.log4j.Logger.getLogger;
 
 import java.io.UnsupportedEncodingException;
@@ -43,7 +43,6 @@ import net.sf.taverna.t2.component.registry.ComponentRegistry;
 import net.sf.taverna.t2.component.registry.ComponentVersionIdentification;
 import net.sf.taverna.t2.component.registry.myexperiment.client.MyExperimentClient;
 import net.sf.taverna.t2.component.registry.myexperiment.client.ServerResponse;
-import net.sf.taverna.t2.component.registry.myexperiment.client.utils.Base64;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -360,7 +359,7 @@ class MyExperimentComponentRegistry extends ComponentRegistry {
 					.append("<content-type>application/vnd.taverna.t2flow+xml</content-type>");
 			contentXml.append("<content encoding=\"base64\" type=\"binary\">");
 			try {
-				contentXml.append(encodeBytes(dataflow.getBytes("UTF-8")));
+				contentXml.append(printBase64Binary(dataflow.getBytes("UTF-8")));
 			} catch (UnsupportedEncodingException e) {
 				throw new RegistryException("Unable to encode workflow", e);
 			}
@@ -398,7 +397,7 @@ class MyExperimentComponentRegistry extends ComponentRegistry {
 		contentXml.append("<type>").append(type).append("</type>");
 		contentXml.append("<content encoding=\"base64\" type=\"binary\">");
 		try {
-			contentXml.append(Base64.encodeBytes(content.getBytes("UTF-8")));
+			contentXml.append(printBase64Binary(content.getBytes("UTF-8")));
 		} catch (UnsupportedEncodingException e1) {
 			throw new RegistryException("Unknown encoding", e1);
 		}

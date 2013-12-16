@@ -97,8 +97,13 @@ public class ComponentVersionChooserPanel extends JPanel implements
 	public Version getChosenComponentVersion() {
 		if (componentVersionMap.isEmpty())
 			return null;
-		return componentVersionMap
-				.get(componentVersionChoice.getSelectedItem());
+		try {
+			return componentVersionMap.get(new Integer(componentVersionChoice
+					.getSelectedItem().toString()));
+		} catch (NumberFormatException nfe) {
+			// Not a number, no version chosen
+			return null;
+		}
 	}
 
 	@Override
@@ -141,7 +146,7 @@ public class ComponentVersionChooserPanel extends JPanel implements
 		protected void done() {
 			componentVersionChoice.removeAllItems();
 			for (Integer versionNumber : componentVersionMap.keySet())
-				componentVersionChoice.addItem(versionNumber);
+				componentVersionChoice.addItem(versionNumber.toString());
 
 			if (!componentVersionMap.isEmpty()) {
 				componentVersionChoice.setSelectedItem(componentVersionMap

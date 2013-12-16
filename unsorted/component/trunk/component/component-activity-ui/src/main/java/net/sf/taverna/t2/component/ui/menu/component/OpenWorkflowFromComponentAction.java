@@ -70,14 +70,15 @@ public class OpenWorkflowFromComponentAction extends AbstractAction {
 			Dataflow d = fm.openDataflow(ComponentFileType.instance, ident);
 
 			final GraphController gc = graphControllerMap.get(d);
-			invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					SVGGraph g = (SVGGraph) gc.getGraph();
-					g.setFillColor(RED);
-					gc.redraw();
-				}
-			});
+			if (gc != null)
+				invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						SVGGraph g = (SVGGraph) gc.getGraph();
+						g.setFillColor(RED);
+						gc.redraw();
+					}
+				});
 		} catch (OpenException e) {
 			logger.error("failed to open component definition", e);
 		}

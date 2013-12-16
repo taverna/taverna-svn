@@ -85,51 +85,53 @@ class NewComponentRegistry extends ComponentRegistry {
 		}
 	}
 
-	final Client client;
+	private Client client;
+
+	synchronized Client getClient() throws RegistryException {
+		if (client == null)
+			client = new Client(jaxbContext, super.getRegistryBase(), true);
+		return client;
+	}
 
 	protected NewComponentRegistry(URL registryBase) throws RegistryException {
 		super(registryBase);
-		try {
-			client = new Client(jaxbContext, registryBase);
-		} catch (Exception e) {
-			throw new RegistryException("Unable to access registry", e);
-		}
 	}
 
 	private List<Description> listComponentFamilies(String profileUri)
 			throws RegistryException {
-		return client.get(ComponentFamilyList.class, COMPONENT_FAMILY_LIST,
-				"component-profile=" + profileUri,
+		return getClient().get(ComponentFamilyList.class,
+				COMPONENT_FAMILY_LIST, "component-profile=" + profileUri,
 				"elements=" + NewComponentFamily.ELEMENTS).getPack();
 	}
 
 	ComponentType getComponentById(String id, Integer version, String elements)
 			throws RegistryException {
 		if (version != null)
-			return client.get(ComponentType.class, WORKFLOW_SERVICE,
+			return getClient().get(ComponentType.class, WORKFLOW_SERVICE,
 					"id=" + id, "version=" + version, "elements=" + elements);
-		return client.get(ComponentType.class, WORKFLOW_SERVICE, "id=" + id,
-				"elements=" + elements);
+		return getClient().get(ComponentType.class, WORKFLOW_SERVICE,
+				"id=" + id, "elements=" + elements);
 	}
 
 	@SuppressWarnings("unused")
 	private ComponentFamilyType getComponentFamilyById(String id,
 			String elements) throws RegistryException {
-		return client.get(ComponentFamilyType.class, PACK_SERVICE, "id=" + id,
-				"elements=" + elements);
+		return getClient().get(ComponentFamilyType.class, PACK_SERVICE,
+				"id=" + id, "elements=" + elements);
 	}
 
 	private ComponentProfileType getComponentProfileById(String id,
 			String elements) throws RegistryException {
-		return client.get(ComponentProfileType.class, FILE_SERVICE, "id=" + id,
-				"elements=" + elements);
+		return getClient().get(ComponentProfileType.class, FILE_SERVICE,
+				"id=" + id, "elements=" + elements);
 	}
 
 	@Override
 	protected void populateFamilyCache() throws RegistryException {
 		for (Profile pr : getComponentProfiles()) {
 			NewComponentProfile p = (NewComponentProfile) pr;
-			for (Description cfd : listComponentFamilies(p.getResourceLocation()))
+			for (Description cfd : listComponentFamilies(p
+					.getResourceLocation()))
 				familyCache.put(getElementString(cfd, "title"),
 						new NewComponentFamily(this, p, cfd));
 		}
@@ -141,24 +143,24 @@ class NewComponentRegistry extends ComponentRegistry {
 			SharingPolicy sharingPolicy) throws RegistryException {
 		NewComponentProfile profile = (NewComponentProfile) componentProfile;
 
-		return new NewComponentFamily(this, profile, client.post(
+		return new NewComponentFamily(this, profile, getClient().post(
 				ComponentFamilyType.class,
 				objectFactory.createPack(makeComponentFamilyCreateRequest(
 						profile, familyName, description, license,
-						sharingPolicy)), COMPONENT_FAMILY_SERVICE, "elements="
-						+ NewComponentFamily.ELEMENTS));
+						sharingPolicy)), COMPONENT_FAMILY_SERVICE,
+				"elements=" + NewComponentFamily.ELEMENTS));
 	}
 
 	@Override
 	protected void internalRemoveComponentFamily(Family componentFamily)
 			throws RegistryException {
 		NewComponentFamily ncf = (NewComponentFamily) componentFamily;
-		client.delete(WORKFLOW_SERVICE, "id=" + ncf.getId());
+		getClient().delete(WORKFLOW_SERVICE, "id=" + ncf.getId());
 	}
 
 	@Override
 	protected void populateProfileCache() throws RegistryException {
-		for (Description cpd : client.get(ComponentProfileList.class,
+		for (Description cpd : getClient().get(ComponentProfileList.class,
 				COMPONENT_PROFILE_LIST,
 				"elements=" + NewComponentProfile.ELEMENTS).getFile())
 			if (cpd.getUri() != null && !cpd.getUri().isEmpty())
@@ -182,13 +184,13 @@ class NewComponentRegistry extends ComponentRegistry {
 		} catch (RegistryException e) {
 			// Do nothing but fall through
 		}
-		return new NewComponentProfile(this, client.post(
-				ComponentProfileType.class, objectFactory
-						.createFile(makeComponentProfileCreateRequest(
-								componentProfile.getName(),
-								componentProfile.getDescription(),
-								componentProfile.getXML(), license,
-								sharingPolicy)), COMPONENT_PROFILE_SERVICE,
+		return new NewComponentProfile(this, getClient().post(
+				ComponentProfileType.class,
+				objectFactory.createFile(makeComponentProfileCreateRequest(
+						componentProfile.getName(),
+						componentProfile.getDescription(),
+						componentProfile.getXML(), license, sharingPolicy)),
+				COMPONENT_PROFILE_SERVICE,
 				"elements=" + NewComponentProfile.ELEMENTS));
 	}
 
@@ -265,7 +267,7 @@ class NewComponentRegistry extends ComponentRegistry {
 	}
 
 	private List<Description> listPolicies() throws RegistryException {
-		return client.get(PolicyList.class, POLICY_LIST, "type=group")
+		return getClient().get(PolicyList.class, POLICY_LIST, "type=group")
 				.getPolicy();
 	}
 
@@ -282,7 +284,7 @@ class NewComponentRegistry extends ComponentRegistry {
 	}
 
 	private List<LicenseType> listLicenses() throws RegistryException {
-		return client.get(LicenseList.class, LICENSE_LIST,
+		return getClient().get(LicenseList.class, LICENSE_LIST,
 				"elements=" + NewComponentLicense.ELEMENTS).getLicense();
 	}
 
@@ -311,7 +313,7 @@ class NewComponentRegistry extends ComponentRegistry {
 
 	private List<Description> listComponents(String query, String prefixes)
 			throws RegistryException {
-		return client.get(ComponentDescriptionList.class, COMPONENT_LIST,
+		return getClient().get(ComponentDescriptionList.class, COMPONENT_LIST,
 				"query=" + query, "prefixes=" + prefixes,
 				"elements=" + NewComponent.ELEMENTS).getWorkflow();
 	}
@@ -340,7 +342,7 @@ class NewComponentRegistry extends ComponentRegistry {
 
 	private List<Description> listComponents(String familyUri)
 			throws RegistryException {
-		return client.get(ComponentDescriptionList.class, COMPONENT_LIST,
+		return getClient().get(ComponentDescriptionList.class, COMPONENT_LIST,
 				"component-family=" + familyUri,
 				"elements=" + NewComponent.ELEMENTS).getWorkflow();
 	}
@@ -355,18 +357,19 @@ class NewComponentRegistry extends ComponentRegistry {
 
 	protected void deleteComponent(NewComponent component)
 			throws RegistryException {
-		client.delete(WORKFLOW_SERVICE, "id=" + component.getId());
+		getClient().delete(WORKFLOW_SERVICE, "id=" + component.getId());
 	}
 
 	protected Version createComponentFrom(NewComponentFamily family,
 			String componentName, String description, Dataflow dataflow,
 			License license, SharingPolicy sharingPolicy)
 			throws RegistryException {
-		ComponentType ct = client.post(ComponentType.class, objectFactory
-				.createWorkflow(makeComponentVersionCreateRequest(
+		ComponentType ct = getClient().post(
+				ComponentType.class,
+				objectFactory.createWorkflow(makeComponentVersionCreateRequest(
 						componentName, description, dataflow, family, license,
-						sharingPolicy)), COMPONENT_SERVICE, "elements="
-				+ NewComponent.ELEMENTS);
+						sharingPolicy)), COMPONENT_SERVICE,
+				"elements=" + NewComponent.ELEMENTS);
 		NewComponent nc = new NewComponent(this, family, ct);
 		return nc.new Version(ct.getVersion(), description, dataflow);
 	}
@@ -375,11 +378,12 @@ class NewComponentRegistry extends ComponentRegistry {
 			String componentName, String description, Dataflow dataflow,
 			License license, SharingPolicy sharingPolicy)
 			throws RegistryException {
-		ComponentType ct = client.post(ComponentType.class, objectFactory
-				.createWorkflow(makeComponentVersionCreateRequest(
+		ComponentType ct = getClient().post(
+				ComponentType.class,
+				objectFactory.createWorkflow(makeComponentVersionCreateRequest(
 						componentName, description, dataflow, component.family,
-						license, sharingPolicy)), COMPONENT_SERVICE, "id="
-				+ component.getId(), "elements=" + NewComponent.ELEMENTS);
+						license, sharingPolicy)), COMPONENT_SERVICE,
+				"id=" + component.getId(), "elements=" + NewComponent.ELEMENTS);
 		return component.new Version(ct.getVersion(), description, dataflow);
 	}
 

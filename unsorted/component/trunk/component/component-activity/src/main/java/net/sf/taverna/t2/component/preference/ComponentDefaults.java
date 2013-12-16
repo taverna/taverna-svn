@@ -13,9 +13,11 @@ import net.sf.taverna.raven.appconfig.ApplicationRuntime;
  * 
  */
 public class ComponentDefaults {
+	public static final String REGISTRY_LIST = "REGISTRY_NAMES";
 	private static final String LOCAL_NAME = "local registry";
 	private static final String MYEXPERIMENT_NAME = "myExperiment";
 	private static final String MYEXPERIMENT_SITE = "http://www.myexperiment.org";
+    public static final String DEFAULT_REGISTRY_LIST = LOCAL_NAME + "," + MYEXPERIMENT_NAME;
 
 	public static Map<String, String> getDefaultProperties() {
 		// Capacity = 2; we know that this is going to have 2 entries

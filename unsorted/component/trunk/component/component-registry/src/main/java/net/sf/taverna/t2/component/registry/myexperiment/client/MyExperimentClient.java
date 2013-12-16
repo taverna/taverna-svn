@@ -20,6 +20,9 @@
  ******************************************************************************/
 package net.sf.taverna.t2.component.registry.myexperiment.client;
 
+import static javax.xml.bind.DatatypeConverter.parseBase64Binary;
+import static javax.xml.bind.DatatypeConverter.printBase64Binary;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -47,7 +50,6 @@ import java.util.Properties;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.t2.component.registry.ClientVersion;
-import net.sf.taverna.t2.component.registry.myexperiment.client.utils.Base64;
 import net.sf.taverna.t2.security.credentialmanager.CMException;
 import net.sf.taverna.t2.security.credentialmanager.CredentialManager;
 import net.sf.taverna.t2.security.credentialmanager.UsernamePassword;
@@ -252,7 +254,7 @@ public class MyExperimentClient {
           // set the system to the "logged in" state from INI file properties
           this.LOGGED_IN = true;
           logger.info("this.LOGGED_IN set to true");
-          this.AUTH_STRING = Base64.encodeBytes((userPass.getUsername() + ":" + userPass.getPasswordAsString())
+          this.AUTH_STRING = printBase64Binary((userPass.getUsername() + ":" + userPass.getPasswordAsString())
               .getBytes("UTF-8"));
 
     	response = this.doMyExperimentGET(this.BASE_URL + "/whoami.xml");
@@ -602,7 +604,7 @@ public class MyExperimentClient {
             + strEncoding + "\nFormat: " + strDataFormat); }
 
     // all checks seem to be fine, decode workflow data
-    byte[] arrWorkflowData = Base64.decode(root.getChildText("content"));
+    byte[] arrWorkflowData = parseBase64Binary(root.getChildText("content"));
     w.setContent(arrWorkflowData);
 
     return (w);

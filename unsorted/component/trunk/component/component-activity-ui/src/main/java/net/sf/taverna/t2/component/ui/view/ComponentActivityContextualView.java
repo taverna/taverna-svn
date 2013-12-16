@@ -102,19 +102,23 @@ public class ComponentActivityContextualView extends
 			logger.error("failed to get component version description", e);
 		}
 
-		List<ActivityInputPortDefinitionBean> inputPortDefinitions = getConfigBean()
-				.getPorts().getInputPortDefinitions();
-		if (!inputPortDefinitions.isEmpty()) {
-			appendHeaderRow(html, "Input Port Name", "Depth");
-			for (ActivityInputPortDefinitionBean bean : inputPortDefinitions)
-				appendPlainRow(html, bean.getName(), bean.getDepth());
-		}
-		List<ActivityOutputPortDefinitionBean> outputPortDefinitions = getConfigBean()
-				.getPorts().getOutputPortDefinitions();
-		if (!outputPortDefinitions.isEmpty()) {
-			appendHeaderRow(html, "Output Port Name", "Depth");
-			for (ActivityOutputPortDefinitionBean bean : outputPortDefinitions)
-				appendPlainRow(html, bean.getName(), bean.getDepth());
+		try {
+			List<ActivityInputPortDefinitionBean> inputPortDefinitions = getConfigBean()
+					.getPorts().getInputPortDefinitions();
+			if (!inputPortDefinitions.isEmpty()) {
+				appendHeaderRow(html, "Input Port Name", "Depth");
+				for (ActivityInputPortDefinitionBean bean : inputPortDefinitions)
+					appendPlainRow(html, bean.getName(), bean.getDepth());
+			}
+			List<ActivityOutputPortDefinitionBean> outputPortDefinitions = getConfigBean()
+					.getPorts().getOutputPortDefinitions();
+			if (!outputPortDefinitions.isEmpty()) {
+				appendHeaderRow(html, "Output Port Name", "Depth");
+				for (ActivityOutputPortDefinitionBean bean : outputPortDefinitions)
+					appendPlainRow(html, bean.getName(), bean.getDepth());
+			}
+		} catch (RegistryException e) {
+			logger.error("failed to get component port description", e);
 		}
 		return html.toString();
 	}

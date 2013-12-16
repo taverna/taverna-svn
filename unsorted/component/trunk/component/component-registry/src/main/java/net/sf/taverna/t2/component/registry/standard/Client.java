@@ -62,10 +62,11 @@ class Client {
 	private final URL registryBase;
 	private final JAXBContext jaxbContext;
 
-	Client(JAXBContext context, URL repository) throws RegistryException {
+	Client(JAXBContext context, URL repository, boolean tryLogIn)
+			throws RegistryException {
 		this.registryBase = repository;
 		this.jaxbContext = context;
-		this.http = new MyExperimentConnector();
+		this.http = new MyExperimentConnector(tryLogIn);
 		logger.info("instantiated client connection engine to " + repository);
 	}
 
@@ -317,8 +318,7 @@ class Client {
 		// authentication settings (and the current user)
 		private String authString = null;
 
-		MyExperimentConnector() throws RegistryException {
-			// check if the stored credentials are valid
+		private void processLogin() throws RegistryException {
 			ServerResponse response = null;
 			try {
 				String userPass = getCredentials(registryBase.toString());
@@ -331,6 +331,7 @@ class Client {
 				authString = userPass;
 				response = GET(registryBase.toString() + WHOAMI);
 			} catch (Exception e) {
+				authString = null;
 				throw new RegistryException(
 						"failed when verifying login credentials", e);
 			}
@@ -352,7 +353,21 @@ class Client {
 					}
 				}
 			}
-			logger.debug("logged in to repository successfully");
+		}
+
+		MyExperimentConnector(boolean doLogin) throws RegistryException {
+			if (doLogin)
+				// check if the stored credentials are valid
+				try {
+					processLogin();
+					logger.debug("logged in to repository successfully");
+				} catch (RegistryException e) {
+					logger.warn("login failed: " + e.getMessage());
+					throw e;
+				} catch (RuntimeException e) {
+					logger.warn("login failed: " + e);
+					throw new RegistryException("unexpected runtime exception", e);
+				}
 		}
 
 		// getter for the current status
@@ -367,10 +382,8 @@ class Client {
 			conn.setRequestMethod(method);
 			if (method.equals("POST") || method.equals("PUT"))
 				conn.setDoOutput(true);
-			if (method.equals("HEAD") || method.equals("DELETE"))
-				conn.setDoInput(false);
 			conn.setRequestProperty("User-Agent", PLUGIN_USER_AGENT);
-			if (authString != null)
+			if (isLoggedIn())
 				conn.setRequestProperty("Authorization", "Basic " + authString);
 			return conn;
 		}

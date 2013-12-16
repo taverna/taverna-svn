@@ -19,6 +19,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -61,7 +62,16 @@ public class ComponentPreferencePanel extends JPanel {
 
 	private RegistryTableModel tableModel = new RegistryTableModel();
 
-	private JTable registryTable = new JTable(tableModel);
+	@SuppressWarnings("serial")
+	private JTable registryTable = new JTable(tableModel) {
+		@Override
+		public String getToolTipText(MouseEvent me) {
+			int row = rowAtPoint(me.getPoint());
+			if (row >= 0)
+				return tableModel.getRowTooltipText(row);
+			return super.getToolTipText(me);
+		}
+	};
 
 	public ComponentPreferencePanel() {
 		super();

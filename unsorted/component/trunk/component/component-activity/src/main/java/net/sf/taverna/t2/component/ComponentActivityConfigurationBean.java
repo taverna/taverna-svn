@@ -39,7 +39,11 @@ public class ComponentActivityConfigurationBean extends
 
 	public ComponentActivityConfigurationBean(Version.ID toBeCopied) {
 		super(toBeCopied);
-		getPorts();
+		try {
+			getPorts();
+		} catch (RegistryException e) {
+			logger.error("failed to get component realization", e);
+		}
 	}
 
 	private ActivityPortsDefinitionBean getPortsDefinition(Dataflow d) {
@@ -91,13 +95,9 @@ public class ComponentActivityConfigurationBean extends
 	/**
 	 * @return the ports
 	 */
-	public ActivityPortsDefinitionBean getPorts() {
-		try {
-			if (ports == null)
-				ports = getPortsDefinition(getDataflow(this));
-		} catch (RegistryException e) {
-			logger.error("failed to get component realization", e);
-		}
+	public ActivityPortsDefinitionBean getPorts() throws RegistryException {
+		if (ports == null)
+			ports = getPortsDefinition(getDataflow(this));
 		return ports;
 	}
 
