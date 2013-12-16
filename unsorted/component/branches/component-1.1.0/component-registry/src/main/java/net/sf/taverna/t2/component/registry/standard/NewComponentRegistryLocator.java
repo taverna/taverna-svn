@@ -28,7 +28,7 @@ public class NewComponentRegistryLocator {
 
 	public static boolean verifyBase(URL registryBase) {
 		try {
-			return new Client(jaxbContext, registryBase).verify();
+			return new Client(jaxbContext, registryBase, false).verify();
 		} catch (Exception e) {
 			logger.info("failed to construct connection client to "
 					+ registryBase, e);

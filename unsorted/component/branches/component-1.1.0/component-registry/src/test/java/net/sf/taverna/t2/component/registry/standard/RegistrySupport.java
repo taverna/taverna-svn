@@ -24,12 +24,12 @@ class RegistrySupport {
 	public static void post() throws Exception {
 		NewComponentRegistry registry = (NewComponentRegistry) getComponentRegistry(componentRegistryUrl);
 		for (Profile p : registry.getComponentProfiles())
-			registry.client.delete("/file.xml", "id=" + p.getId());
+			registry.getClient().delete("/file.xml", "id=" + p.getId());
 		for (Family f : registry.getComponentFamilies()) {
 			for (Component c : f.getComponents())
 				registry.deleteComponent((NewComponent) c);
-			registry.client.delete("/pack.xml", "id="
-					+ ((NewComponentFamily) f).getId());
+			registry.getClient().delete("/pack.xml",
+					"id=" + ((NewComponentFamily) f).getId());
 		}
 	}
 }
