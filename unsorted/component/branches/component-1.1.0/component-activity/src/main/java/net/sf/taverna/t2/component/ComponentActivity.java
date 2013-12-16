@@ -1,7 +1,7 @@
 package net.sf.taverna.t2.component;
 
 import static java.lang.Thread.currentThread;
-import static net.sf.taverna.t2.component.registry.ComponentDataflowCache.getDataflow;
+import static net.sf.taverna.t2.component.registry.ComponentUtil.calculateComponentVersion;
 import static org.apache.log4j.Logger.getLogger;
 
 import java.util.Map;
@@ -40,9 +40,10 @@ public class ComponentActivity extends
 	private static final Edits EDITS = em.getEdits();
 	private static final AnnotationTools aTools = new AnnotationTools();
 
-	private volatile DataflowActivity componentRealization = new DataflowActivity();
+	private final DataflowActivity componentRealization = new DataflowActivity();
 	private ComponentActivityConfigurationBean configBean;
 	private DataflowImpl skeletonDataflow = null;
+	private volatile Dataflow realizingDataflow = null;
 
 	@Override
 	public void configure(ComponentActivityConfigurationBean configBean)
@@ -127,14 +128,22 @@ public class ComponentActivity extends
 		return configBean;
 	}
 
+	private Dataflow getRealizingDataflow() throws RegistryException {
+		if (realizingDataflow == null)
+			realizingDataflow = calculateComponentVersion(getConfiguration())
+					.getDataflow();
+		return realizingDataflow;
+	}
+
 	public DataflowActivity getComponentRealization()
 			throws ActivityConfigurationException {
 		synchronized (componentRealization) {
 			if (componentRealization.getConfiguration() == null) {
 				Dataflow d;
 				try {
-					d = getDataflow(configBean);
+					d = getRealizingDataflow();
 				} catch (RegistryException e) {
+					logger.error("unable to read dataflow", e);
 					throw new ActivityConfigurationException(
 							"Unable to read dataflow", e);
 				}
@@ -166,7 +175,7 @@ public class ComponentActivity extends
 			if (elem.getClassName().contains("GraphController"))
 				return skeletonDataflow;
 		try {
-			return getDataflow(configBean);
+			return getRealizingDataflow();
 		} catch (RegistryException e) {
 			logger.error("failed to get component realization", e);
 		}
