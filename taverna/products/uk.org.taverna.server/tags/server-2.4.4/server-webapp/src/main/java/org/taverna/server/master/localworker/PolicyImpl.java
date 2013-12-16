@@ -16,6 +16,7 @@ import org.taverna.server.master.common.Workflow;
 import org.taverna.server.master.exceptions.NoCreateException;
 import org.taverna.server.master.exceptions.NoDestroyException;
 import org.taverna.server.master.exceptions.NoUpdateException;
+import org.taverna.server.master.exceptions.OverloadedException;
 import org.taverna.server.master.interfaces.Policy;
 import org.taverna.server.master.interfaces.TavernaRun;
 import org.taverna.server.master.interfaces.TavernaSecurityContext;
@@ -84,7 +85,7 @@ class PolicyImpl implements Policy {
 			throw new NoCreateException(
 					"anonymous workflow creation not allowed");
 		if (runDB.countRuns() >= getMaxRuns())
-			throw new NoCreateException("server load exceeded; please wait");
+			throw new OverloadedException("server load exceeded; please wait");
 	}
 
 	@Override

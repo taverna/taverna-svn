@@ -55,6 +55,9 @@
 	<bean id="ExceptionProvider.NotOwner" class="org.taverna.server.master.rest.handler.NotOwnerHandler">
 		<property name="managementModel" ref="webapp.state" />
 	</bean>
+	<bean id="ExceptionProvider.Overloaded" class="org.taverna.server.master.rest.handler.OverloadedHandler">
+		<property name="managementModel" ref="webapp.state" />
+	</bean>
 	<bean id="ExceptionProvider.UnknownRun" class="org.taverna.server.master.rest.handler.UnknownRunHandler">
 		<property name="managementModel" ref="webapp.state" />
 	</bean>
