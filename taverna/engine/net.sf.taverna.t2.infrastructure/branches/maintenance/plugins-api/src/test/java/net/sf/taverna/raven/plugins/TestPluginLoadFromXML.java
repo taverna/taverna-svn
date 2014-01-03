@@ -1,6 +1,8 @@
 package net.sf.taverna.raven.plugins;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -15,7 +17,6 @@ import javax.xml.namespace.QName;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.x2008.xml.plugins.DescribedPlugin;
-import net.sf.taverna.x2008.xml.plugins.PluginDocument;
 import net.sf.taverna.x2008.xml.plugins.PluginsDocument;
 
 import org.apache.xmlbeans.XmlOptions;

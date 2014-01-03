@@ -21,9 +21,7 @@
 package net.sf.taverna.raven.launcher;
 
 import java.awt.GraphicsEnvironment;
-import java.io.IOException;
 import java.net.Authenticator;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import net.sf.taverna.raven.SplashScreen;
@@ -36,8 +34,6 @@ import net.sf.taverna.raven.prelauncher.PreLauncher;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.raven.spi.SpiRegistry;
-
-import org.apache.log4j.Logger;
 
 /**
  * Launcher called by the {@link PreLauncher} after making sure Raven etc. is on

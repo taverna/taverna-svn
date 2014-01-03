@@ -55,6 +55,8 @@ package net.sf.taverna.raven.plugins;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -76,12 +78,23 @@ public class TavernaPluginSite extends PluginSite {
 	private static Logger logger = Logger.getLogger(TavernaPluginSite.class);
 	private URL workingURL = null;
 	
-	private List<URL> urls;
+	private List<URI> urls = new ArrayList<URI>();
 	
-	public TavernaPluginSite(String name, URL [] urls) {
+	public TavernaPluginSite(String name, List<URI> uris) {
+	    super(name, uris.get(0));
+	    this.urls.addAll(uris);
+	}
+	
+	@Deprecated
+	@SuppressWarnings("deprecation")
+    public TavernaPluginSite(String name, URL [] urls) {
 		super(name,urls[0]);
-		this.urls=new ArrayList<URL>();
-		for (URL url : urls) this.urls.add(url);
+		for (URL url : urls)
+            try {
+                this.urls.add(url.toURI());
+            } catch (URISyntaxException e) {
+               logger.warn("Skipping invalid plugin site " + url);
+            }
 	}
 
 	/**
@@ -95,8 +108,9 @@ public class TavernaPluginSite extends PluginSite {
 			return workingURL;
 		}
 		URL pluginsURL=null;
-		for (URL url : urls) {
+		for (URI uri : urls) {
 			try {
+			    URL url = uri.toURL();
 				pluginsURL=new URL(url,"pluginlist.xml");
 				URLConnection con=pluginsURL.openConnection();
 				InputStream stream=con.getInputStream();

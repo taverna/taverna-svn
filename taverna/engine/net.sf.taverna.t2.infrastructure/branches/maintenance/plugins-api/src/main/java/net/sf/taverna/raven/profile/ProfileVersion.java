@@ -54,6 +54,7 @@
 package net.sf.taverna.raven.profile;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 
 import org.jdom.Element;
@@ -80,14 +81,14 @@ public class ProfileVersion {
 		return description;
 	}
 	
-	public static ProfileVersion fromXml(Element element, URL sourceURL) throws MalformedURLException {
+	public static ProfileVersion fromXml(Element element, URI sourceURL) throws MalformedURLException {
 		ProfileVersion result = new ProfileVersion();
 		if (element.getChild("version")!=null) result.version=element.getChildTextTrim("version");
 		if (element.getChild("name")!=null) result.name=element.getChildTextTrim("name");
 		if (element.getChild("location")!=null) {
 			result.profileLocation=element.getChildTextTrim("location");					
 			if (sourceURL!=null) {
-				URL correctURL=new URL(sourceURL,result.profileLocation);
+				URI correctURL=sourceURL.resolve(result.profileLocation);
 				result.profileLocation=correctURL.toString();
 			}
 		}		

@@ -20,6 +20,7 @@
  ******************************************************************************/
 package net.sf.taverna.raven.repository;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
@@ -44,13 +45,24 @@ public interface Repository {
 	 */
 	public abstract void addArtifact(Artifact a);
 
+    /**
+     * Add a reference to a remote repository to be used to fetch pom and jar
+     * files. Repositories are scanned in turn until a match is found.
+     * 
+     * @param repositoryURL
+     * @deprecated Use {@link #addRemoteRepository(URI)}
+     */
+	@Deprecated
+    public abstract void addRemoteRepository(URL repositoryURL);
+
+	
 	/**
 	 * Add a reference to a remote repository to be used to fetch pom and jar
 	 * files. Repositories are scanned in turn until a match is found.
 	 * 
-	 * @param repositoryURL
+	 * @param repositoryURI
 	 */
-	public abstract void addRemoteRepository(URL repositoryURL);
+	public abstract void addRemoteRepository(URI repositoryURI);
 
 	/**
 	 * Add a listener to be notified on changes to the repository status

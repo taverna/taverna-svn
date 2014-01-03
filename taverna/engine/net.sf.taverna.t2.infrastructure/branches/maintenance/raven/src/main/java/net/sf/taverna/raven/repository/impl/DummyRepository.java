@@ -53,6 +53,7 @@
  *****************************************************************/
 package net.sf.taverna.raven.repository.impl;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,6 +98,11 @@ public class DummyRepository implements Repository {
 	public void addArtifact(Artifact a) {
 
 	}
+
+
+    @Override
+    public void addRemoteRepository(URI repositoryURI) {
+    }
 
 	public void addRemoteRepository(URL repositoryURL) {
 
@@ -162,5 +168,4 @@ public class DummyRepository implements Repository {
 	public void update() {
 
 	}
-
 }

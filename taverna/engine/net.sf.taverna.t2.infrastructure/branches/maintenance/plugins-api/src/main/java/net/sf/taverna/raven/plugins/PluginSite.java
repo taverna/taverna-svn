@@ -54,7 +54,11 @@
 package net.sf.taverna.raven.plugins;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+
+import javax.jws.soap.SOAPBinding.Use;
 
 import org.jdom.Element;
 
@@ -64,21 +68,39 @@ import org.jdom.Element;
  */
 public class PluginSite {
 	private String name;
-	private URL url;		
+	private URI uri;		
 
+
+    /**
+     * Constructs an instance of PluginSite.
+     *
+     * @param name the name of the plugin site
+     * @param url the url of the plugin site
+     * @deprecated Use {@link #PluginSite(String, URI)}
+     */
+	@Deprecated
+    public PluginSite(String name, URL url) {
+        this.name = name;
+        try {
+            this.uri = url.toURI();
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Invalid plugin site "+ url, e);
+        }
+    }
+	
 	/**
 	 * Constructs an instance of PluginSite.
 	 *
 	 * @param name the name of the plugin site
-	 * @param url the url of the plugin site
+	 * @param uri the uri of the plugin site
 	 */
-	public PluginSite(String name, URL url) {
+	public PluginSite(String name, URI uri) {
 		this.name = name;
-		this.url = url;
+		this.uri = uri;
 	}	
 
 	/**
-	 * Returns the name.
+	 * Return the name.
 	 *
 	 * @return the name
 	 */
@@ -87,31 +109,51 @@ public class PluginSite {
 	}
 
 	/**
-	 * Returns the url.
+	 * Return the url.
 	 *
 	 * @return the url
+	 * @deprecated {@link Use} #getUri()
 	 */
+	@Deprecated
 	public URL getUrl() {
-		return url;
+		try {
+            return uri.toURL();
+        } catch (MalformedURLException e) {
+            throw new IllegalStateException("Invalid plugin site "+ uri, e);
+        }
 	}
+	
+	/**
+	 * Return the plugin site URI
+	 * 
+	 * @return URI for the plugin site
+	 */
+	public URI getUri() {
+        return uri;
+    }
 	
 	public String toString() {
 		return "Plugin site " + getUrl();
 	}
 	
 	/**
-	 * Creates a <code>PluginSite</code> from an XML element.
+	 * Create a <code>PluginSite</code> from an XML element.
 	 * 
 	 * @param pluginSiteElement the XML element
 	 * @return a new <code>PluginSite</code>
 	 */
-	public static PluginSite fromXml(Element pluginSiteElement) throws MalformedURLException {
+	public static PluginSite fromXml(Element pluginSiteElement) {
 		String name = pluginSiteElement.getChildTextTrim("name");
 		String urlString = pluginSiteElement.getChildTextTrim("url");
 		if (!urlString.endsWith("/")) {
 			urlString = urlString + "/";
 		}
-		URL url = new URL(urlString);		
+		URI url;
+        try {
+            url = new URI(urlString);
+        } catch (URISyntaxException e) {
+            throw new IllegalStateException("Invalid plugin site " + urlString);
+        }		
 		return new PluginSite(name, url);
 	}
 
@@ -124,8 +166,8 @@ public class PluginSite {
 		Element pluginSiteElement = new Element("pluginSite");
 		pluginSiteElement.addContent(new Element("name").addContent(getName()));
 		Element urlElement = new Element("url");
-		if (getUrl() != null) {
-			urlElement.addContent(getUrl().toString());
+		if (getUri() != null) {
+			urlElement.addContent(getUri().toString());
 		}
 		pluginSiteElement.addContent(urlElement);
 		return pluginSiteElement;
@@ -139,7 +181,7 @@ public class PluginSite {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((url == null) ? 0 : url.hashCode());
+		result = prime * result + ((uri == null) ? 0 : uri.hashCode());
 		return result;
 	}
 
@@ -160,10 +202,10 @@ public class PluginSite {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (url == null) {
-			if (other.url != null)
+		if (uri == null) {
+			if (other.uri != null)
 				return false;
-		} else if (!url.equals(other.url))
+		} else if (!uri.equals(other.uri))
 			return false;
 		return true;
 	}

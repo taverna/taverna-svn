@@ -138,14 +138,13 @@ public class LocalRepository implements Repository {
 	 */
 	private Map<ArtifactImpl, DownloadStatusImpl> dlstatus = new HashMap<ArtifactImpl, DownloadStatusImpl>();
 
-	/**
-	 * Subset of repositories that are hosted locally, ie. which URLs start with
-	 * 
-	 * <pre>
-	 * file:
-	 * </pre>. Modified by {@link #addRemoteRepository(URL)}.
-	 */
-	private LinkedHashSet<URL> fileRepositories = new LinkedHashSet<URL>();
+	    /**
+     * Subset of repositories that are hosted locally, ie. which URIs start with
+     * "file:"
+     * <p>
+     * Modified by {@link #addRemoteRepository(URI)}.
+     */
+	private LinkedHashSet<URI> fileRepositories = new LinkedHashSet<URI>();
 
 	/**
 	 * Cache of jar files for given artifacts, supports pomFile(). File entries
@@ -168,10 +167,10 @@ public class LocalRepository implements Repository {
 
 
 	/**
-	 * URL list of remote repository base URLs. Modified by
-	 * {@link #addRemoteRepository(URL)}
+	 * URI list of remote repository base URIs. Modified by
+	 * {@link #addRemoteRepository(URI)}
 	 */
-	private LinkedHashSet<URL> repositories = new LinkedHashSet<URL>();
+	private LinkedHashSet<URI> repositories = new LinkedHashSet<URI>();
 
 	private HashSet<URI> blacklistedRepositories = new HashSet<URI>();
 
@@ -258,15 +257,22 @@ public class LocalRepository implements Repository {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
+	 * @deprecated Use Instead {@link #addRemoteRepository(URI)}
 	 * @see net.sf.taverna.raven.repository.impl.Repository#addRemoteRepository(java.net.URL)
 	 */
+	@Deprecated
 	public void addRemoteRepository(URL repositoryURL) {
-		repositories.add(repositoryURL);
-		if (repositoryURL.getProtocol().equals("file")) {
-			fileRepositories.add(repositoryURL);
+	    try {
+            addRemoteRepository(repositoryURL.toURI());
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Invalid repository URI", e);
+        }
+	}
+	public void addRemoteRepository(URI repositoryURI) {
+		repositories.add(repositoryURI);
+		if (repositoryURI.getScheme().equals("file")) {
+			fileRepositories.add(repositoryURI);
 		}
 	}
 
@@ -447,19 +453,32 @@ public class LocalRepository implements Repository {
 	}
 
 	/**
-	 * Adds a remote repository, but adds it at the start of the list. This is
-	 * used by Plugins that specify their repositories that we know need to be
-	 * checked first.
-	 * 
+	 * @deprecated Use instead {@link #prependRemoteRepository(URI)}
 	 * @param repositoryURL
 	 */
+	@Deprecated
 	public void prependRemoteRepository(URL repositoryURL) {
-		LinkedHashSet<URL> tmpRepositories = new LinkedHashSet<URL>();
-		tmpRepositories.add(repositoryURL);
+	    try {
+            prependRemoteRepository(repositoryURL.toURI());
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Invalid repository URI", e);
+        }
+	}
+	
+	/**
+     * Adds a remote repository, but adds it at the start of the list. This is
+     * used by Plugins that specify their repositories that we know need to be
+     * checked first.
+     * 
+     * @param repositoryURI
+     */
+    public void prependRemoteRepository(URI repositoryURI) {
+		LinkedHashSet<URI> tmpRepositories = new LinkedHashSet<URI>();
+		tmpRepositories.add(repositoryURI);
 		tmpRepositories.addAll(repositories);
 		repositories = tmpRepositories;
-		if (repositoryURL.getProtocol().equals("file")) {
-			fileRepositories.add(repositoryURL);
+		if (repositoryURI.getScheme().equals("file")) {
+			fileRepositories.add(repositoryURI);
 		}
 	}
 
@@ -717,12 +736,20 @@ public class LocalRepository implements Repository {
 			return;
 		}
 		String repositoryPath = repositoryPath(a, suffix);
-		for (URL repository : repositories) {
-			if (isBlacklisted(repository)) {
-				logger.debug("Skipping ignored repository " + repository
+		for (URI repositoryUri : repositories) {
+			if (isBlacklisted(repositoryUri)) {
+				logger.debug("Skipping ignored repository " + repositoryUri
 						+ " for " + a);
 				continue;
 			}
+			URL repository;
+            try {
+                repository = repositoryUri.toURL();
+            } catch (MalformedURLException e1) {
+                logger.warn("Unsupported URL " + repositoryUri);
+                blacklistRepository(repositoryUri);
+                continue;
+            }
 			InputStream is = null;
 			try {
 				URL pomLocation;
@@ -739,17 +766,17 @@ public class LocalRepository implements Repository {
 					if (a.getVersion().endsWith("-SNAPSHOT")) {
 						is = getSnapshotArtifactStream(a, suffix, repository);
 					} else {
-						logger.info(a + " not found in " + repository);
+						logger.info(a + " not found in " + repositoryUri);
 					}
 				} catch (SocketTimeoutException e) {
 					logger.warn("Connection timed out while looking for " + a
-							+ " in " + repository);
-					blacklistRepository(repository);
+							+ " in " + repositoryUri);
+					blacklistRepository(repositoryUri);
 				} catch (UnknownHostException e) {
 					logger.error("Unable to determine host for: "
 							+ pomLocation.toExternalForm()
 							+ ", maybe there is no network access?");
-					blacklistRepository(repository);
+					blacklistRepository(repositoryUri);
 				}
 
 				if (is != null) {
@@ -790,14 +817,14 @@ public class LocalRepository implements Repository {
 				}
 
 			} catch (MalformedURLException e) {
-				logger.error("Malformed repository URL: " + repository, e);
+				logger.error("Malformed repository URL: " + repositoryUri, e);
 			} catch (FileNotFoundException e) {
-				logger.info(a + " not found in " + repository);
+				logger.info(a + " not found in " + repositoryUri);
 			} catch (SocketException e) {
-				logger.warn("Socket error when connection to " + repository, e);
-				blacklistRepository(repository);
+				logger.warn("Socket error when connection to " + repositoryUri, e);
+				blacklistRepository(repositoryUri);
 			} catch (IOException e) {
-				logger.warn("Could not read " + a + " from " + repository, e);
+				logger.warn("Could not read " + a + " from " + repositoryUri, e);
 				// Ignore the exception, probably means we couldn't find the POM
 				// in the repository. If there are more repositories in the list
 				// this isn't necessarily an issue.
@@ -820,22 +847,13 @@ public class LocalRepository implements Repository {
 		throw new ArtifactNotFoundException(a, "Can't find artifact for: " + a);
 	}
 
-	private boolean isBlacklisted(URL repository) {
-		try {
-			return blacklistedRepositories.contains(repository.toURI());
-		} catch (URISyntaxException e) {
-			logger.debug("Ignoring invalid repository " + repository);
-			return true;
-		}
+	private boolean isBlacklisted(URI repository) {
+		return blacklistedRepositories.contains(repository);
 	}
 
-	private void blacklistRepository(URL repository) {
+	private void blacklistRepository(URI repository) {
 		logger.warn("Ignoring repository " + repository);
-		try {
-			blacklistedRepositories.add(repository.toURI());
-		} catch (URISyntaxException e1) {
-			logger.error("Invalid ignored repository " + repository);
-		}
+		blacklistedRepositories.add(repository);
 	}
 
 	/**
@@ -869,14 +887,9 @@ public class LocalRepository implements Repository {
 				return false;
 			}
 		}
-		for (URL repository : fileRepositories) {
+		for (URI repository : fileRepositories) {
 			File repositoryDir;
-			try {
-				repositoryDir = new File(repository.toURI());
-			} catch (URISyntaxException e1) {
-				logger.error("Invalid file repository "+ repository, e1);
-				continue;
-			}
+			repositoryDir = new File(repository);
 			File file = new File(repositoryDir, repositoryPath);
 			if (!file.canRead()) {
 				continue; // Not found in this repository
@@ -1107,7 +1120,7 @@ public class LocalRepository implements Repository {
 		}
 	}
 
-	protected LinkedHashSet<URL> getRemoteRepositories() {
+	protected LinkedHashSet<URI> getRemoteRepositories() {
 		return repositories;
 	}
 

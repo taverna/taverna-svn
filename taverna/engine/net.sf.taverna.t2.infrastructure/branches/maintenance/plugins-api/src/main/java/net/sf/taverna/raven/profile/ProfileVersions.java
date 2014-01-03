@@ -55,6 +55,7 @@ package net.sf.taverna.raven.profile;
 
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,7 +90,7 @@ public class ProfileVersions {
 	public static List<ProfileVersion> getProfileVersions(URL profileListUrl) {
 		try {						
 			InputStream str=profileListUrl.openStream();
-			return getProfileVersions(str,profileListUrl);
+			return getProfileVersions(str,profileListUrl.toURI());
 		}
 		catch(Exception e) {
 			logger.error("Error opening the stream to the URL:"+profileListUrl.toString(),e);
@@ -108,7 +109,7 @@ public class ProfileVersions {
 	 * @param sourceURL if not null, then this URL is used to resolve partial URL's within the profile version XML document to their full path
 	 * @return
 	 */
-	public static List<ProfileVersion> getProfileVersions(InputStream profileListStream, URL sourceURL) {
+	public static List<ProfileVersion> getProfileVersions(InputStream profileListStream, URI sourceURL) {
 		List<ProfileVersion> result = new ArrayList<ProfileVersion>();				
 		
 		try {			

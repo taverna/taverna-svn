@@ -36,11 +36,9 @@ import net.sf.taverna.x2008.xml.plugins.Compatibility;
 import net.sf.taverna.x2008.xml.plugins.Dependency;
 import net.sf.taverna.x2008.xml.plugins.DescribedPlugin;
 import net.sf.taverna.x2008.xml.plugins.IdentifiedPlugin;
-import net.sf.taverna.x2008.xml.plugins.PluginDocument;
 import net.sf.taverna.x2008.xml.plugins.Repositories;
 
 import org.apache.log4j.Logger;
-import org.apache.xmlbeans.XmlObject;
 import org.jdom.Element;
 
 /**

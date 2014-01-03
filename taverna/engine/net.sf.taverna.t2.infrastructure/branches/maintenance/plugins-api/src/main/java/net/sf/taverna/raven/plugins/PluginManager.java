@@ -70,8 +70,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
@@ -85,7 +85,6 @@ import net.sf.taverna.raven.plugins.event.PluginManagerEvent;
 import net.sf.taverna.raven.plugins.event.PluginManagerListener;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.Repository;
-import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.x2008.xml.plugins.DescribedPlugin;
@@ -193,15 +192,15 @@ public class PluginManager implements PluginListener {
 		if (!plugins.contains(plugin)) {
 			plugins.add(plugin);
 			sortPlugins();
-			for (String repositoryURL : plugin.getRepositories()) {
+			for (String repositoryURI : plugin.getRepositories()) {
 				try {
 					// T2-338 - always add to the end - do not use
 					// prependRemoteRepository
-					repository.addRemoteRepository(new URL(repositoryURL));
-				} catch (MalformedURLException e) {
-					logger.warn("Invalid remote repository URL - "
-							+ repositoryURL);
-				}
+					repository.addRemoteRepository(new URI(repositoryURI));
+				} catch (URISyntaxException e) {
+					logger.warn("Invalid remote repository URI - "
+							+ repositoryURI);
+                }
 			}
 			for (Artifact artifact : plugin.getProfile().getArtifacts()) {
 				repository.addArtifact(artifact);
@@ -437,7 +436,7 @@ public class PluginManager implements PluginListener {
 	 * @return all the <code>Plugin</code>s available from the
 	 *         <code>PluginSite</code>
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	public List<Plugin> getPluginsFromSite(PluginSite pluginSite) {
 		List<Plugin> plugins = new ArrayList<Plugin>();
 		HttpClient client = new HttpClient();
@@ -445,19 +444,12 @@ public class PluginManager implements PluginListener {
 		client.setTimeout(TIMEOUT);
 		setProxy(client);
 
-		if (pluginSite.getUrl() == null) {
+		if (pluginSite.getUri() == null) {
 			logger.error("No plugin site URL" + pluginSite);
 			return plugins;
 		}
 
-		URI pluginSiteURI;
-		try {
-			pluginSiteURI = pluginSite.getUrl().toURI();
-		} catch (URISyntaxException e) {
-			logger.error("Invalid plugin site URL" + pluginSite);
-			return plugins;
-		}
-
+		URI pluginSiteURI = pluginSite.getUri();
 		URI pluginsXML = pluginSiteURI.resolve("pluginlist.xml");
 
 		HttpMethod getPlugins = new GetMethod(pluginsXML.toString());
@@ -627,14 +619,14 @@ public class PluginManager implements PluginListener {
 				if (!plugins.contains(newPlugin)) {
 					plugins.add(newPlugin);
 					sortPlugins();
-					for (String repositoryURL : newPlugin.getRepositories()) {
+					for (String repositoryURI : newPlugin.getRepositories()) {
 						try {
 							// T2-338 - always add to the end - do not use
 							// prependRemoteRepository
-							repository.addRemoteRepository(new URL(repositoryURL));
-						} catch (MalformedURLException e) {
-							logger.warn("Invalid remote repository URL - "
-									+ repositoryURL);
+							repository.addRemoteRepository(new URI(repositoryURI));
+						} catch (URISyntaxException e) {
+							logger.warn("Invalid remote repository URI - "
+									+ repositoryURI);
 						}
 					}
 					for (Artifact artifact : newPlugin.getProfile().getArtifacts()) {
@@ -784,7 +776,6 @@ public class PluginManager implements PluginListener {
 				plugins.indexOf(event.getPlugin())));
 	}
 
-	@SuppressWarnings("unchecked")
 	private void initializePlugins() {
 		URL pluginsFile;
 		List<Plugin> extractedPlugins;
@@ -884,7 +875,7 @@ public class PluginManager implements PluginListener {
 				}
 			}
 
-			// create a list of URL objects from the space seperated list of
+			// create a list of URI objects from the space seperated list of
 			// alternatives for each site
 			for (Integer siteIndex : pluginSiteMap.keySet()) {
 				String siteList = pluginSiteMap.get(siteIndex);
@@ -893,7 +884,7 @@ public class PluginManager implements PluginListener {
 				if (name == null)
 					name = "Taverna Plugin Update Site";
 
-				List<URL> urls = new ArrayList<URL>();
+				List<URI> urls = new ArrayList<URI>();
 				logger.info("Adding plugin sitelist: " + siteList);
 				String[] siteUrls = siteList.split(" ");
 				for (String siteUrl : siteUrls) {
@@ -901,17 +892,16 @@ public class PluginManager implements PluginListener {
 					if (!siteUrl.endsWith("/"))
 						siteUrl += "/";
 					try {
-						URL url = new URL(siteUrl);
+						URI url = new URI(siteUrl);
 						urls.add(url);
-					} catch (MalformedURLException e) {
+					} catch (URISyntaxException e) {
 						logger
 								.error("Malformed URL for plugin site (or mirror):"
 										+ siteUrl);
 					}
 				}
 				if (urls.size() > 0) {
-					result.add(new TavernaPluginSite(name, urls
-							.toArray(new URL[] {})));
+					result.add(new TavernaPluginSite(name, urls));
 				}
 			}
 		}
@@ -939,7 +929,6 @@ public class PluginManager implements PluginListener {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void initializePluginSites() {
 		pluginSites.addAll(getTavernaPluginSites());
 
