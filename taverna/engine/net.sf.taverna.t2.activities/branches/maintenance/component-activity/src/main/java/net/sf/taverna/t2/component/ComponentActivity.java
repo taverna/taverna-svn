@@ -9,6 +9,7 @@ import java.util.Map;
 import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.profile.ExceptionHandling;
+import net.sf.taverna.t2.component.registry.ComponentDataflowCache;
 import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.impl.InvocationContextImpl;
@@ -44,7 +45,6 @@ public class ComponentActivity extends
 
 	private volatile DataflowActivity componentRealization = new DataflowActivity();
 	private ComponentActivityConfigurationBean configBean;
-	private DataflowImpl skeletonDataflow = null;
 	
 	private Dataflow realizingDataflow = null;
 
@@ -60,46 +60,12 @@ public class ComponentActivity extends
 					"failed to get component realization", e);
 		}
 
-		skeletonDataflow = (DataflowImpl) EDITS.createDataflow();
-		skeletonDataflow.setLocalName(configBean.getComponentName());
-		for (ActivityInputPort aip : getInputPorts())
-			try {
-				DataflowInputPort dip = EDITS.createDataflowInputPort(
-						aip.getName(), aip.getDepth(), aip.getDepth(),
-						skeletonDataflow);
-				EDITS.getAddDataflowInputPortEdit(skeletonDataflow, dip)
-						.doEdit();
-			} catch (EditException e) {
-				logger.error("failed to add dataflow input", e);
-			}
-		for (OutputPort aop : getOutputPorts())
-			try {
-				DataflowOutputPort dop = EDITS.createDataflowOutputPort(
-						aop.getName(), skeletonDataflow);
-				EDITS.getAddDataflowOutputPortEdit(skeletonDataflow, dop)
-						.doEdit();
-			} catch (EditException e) {
-				logger.error("failed to add dataflow output", e);
-			}
 	}
 
 	@Override
 	public void executeAsynch(final Map<String, T2Reference> inputs,
 			final AsynchronousActivityCallback callback) {
-		// try {
-		//
-		// Field field = callback.getClass().getDeclaredField("this$0");
-		// field.setAccessible(true);
-		// AbstractDispatchLayer container = (AbstractDispatchLayer)
-		// field.get(callback);
-		//
-		// Processor containingProcessor = container.getProcessor();
-		//
-		// String description = aTools.getAnnotationString(containingProcessor,
-		// FreeTextDescription.class, null);
-		// } catch (Exception e) {
-		// logger.error(e);
-		// }
+
 		try {
 			ExceptionHandling exceptionHandling = configBean
 					.getExceptionHandling();
@@ -169,17 +135,14 @@ public class ComponentActivity extends
 
 	private void checkRealizingDataflow() throws RegistryException {
 		if (realizingDataflow == null) {
+//			realizingDataflow = ComponentDataflowCache.getDataflow(getConfiguration());
 			realizingDataflow = ComponentUtil.calculateComponentVersion(getConfiguration()).getDataflow();
 		}		
 	}
 	
 	@Override
 	public Dataflow getNestedDataflow() {
-		// FIXME To go when integrated into Taverna properly
-		StackTraceElement[] stackTrace = currentThread().getStackTrace();
-		for (StackTraceElement elem : stackTrace)
-			if (elem.getClassName().contains("GraphController"))
-				return skeletonDataflow;
+
 		try {
 			checkRealizingDataflow();
 			return realizingDataflow;
@@ -187,7 +150,7 @@ public class ComponentActivity extends
 		} catch (RegistryException e) {
 			logger.error("failed to get component realization", e);
 		}
-		return skeletonDataflow;
+		return null;
 	}
 
 }
