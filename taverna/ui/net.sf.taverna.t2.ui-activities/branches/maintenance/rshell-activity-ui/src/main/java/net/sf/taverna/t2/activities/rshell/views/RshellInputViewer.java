@@ -43,6 +43,7 @@ import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes;
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SemanticTypes;
 import net.sf.taverna.t2.lang.ui.DialogTextArea;
+import net.sf.taverna.t2.lang.ui.SanitisingDocumentFilter;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 
 /**
@@ -111,6 +112,7 @@ public class RshellInputViewer extends JPanel {
 		outerConstraint.fill = GridBagConstraints.BOTH;
 
 		nameField = new JTextField(bean.getName());
+		SanitisingDocumentFilter.addFilterToComponent(nameField);
 		add(nameField, outerConstraint);
 		
 		semanticTypeSelector = new JComboBox(RshellPortTypes.getInputSymanticTypes());
