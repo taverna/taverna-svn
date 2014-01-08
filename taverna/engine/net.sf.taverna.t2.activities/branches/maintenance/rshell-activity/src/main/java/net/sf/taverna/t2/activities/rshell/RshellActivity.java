@@ -227,15 +227,15 @@ AbstractAsynchronousActivity<RshellActivityConfigurationBean> {
 								}
 								if (value.isLogical()) {
 									if (((REXPLogical)value).length() == 1) {
-										script = inputName + " <- " + value.asString() + ";\n" + script;
+										script = quoteString(inputName) + " = " + value.asString() + ";\n" + script;
 									} else {
 										String[] strings = value.asStrings();
 										String completeString = "c(" + StringUtils.join(strings, ",") + ")";
-										script = inputName + " <- " + completeString + ";\n" + script;
+										script = quoteString(inputName) + " = " + completeString + ";\n" + script;
 									}
 								} else if (symanticType == SemanticTypes.R_EXP) {
 									connection.assign(inputName, value);
-									script = inputName + " <- " + "eval(parse(text=" + inputName + "));\n" + script;
+									script = quoteString(inputName) + " = " + "eval(parse(text=" + inputName + "));\n" + script;
 								} else {
 									connection.assign(inputName, value);
 								}
@@ -249,7 +249,7 @@ AbstractAsynchronousActivity<RshellActivityConfigurationBean> {
 								connection.assign(outputPort.getName(),
 										generateFilename(outputPort));
 							} else if (outputSymanticTypes.get(outputPort.getName()) == SemanticTypes.R_EXP) {
-								script = script + outputPort.getName() + " <- deparse(" + outputPort.getName() + ");\n";
+								script = script + "\n" + quoteString(outputPort.getName()) + " = deparse(" + outputPort.getName() + ");\n";
 							}
 						}
 
@@ -278,13 +278,13 @@ AbstractAsynchronousActivity<RshellActivityConfigurationBean> {
 								returnString.append(", ");
 							}
 							String portName = outputPort.getName();
-							returnString.append(portName);
+							returnString.append(quoteString(portName));
 							returnString.append("=");
-							returnString.append(portName);
+							returnString.append("get(" + quoteString(portName) + ")");
 						}
 						returnString.append(")\n");
 						connection.assign(".tmp.", returnString.toString());
-						REXP results = connection.parseAndEval("try(eval(parse(text=.tmp.)),silent=TRUE)");
+						REXP results = connection.parseAndEval("try(eval(parse(text=.tmp.)), silent=TRUE)");
 						if (results.inherits("try-error")) {
 							String errorString = results.asString();
 							if (errorString.contains(": ")) {
@@ -367,6 +367,10 @@ AbstractAsynchronousActivity<RshellActivityConfigurationBean> {
 
 		});
 
+	}
+	
+	private static String quoteString(final String original) {
+		return "\"" + original + "\"";
 	}
 
 	private static Object getLock(RshellConnectionSettings settings) {
