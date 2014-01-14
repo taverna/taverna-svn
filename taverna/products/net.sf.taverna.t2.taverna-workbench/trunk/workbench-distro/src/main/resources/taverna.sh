@@ -9,13 +9,20 @@ real_path() {
     readlink -m "$1" 2>/dev/null || python -c 'import os,sys;print os.path.realpath(sys.argv[1])' "$1"
 }
 
+
 realprog=`real_path "$prog"`
 taverna_home=`dirname "$realprog"`
+realprog=`real_path "$prog"`
+javabin="$taverna_home/jre/bin/java"
+if test -x "$JAVA_HOME/bin/java"; then
+    javabin="$JAVA_HOME/bin/java"
+fi
 
 # 400 MB memory, 140 MB for classes
-exec java -Xmx400m -XX:MaxPermSize=140m \
+exec "$javabin" -Xmx400m -XX:MaxPermSize=140m \
   "-Draven.profile=file://$taverna_home/conf/current-profile.xml" \
   "-Dtaverna.startup=$taverna_home" \
+  "-Ddot.location=bin/dot.sh" \
   -Djava.system.class.loader=net.sf.taverna.raven.prelauncher.BootstrapClassLoader \
   -Dapple.laf.useScreenMenuBar=true \
   -Dapple.awt.graphics.UseQuartz=false \
