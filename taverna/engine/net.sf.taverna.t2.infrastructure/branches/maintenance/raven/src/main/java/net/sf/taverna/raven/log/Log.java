@@ -137,7 +137,7 @@ public class Log {
 		log(LogInterface.Priority.INFO, msg, ex);
 	}
 
-	public synchronized void log(LogInterface.Priority priority, Object msg,
+	public void log(LogInterface.Priority priority, Object msg,
 			Throwable ex) {
 		if (!checkImplementation()) {
 			return;
@@ -160,22 +160,24 @@ public class Log {
 		log(LogInterface.Priority.WARN, msg, ex);
 	}
 
-	private synchronized boolean checkImplementation() {
+	private boolean checkImplementation() {
 		if (logImplementation == null) {
 			return false;
 		}
-		if (logInstance == null
-				|| !logImplementation.getClass().isInstance(logInstance)) {
-			// Not yet initialized or implementation has changed
-			try {
-				logInstance = logImplementation.getLogger(callingClass);
-			} catch (Throwable t) {
-				System.err.println("Raven could not get logger implementation "
-						+ logImplementation);
-				t.printStackTrace();
-				System.err.println("Disabling Raven logging");
-				setImplementation(null);
-			}
+		synchronized (this) {
+    		if (logInstance == null
+    				|| !logImplementation.getClass().isInstance(logInstance)) {
+    			// Not yet initialized or implementation has changed
+    			try {
+    				logInstance = logImplementation.getLogger(callingClass);
+    			} catch (Throwable t) {
+    				System.err.println("Raven could not get logger implementation "
+    						+ logImplementation);
+    				t.printStackTrace();
+    				System.err.println("Disabling Raven logging");
+    				setImplementation(null);
+    			}
+    		}
 		}
 		return (logInstance != null);
 	}
