@@ -1,7 +1,5 @@
 package net.sf.taverna.t2.component;
 
-import static java.lang.Thread.currentThread;
-import static net.sf.taverna.t2.component.registry.ComponentDataflowCache.getDataflow;
 import static org.apache.log4j.Logger.getLogger;
 
 import java.util.Map;
@@ -9,7 +7,6 @@ import java.util.Map;
 import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.profile.ExceptionHandling;
-import net.sf.taverna.t2.component.registry.ComponentDataflowCache;
 import net.sf.taverna.t2.component.registry.ComponentUtil;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.impl.InvocationContextImpl;
@@ -17,19 +14,13 @@ import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
-import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
-import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
-import net.sf.taverna.t2.workflowmodel.OutputPort;
-import net.sf.taverna.t2.workflowmodel.impl.DataflowImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import net.sf.taverna.t2.workflowmodel.processor.activity.LockedNestedDataflow;
-import net.sf.taverna.t2.workflowmodel.processor.activity.NestedDataflow;
 import net.sf.taverna.t2.workflowmodel.utils.AnnotationTools;
 
 import org.apache.log4j.Logger;
@@ -39,8 +30,6 @@ public class ComponentActivity extends
 		implements AsynchronousActivity<ComponentActivityConfigurationBean>,
 		LockedNestedDataflow {
 	private static final Logger logger = getLogger(ComponentActivity.class);
-	private static final EditManager em = EditManager.getInstance();
-	private static final Edits EDITS = em.getEdits();
 	private static final AnnotationTools aTools = new AnnotationTools();
 
 	private volatile DataflowActivity componentRealization = new DataflowActivity();
