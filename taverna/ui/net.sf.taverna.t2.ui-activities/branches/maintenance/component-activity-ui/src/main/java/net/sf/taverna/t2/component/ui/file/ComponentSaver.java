@@ -34,6 +34,7 @@ import net.sf.taverna.t2.workbench.file.FileType;
 import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
 import net.sf.taverna.t2.workflowmodel.ConfigurationException;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 
 import org.apache.log4j.Logger;
 
@@ -56,6 +57,12 @@ public class ComponentSaver extends AbstractDataflowPersistenceHandler
 		if (!(destination instanceof Version.ID))
 			throw new IllegalArgumentException("Unsupported destination type "
 					+ destination.getClass().getName());
+
+		DataflowValidationReport dvr = dataflow.checkValidity();
+		if (!dvr.isValid()) {
+			throw new SaveException("Cannot save a structurally invalid workflow as a component");
+		}
+		// Saving an invalid dataflow is OK. Validity check is done to get predicted depth for output (if possible)
 
 		Version.ID ident = (Version.ID) destination;
 

@@ -73,9 +73,11 @@ public class OpenWorkflowFromComponentAction extends AbstractAction {
 			invokeLater(new Runnable() {
 				@Override
 				public void run() {
+					if (gc != null) {
 					SVGGraph g = (SVGGraph) gc.getGraph();
 					g.setFillColor(RED);
 					gc.redraw();
+					}
 				}
 			});
 		} catch (OpenException e) {
