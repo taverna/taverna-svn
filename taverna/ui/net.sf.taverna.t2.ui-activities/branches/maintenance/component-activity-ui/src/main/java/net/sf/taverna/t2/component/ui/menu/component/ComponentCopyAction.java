@@ -11,6 +11,7 @@ import static javax.swing.JOptionPane.OK_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceIcon.getIcon;
+import static net.sf.taverna.t2.component.ui.util.Utils.refreshComponentServiceProvider;
 import static org.apache.log4j.Logger.getLogger;
 
 import java.awt.GridBagConstraints;
@@ -31,8 +32,10 @@ import net.sf.taverna.t2.component.ui.panel.ComponentChoiceMessage;
 import net.sf.taverna.t2.component.ui.panel.ComponentChooserPanel;
 import net.sf.taverna.t2.component.ui.panel.ProfileChoiceMessage;
 import net.sf.taverna.t2.component.ui.panel.RegistryAndFamilyChooserPanel;
+import net.sf.taverna.t2.component.ui.serviceprovider.ComponentServiceProviderConfig;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
+import net.sf.taverna.t2.workflowmodel.ConfigurationException;
 
 import org.apache.log4j.Logger;
 
@@ -115,9 +118,16 @@ public class ComponentCopyAction extends AbstractAction {
 						.getComponentVersionMap().get(
 								sourceComponent.getComponentVersionMap()
 										.lastKey());
-				targetFamily.createComponentBasedOn(componentName,
+				Version targetVersion = targetFamily.createComponentBasedOn(componentName,
 						sourceComponent.getDescription(),
 						sourceVersion.getDataflow());
+				try {
+					refreshComponentServiceProvider(new ComponentServiceProviderConfig(
+							targetVersion.getID()));
+				} catch (ConfigurationException e) {
+					logger.error(e);
+				}
+				
 			}
 		} catch (RegistryException e) {
 			logger.error("failed to copy component", e);
