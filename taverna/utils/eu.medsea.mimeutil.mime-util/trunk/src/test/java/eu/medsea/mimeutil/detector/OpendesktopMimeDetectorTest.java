@@ -5,12 +5,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import eu.medsea.mimeutil.MimeUtil2;
-
-import eu.medsea.util.EncodingGuesser;
-
 import junit.framework.TestCase;
 
+import org.junit.Ignore;
+
+import eu.medsea.mimeutil.MimeUtil2;
+import eu.medsea.util.EncodingGuesser;
+
+@Ignore
 public class OpendesktopMimeDetectorTest extends TestCase {
 
 	MimeUtil2 mimeUtil = new MimeUtil2();
