@@ -21,6 +21,8 @@
 package net.sf.taverna.raven.launcher;
 
 import java.awt.GraphicsEnvironment;
+import java.io.File;
+import java.io.IOException;
 import java.net.Authenticator;
 import java.net.URL;
 
@@ -180,6 +182,26 @@ public class Launcher {
 			// 3rd party libraries
 			Thread.currentThread().setContextClassLoader(launchingClassLoader);
 		}
+		
+		if (System.getProperty("taverna.startup", "").isEmpty()) {
+			try {
+				System.setProperty("taverna.startup", appConfig.getStartupDir().toString());
+			} catch (IOException e) {
+				System.err.println("Could not set taverna.startup property");
+			}
+		}
+
+		if (System.getProperty("raven.profile", "").isEmpty()) {
+			File profile;
+			try {
+				profile = new File(new File(appConfig.getStartupDir(), "conf"), "current-profile.xml");
+				if (profile.exists()) {
+					System.setProperty("raven.profile", profile.toURI().toASCIIString());
+				}
+			} catch (IOException e) {
+				System.err.println("Could not check conf/current-profile.xml");
+			}
+		}	
 		
 		// Add conf/ folder to classpath
 		try {
