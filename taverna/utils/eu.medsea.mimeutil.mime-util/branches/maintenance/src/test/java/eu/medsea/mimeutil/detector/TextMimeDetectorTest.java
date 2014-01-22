@@ -47,17 +47,17 @@ public class TextMimeDetectorTest extends TestCase {
 
 	// We don't register any MimeDetector(s) so the default TextMimeDetector will be used
 
-//	@Ignore
+	@Ignore
 	public void testGetMimeTypesFile() {
-
+		// TODO: Update test to not use File() directly
 		assertTrue(mimeUtil.getMimeTypes(new File("src/test/resources/a.html")).contains("text/plain"));
 		assertFalse(mimeUtil.getMimeTypes(new File("src/test/resources/b-jpg.img")).contains("text/plain"));
 		assertFalse(mimeUtil.getMimeTypes(new File("src/test/resources/b.jpg")).contains("text/plain"));
 		assertFalse(mimeUtil.getMimeTypes(new File("src/test/resources/c-gif.img")).contains("text/plain"));
 		assertFalse(mimeUtil.getMimeTypes(new File("src/test/resources/c.gif")).contains("text/plain"));
 		assertFalse(mimeUtil.getMimeTypes(new File("src/test/resources/d-png.img")).contains("text/plain"));
-//		assertTrue(mimeUtil.getMimeTypes(new File("src/test/resources/e-svg.img")).contains("text/plain"));
-//		assertTrue(mimeUtil.getMimeTypes(new File("src/test/resources/e.svg")).contains("text/plain"));
+		assertTrue(mimeUtil.getMimeTypes(new File("src/test/resources/e-svg.img")).contains("text/plain"));
+		assertTrue(mimeUtil.getMimeTypes(new File("src/test/resources/e.svg")).contains("text/plain"));
 		assertTrue(mimeUtil.getMimeTypes(new File("src/test/resources/e.xml")).contains("text/plain"));
 		assertTrue(mimeUtil.getMimeTypes(new File("src/test/resources/e[xml]")).contains("text/plain"));
 		assertFalse(mimeUtil.getMimeTypes(new File("src/test/resources/f.tar.gz")).contains("text/plain"));
