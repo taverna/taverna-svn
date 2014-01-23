@@ -354,7 +354,7 @@ class Client {
 							authString = null;
 							clearCredentials(registryBase.toString());
 						} catch (Exception e) {
-							throw new RegistryException(
+							logger.debug(
 									"failed to clear credentials", e);
 						}
 					}
