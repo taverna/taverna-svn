@@ -15,16 +15,16 @@
 			<artifactId>beanshell-activity-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-<!-- 		<dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>biomoby-activity-ui</artifactId>
 			<version>${project.version}</version>
-		</dependency> -->
-<!-- 		<dependency>
+		</dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>biomart-activity-ui</artifactId>
 			<version>${project.version}</version>
-		</dependency> -->
+		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>component-activity-ui</artifactId>
@@ -71,11 +71,11 @@
 			<artifactId>sardine-activity-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-<!-- 		<dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>soaplab-activity-ui</artifactId>
 			<version>${project.version}</version>
-		</dependency> -->
+		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>spreadsheet-import-activity-ui</artifactId>
@@ -96,11 +96,11 @@
 			<artifactId>wsdl-activity-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-<!-- 		<dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>apiconsumer-activity-ui</artifactId>
 			<version>${project.version}</version>
-		</dependency> -->
+		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.ui-activities</groupId>
 			<artifactId>xpath-activity-ui</artifactId>

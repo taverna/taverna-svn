@@ -38,6 +38,8 @@
 		<module>unrecognized-activity-ui</module>
 		<module>wsdl-activity-ui</module>
 		<module>xpath-activity-ui</module>
+		<module>common-activity-uis</module>
+		<module>bioinformatics-activity-uis</module>
 	</modules>
 	<repositories>
 		<repository>
