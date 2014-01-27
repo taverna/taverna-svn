@@ -155,7 +155,11 @@
 			<artifactId>renderers-exts</artifactId>
 			<version>${t2.ui.exts.version}</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>org.purl.wf4ever.provtaverna</groupId>
+			<artifactId>prov-taverna-ui</artifactId>
+			<version>${t2.tavernaprov.version}</version>
+		</dependency>
 
 		<!--  System artifacts -->
 		<dependency>
