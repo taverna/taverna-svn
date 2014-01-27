@@ -17,6 +17,7 @@ public class DeveloperWorkbench {
 	public static void main(String[] args) throws URISyntaxException {
 		URL dir = DeveloperWorkbench.class.getResource("/conf/current-profile.xml");
 		System.setProperty("taverna.startup", dir.toURI().resolve("../").getPath());
+		System.setProperty("raven.launcher.app.name", "taverna-2.5.0-dev");
 		Launcher.main(args);
 	}
 
