@@ -44,6 +44,8 @@
 		<module>usecase-activity</module>
 		<module>wsdl-activity</module>
 		<module>xpath-activity</module>
+		<module>common-activities</module>
+		<module>bioinformatics-activities</module>
 	</modules>	
 	<repositories>
 		<repository>
