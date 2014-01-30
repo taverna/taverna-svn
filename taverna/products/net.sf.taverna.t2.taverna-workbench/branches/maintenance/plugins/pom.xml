@@ -12,7 +12,7 @@
 	<name>Taverna workbench plugins</name>
 	<modules>
 		<module>activities-plugin</module>
-		<module>components-plugin</module>
+		<module>workbench-plugin</module>
 		<module>translators-plugin</module>
 		<module>externaltool-plugin</module>
 		<module>servicecatalogue-plugin</module>
