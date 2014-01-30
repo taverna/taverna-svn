@@ -32,7 +32,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPo
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.serialization.xml.ActivityXMLDeserializer;
 
-public class SardineServiceProvider implements ServiceDescriptionProvider {
+public class WebDAVServiceProvider implements ServiceDescriptionProvider {
 	
 	private static final String LOCALWORKER_NAMES = "/sardineworker_names";
 	
