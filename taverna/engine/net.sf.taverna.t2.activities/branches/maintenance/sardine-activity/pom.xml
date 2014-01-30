@@ -5,13 +5,16 @@
     <artifactId>activities</artifactId>
     <version>1.5-SNAPSHOT</version>
   </parent>
-	<groupId>net.sf.taverna.t2.activities</groupId>
-  <artifactId>sardine-activity</artifactId>
+
+  <name>Taverna WebDAV activity</name>
+  <description>Dependencies for WebDAV local worker</description>
+  <groupId>net.sf.taverna.t2.activities</groupId>
+  <artifactId>webdav-activity</artifactId>
   <dependencies>
-             <dependency>
-	<groupId>com.github.lookfirst</groupId>
-	<artifactId>sardine</artifactId>
-	<version>5.0_1_6</version>
-</dependency>
-	</dependencies>
+	<dependency>
+		<groupId>com.github.lookfirst</groupId>
+		<artifactId>sardine</artifactId>
+		<version>5.0_1_6</version>
+	</dependency>
+  </dependencies>
 </project>
