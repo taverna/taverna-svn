@@ -50,25 +50,25 @@ public class WebDAVServiceProvider implements ServiceDescriptionProvider {
 
 	static {
 		localWorkerToScript.put(
-				"net.sf.taverna.t2.webdav.List",
+				"net.sf.taverna.t2.webdav.sardine.List",
 				"List");
 		localWorkerToScript.put(
-				"net.sf.taverna.t2.webdav.CreateDirectory",
+				"net.sf.taverna.t2.webdav.sardine.CreateDirectory",
 				"CreateDirectory");
 		localWorkerToScript.put(
-				"net.sf.taverna.t2.webdav.Move",
+				"net.sf.taverna.t2.webdav.sardine.Move",
 				"Move");
 		localWorkerToScript.put(
-				"net.sf.taverna.t2.webdav.Copy",
+				"net.sf.taverna.t2.webdav.sardine.Copy",
 				"Copy");
 		localWorkerToScript.put(
-				"net.sf.taverna.t2.webdav.Exists",
+				"net.sf.taverna.t2.webdav.sardine.Exists",
 				"Exists");
 		localWorkerToScript.put(
-				"net.sf.taverna.t2.webdav.Lock",
+				"net.sf.taverna.t2.webdav.sardine.Lock",
 				"Lock");
 		localWorkerToScript.put(
-				"net.sf.taverna.t2.webdav.Unlock",
+				"net.sf.taverna.t2.webdav.sardine.Unlock",
 				"Unlock");
 	}
 
