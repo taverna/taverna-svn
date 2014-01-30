@@ -1,4 +1,4 @@
-category:webdav.sardine
+category:webdav
 #net.sf.taverna.t2.webdav.sardine.SetCredentials
 net.sf.taverna.t2.webdav.sardine.List
 #net.sf.taverna.t2.webdav.sardine.Patch
