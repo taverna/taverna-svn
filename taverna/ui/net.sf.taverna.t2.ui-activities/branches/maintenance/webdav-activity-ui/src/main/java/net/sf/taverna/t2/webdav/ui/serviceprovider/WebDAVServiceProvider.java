@@ -41,7 +41,7 @@ public class WebDAVServiceProvider implements ServiceDescriptionProvider {
 	private static Logger logger = Logger.getLogger(Logger.class);
 
 	private static final URI providerId = URI
-	.create("http://taverna.sf.net/2010/service-provider/localworker");
+	.create("http://taverna.sf.net/2010/service-provider/webdav");
 	
 	/** Used to deserialize the Activities stored on disk */
 	private ActivityXMLDeserializer deserializer = ActivityXMLDeserializer.getInstance();;
