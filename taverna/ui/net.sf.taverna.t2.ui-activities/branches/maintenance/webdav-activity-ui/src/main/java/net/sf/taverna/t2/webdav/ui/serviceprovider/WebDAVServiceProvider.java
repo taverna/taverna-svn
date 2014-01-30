@@ -36,7 +36,7 @@ public class WebDAVServiceProvider implements ServiceDescriptionProvider {
 	
 	private static final String LOCALWORKER_NAMES = "/webdav_worker_names";
 	
-	private static final String LOCALWORKER_SERVICE = "Local service";
+	private static final String LOCALWORKER_SERVICE = "WebDAV local services";
 
 	private static Logger logger = Logger.getLogger(Logger.class);
 
@@ -254,7 +254,7 @@ public class WebDAVServiceProvider implements ServiceDescriptionProvider {
 	
 	@Override
 	public String toString() {
-		return "Local workers provider";
+		return "WebDAV local services provider";
 	}
 	
 	public static String getServiceNameFromClassname(String classname) {
