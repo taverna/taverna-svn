@@ -7,13 +7,13 @@
 		<version>1.5-SNAPSHOT</version>
 	</parent>
 		<groupId>net.sf.taverna.t2.ui-activities</groupId>
-	<artifactId>sardine-activity-ui</artifactId>
-	<name>Sardine Taverna activity UI bindings</name>
+	<artifactId>webdav-activity-ui</artifactId>
+	<name>Taverna WebDAV activity UI bindings</name>
 
 	<dependencies>
 			<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
-			<artifactId>sardine-activity</artifactId>
+			<artifactId>webdav-activity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	<dependency>
