@@ -10,18 +10,7 @@
 	<artifactId>provenanceconnectors-plugin</artifactId>
 	<name>Provenance Connectors Plugin</name>
 	<dependencies>
-		<dependency>
-			<groupId>net.sf.taverna.t2.core</groupId>
-			<artifactId>provenance-derby</artifactId>
-			<version>${t2.core.provenance.derby.version}</version>
-		</dependency>
-		<!-- 
-		<dependency>
-			<groupId>net.sf.taverna.t2.core</groupId>
-			<artifactId>provenance-mysql</artifactId>
-			<version>${t2.core.provenance.mysql.version}</version>
-		</dependency>
-		 -->
+		
 
 	</dependencies>
 </project>

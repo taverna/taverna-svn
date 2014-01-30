@@ -7,8 +7,8 @@
 		<version>2.5-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
-	<artifactId>components-plugin</artifactId>
-	<name>Taverna workbench components</name>
+	<artifactId>workbench-plugin</artifactId>
+	<name>Taverna workbench</name>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>
@@ -156,10 +156,23 @@
 			<version>${t2.ui.exts.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>provenance-derby</artifactId>
+			<version>${t2.core.provenance.derby.version}</version>
+		</dependency>
+		<!-- 
+		<dependency>
+			<groupId>net.sf.taverna.t2.core</groupId>
+			<artifactId>provenance-mysql</artifactId>
+			<version>${t2.core.provenance.mysql.version}</version>
+		</dependency>
+		 -->
+		<dependency>
 			<groupId>org.purl.wf4ever.provtaverna</groupId>
 			<artifactId>prov-taverna-ui</artifactId>
 			<version>${t2.tavernaprov.version}</version>
 		</dependency>
+
 
 		<!--  System artifacts -->
 		<dependency>
@@ -197,6 +210,8 @@
 			<artifactId>log4j</artifactId>
 			<version>${log4j.version}</version>
 		</dependency>
+		
+		
 
 	</dependencies>
 </project>
