@@ -5,6 +5,7 @@
     <groupId>net.sf.taverna.t2</groupId>
     <version>1.5-SNAPSHOT</version>
   </parent>
+  <name>Taverna usecase activity (legacy)</name>
   <groupId>net.sf.taverna.t2.activities</groupId>
   <artifactId>usecase-activity</artifactId>
   <dependencies>

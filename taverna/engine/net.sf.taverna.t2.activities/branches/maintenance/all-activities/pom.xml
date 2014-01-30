@@ -68,7 +68,7 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.activities</groupId>
-			<artifactId>sardine-activity</artifactId>
+			<artifactId>webdav-activity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 <!-- 		<dependency>

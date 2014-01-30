@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>net.sf.taverna.t2.component</groupId>
 	<artifactId>component-activity</artifactId>
-	<name>Component Taverna activity</name>
+	<name>Taverna Component activity</name>
 
 	<dependencies>
 		<dependency>
