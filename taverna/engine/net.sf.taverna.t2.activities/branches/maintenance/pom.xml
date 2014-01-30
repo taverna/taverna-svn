@@ -37,11 +37,11 @@
 		<module>localworker-activity</module>
 		<module>rest-activity</module>
 		<module>rshell-activity</module>
-		<module>sardine-activity</module>
 		<module>soaplab-activity</module>
 		<module>spreadsheet-import-activity</module>
 		<module>stringconstant-activity</module>
 		<module>usecase-activity</module>
+		<module>webdav-activity</module>
 		<module>wsdl-activity</module>
 		<module>xpath-activity</module>
 		<module>common-activities</module>
