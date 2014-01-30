@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.webdav.sardine.ui.serviceprovider;
+package net.sf.taverna.t2.webdav.ui.serviceprovider;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -50,25 +50,25 @@ public class SardineServiceProvider implements ServiceDescriptionProvider {
 
 	static {
 		localWorkerToScript.put(
-				"net.sf.taverna.t2.webdav.sardine.List",
+				"net.sf.taverna.t2.webdav.List",
 				"List");
 		localWorkerToScript.put(
-				"net.sf.taverna.t2.webdav.sardine.CreateDirectory",
+				"net.sf.taverna.t2.webdav.CreateDirectory",
 				"CreateDirectory");
 		localWorkerToScript.put(
-				"net.sf.taverna.t2.webdav.sardine.Move",
+				"net.sf.taverna.t2.webdav.Move",
 				"Move");
 		localWorkerToScript.put(
-				"net.sf.taverna.t2.webdav.sardine.Copy",
+				"net.sf.taverna.t2.webdav.Copy",
 				"Copy");
 		localWorkerToScript.put(
-				"net.sf.taverna.t2.webdav.sardine.Exists",
+				"net.sf.taverna.t2.webdav.Exists",
 				"Exists");
 		localWorkerToScript.put(
-				"net.sf.taverna.t2.webdav.sardine.Lock",
+				"net.sf.taverna.t2.webdav.Lock",
 				"Lock");
 		localWorkerToScript.put(
-				"net.sf.taverna.t2.webdav.sardine.Unlock",
+				"net.sf.taverna.t2.webdav.Unlock",
 				"Unlock");
 	}
 

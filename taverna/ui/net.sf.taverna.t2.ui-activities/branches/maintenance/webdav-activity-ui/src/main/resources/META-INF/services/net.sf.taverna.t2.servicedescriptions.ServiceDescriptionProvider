@@ -1,1 +1,1 @@
-net.sf.taverna.t2.webdav.sardine.ui.serviceprovider.SardineServiceProvider
+net.sf.taverna.t2.webdav.ui.serviceprovider.SardineServiceProvider
