@@ -559,7 +559,45 @@ public class Plugin implements Comparable<Plugin> {
 		if (plugin == null) {
 			return -1;
 		}
-		return version.compareTo(plugin.version);
+		String currentVersion = version;
+		String otherVersion = plugin.version;
+		return compareVersionString(currentVersion, otherVersion);
+	}
+
+	public static final int compareVersionString(final String currentVersion, final String otherVersion) {
+		
+		String[] currentParts = currentVersion.split("[.-]");
+		String[] otherParts = otherVersion.split("[.-]");
+		
+		int greaterLength = Math.max(currentParts.length, otherParts.length);
+		
+		for (int i = 0; i < greaterLength; i++) {
+			Integer currentPart = calculatePart(currentParts, i);
+			Integer otherPart = calculatePart(otherParts, i);
+			int comparison = currentPart.compareTo(otherPart);
+			if (comparison != 0) {
+				return comparison;
+			}
+		}
+		return 0;
+	}
+
+
+	private static Integer calculatePart(String[] parts, int i) {
+		if (i >= parts.length) {
+			return 0;
+		}
+		String partString = parts[i];
+		if (partString.equalsIgnoreCase("SNAPSHOT")) {
+			return -1;
+		}
+		try {
+			Integer result = Integer.valueOf(partString);
+			return result;
+		} catch (NumberFormatException e) {
+			return -2;
+		}
+		
 	}
 
 	public String toString() {
