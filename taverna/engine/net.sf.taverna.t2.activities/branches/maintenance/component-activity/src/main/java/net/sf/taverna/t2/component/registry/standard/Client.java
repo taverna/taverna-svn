@@ -276,13 +276,19 @@ class Client {
 
 	private static String getCredentials(String urlString) throws CMException,
 			UnsupportedEncodingException {
-		UsernamePassword userAndPass = cm().getUsernameAndPasswordForService(
-				URI.create(urlString), true, null);
-		// Check for user didn't log in...
-		if (userAndPass == null)
-			return null;
-		return printBase64Binary((userAndPass.getUsername() + ":" + userAndPass
-				.getPasswordAsString()).getBytes("UTF-8"));
+		final URI serviceURI = URI.create(urlString);
+		
+		if (cm().hasUsernamePasswordForService(serviceURI)) {
+			UsernamePassword userAndPass = cm()
+					.getUsernameAndPasswordForService(serviceURI, true, null);
+			// Check for user didn't log in...
+			if (userAndPass == null) {
+				return null;
+			}
+			return printBase64Binary((userAndPass.getUsername() + ":" + userAndPass
+					.getPasswordAsString()).getBytes("UTF-8"));
+		}
+		return null;
 	}
 
 	private static void clearCredentials(String baseURL) throws CMException {
