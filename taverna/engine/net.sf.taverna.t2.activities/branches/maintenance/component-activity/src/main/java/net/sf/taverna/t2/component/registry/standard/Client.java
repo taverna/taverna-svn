@@ -66,7 +66,8 @@ class Client {
 		this(context, repository, true);
 	}
 
-	Client(JAXBContext context, URL repository, boolean tryLogIn) throws RegistryException {
+	Client(JAXBContext context, URL repository, boolean tryLogIn)
+			throws RegistryException {
 		this.registryBase = repository;
 		this.jaxbContext = context;
 		this.http = new MyExperimentConnector(tryLogIn);
@@ -274,11 +275,11 @@ class Client {
 		return CredentialManager.getInstance();
 	}
 
-	private static String getCredentials(String urlString) throws CMException,
-			UnsupportedEncodingException {
+	private static String getCredentials(String urlString, boolean mandatory)
+			throws CMException, UnsupportedEncodingException {
 		final URI serviceURI = URI.create(urlString);
-		
-		if (cm().hasUsernamePasswordForService(serviceURI)) {
+
+		if (mandatory || cm().hasUsernamePasswordForService(serviceURI)) {
 			UsernamePassword userAndPass = cm()
 					.getUsernameAndPasswordForService(serviceURI, true, null);
 			// Check for user didn't log in...
@@ -327,48 +328,46 @@ class Client {
 		// authentication settings (and the current user)
 		private String authString = null;
 
-		MyExperimentConnector(final boolean tryLogIn) throws RegistryException {
-			if (tryLogIn) {
-				// check if the stored credentials are valid
-				ServerResponse response = null;
-				try {
-					String userPass = getCredentials(registryBase.toString());
-					if (userPass == null) 
-						logger.debug(
-								"no credentials available for " + registryBase);
-					else {
-						// set the system to the "logged in" state from INI file
-						// properties
-						authString = userPass;
-						response = GET(registryBase.toString() + WHOAMI);
-					}
-				} catch (Exception e) {
-					authString = null;
-					logger.debug(
-							"failed when verifying login credentials", e);
+		private void tryLogIn(boolean mandatory) throws RegistryException {
+			// check if the stored credentials are valid
+			ServerResponse response = null;
+			try {
+				String userPass = getCredentials(registryBase.toString(),
+						mandatory);
+				if (userPass == null)
+					logger.debug("no credentials available for " + registryBase);
+				else {
+					// set the system to the "logged in" state from INI file properties
+					authString = userPass;
+					response = GET(registryBase.toString() + WHOAMI);
 				}
-
-				if (response == null || response.getCode() != HTTP_OK) {
-					try {
-						if (response != null)
-							throw new RegistryException("failed to log in: "
-									+ response.getError());
-//						else
-//							throw new RegistryException("unauthorized");
-					} finally {
-						try {
-							authString = null;
-							clearCredentials(registryBase.toString());
-						} catch (Exception e) {
-							logger.debug(
-									"failed to clear credentials", e);
-						}
-					}
-				}
-				if (authString != null) {
-					logger.debug("logged in to repository successfully");
-				}
+			} catch (Exception e) {
+				authString = null;
+				logger.debug("failed when verifying login credentials", e);
 			}
+
+			if (response == null || response.getCode() != HTTP_OK)
+				try {
+					if (response != null)
+						throw new RegistryException("failed to log in: "
+								+ response.getError());
+					// else
+					// throw new RegistryException("unauthorized");
+				} finally {
+					try {
+						authString = null;
+						clearCredentials(registryBase.toString());
+					} catch (Exception e) {
+						logger.debug("failed to clear credentials", e);
+					}
+				}
+			if (authString != null)
+				logger.debug("logged in to repository successfully");
+		}
+
+		MyExperimentConnector(boolean tryLogIn) throws RegistryException {
+			if (tryLogIn)
+				tryLogIn(false);
 		}
 
 		// getter for the current status
@@ -387,6 +386,11 @@ class Client {
 			if (authString != null)
 				conn.setRequestProperty("Authorization", "Basic " + authString);
 			return conn;
+		}
+
+		private boolean elevate() throws RegistryException {
+			tryLogIn(true);
+			return isLoggedIn();
 		}
 
 		/**
@@ -438,7 +442,7 @@ class Client {
 		 */
 		public ServerResponse POST(String url, String xmlDataBody)
 				throws Exception {
-			if (!isLoggedIn())
+			if (!isLoggedIn() && !elevate())
 				return null;
 
 			HttpURLConnection conn = connect("POST", url);
@@ -465,7 +469,7 @@ class Client {
 		 * @throws Exception
 		 */
 		public ServerResponse DELETE(String url) throws Exception {
-			if (!isLoggedIn())
+			if (!isLoggedIn() && !elevate())
 				return null;
 			return receiveServerResponse(connect("DELETE", url), url, true,
 					false);
@@ -474,7 +478,7 @@ class Client {
 		@Unused
 		public ServerResponse PUT(String url, String xmlDataBody)
 				throws Exception {
-			if (!isLoggedIn())
+			if (!isLoggedIn() && !elevate())
 				return null;
 
 			HttpURLConnection conn = connect("PUT", url);
