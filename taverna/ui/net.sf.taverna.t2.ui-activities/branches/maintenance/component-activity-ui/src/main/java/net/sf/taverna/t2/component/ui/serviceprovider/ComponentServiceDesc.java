@@ -3,6 +3,7 @@ package net.sf.taverna.t2.component.ui.serviceprovider;
 import static java.util.Arrays.asList;
 import static org.apache.log4j.Logger.getLogger;
 
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,8 +11,11 @@ import javax.swing.Icon;
 
 import net.sf.taverna.t2.component.ComponentActivity;
 import net.sf.taverna.t2.component.ComponentActivityConfigurationBean;
+import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.component.preference.ComponentPreference;
+import net.sf.taverna.t2.component.registry.ComponentUtil;
+import net.sf.taverna.t2.component.registry.ComponentVersion;
 import net.sf.taverna.t2.servicedescriptions.ServiceDescription;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
@@ -110,5 +114,15 @@ public class ComponentServiceDesc extends
 	 */
 	public void setIdentification(Version.ID identification) {
 		this.identification = identification;
+	}
+	
+	public URL getHelpURL() {
+		try {
+			Version version = ComponentUtil.calculateComponentVersion(getIdentification());
+			return version.getHelpURL();
+		} catch (RegistryException e) {
+			logger.error(e);
+		}
+		return null;
 	}
 }
