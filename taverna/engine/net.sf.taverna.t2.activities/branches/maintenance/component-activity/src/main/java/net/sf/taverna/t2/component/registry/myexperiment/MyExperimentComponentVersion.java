@@ -137,4 +137,9 @@ class MyExperimentComponentVersion extends ComponentVersion {
 		wfUri = StringUtils.substringBeforeLast(wfUri, "?");
 		return wfUri.equals(resourceUri);
 	}
+
+	@Override
+	public URL getHelpURL() {
+		return null;
+	}
 }

@@ -7,6 +7,9 @@ import static net.sf.taverna.t2.component.registry.standard.Utils.getElementStri
 import static net.sf.taverna.t2.component.registry.standard.Utils.getValue;
 
 import java.lang.ref.SoftReference;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.IllegalFormatException;
 
 import net.sf.taverna.t2.component.api.Family;
 import net.sf.taverna.t2.component.api.License;
@@ -123,6 +126,8 @@ class NewComponent extends Component {
 		private String description;
 		private String dataflowUri;
 		private SoftReference<Dataflow> dataflowRef;
+		
+		private static final String htmlPageTemplate = "%1$s/workflows/%2$s/versions/%3$s.html";
 
 		protected Version(Integer version, String description, Dataflow dataflow) {
 			super(NewComponent.this);
@@ -185,6 +190,18 @@ class NewComponent extends Component {
 				}
 			}
 			return dataflowRef.get();
+		}
+
+		@Override
+		public URL getHelpURL() {
+			URL result = null;
+			try {
+				String urlString = String.format(htmlPageTemplate, registry.getRegistryBaseString(), getId(), version);
+				result = new URL(urlString);
+			} catch (IllegalFormatException | MalformedURLException e) {
+				logger.error(e);
+			}
+			return result;
 		}
 	}
 

@@ -20,6 +20,8 @@ public interface Version {
 
 	/** @return The identification token for this version */
 	ID getID();
+	
+	URL getHelpURL();
 
 	interface ID extends Serializable {
 		/** @return The name of the family of the component to which we refer to */
@@ -59,5 +61,6 @@ public interface Version {
 		 * @return A boolean
 		 */
 		boolean mostlyEqualTo(Component component);
+		
 	}
 }

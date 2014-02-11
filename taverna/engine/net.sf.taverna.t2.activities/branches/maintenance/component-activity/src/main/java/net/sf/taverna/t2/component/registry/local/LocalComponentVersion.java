@@ -9,6 +9,7 @@ import static org.apache.log4j.Logger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import net.sf.taverna.t2.component.api.RegistryException;
 import net.sf.taverna.t2.component.registry.ComponentVersion;
@@ -95,6 +96,11 @@ class LocalComponentVersion extends ComponentVersion {
 		} else if (!componentVersionDir.equals(other.componentVersionDir))
 			return false;
 		return true;
+	}
+
+	@Override
+	public URL getHelpURL() {
+		return null;
 	}
 
 }
