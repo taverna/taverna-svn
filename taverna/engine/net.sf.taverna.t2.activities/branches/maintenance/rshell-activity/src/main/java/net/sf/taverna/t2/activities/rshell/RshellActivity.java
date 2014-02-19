@@ -54,6 +54,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPo
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 //import org.apache.log4j.Logger;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPDouble;
@@ -74,7 +75,7 @@ import org.rosuda.REngine.Rserve.RserveException;
 public class RshellActivity extends
 AbstractAsynchronousActivity<RshellActivityConfigurationBean> {
 
-	//private static Logger logger = Logger.getLogger(RshellActivity.class);
+	private static Logger logger = Logger.getLogger(RshellActivity.class);
 
 	private static int BUF_SIZE = 1024;
 
@@ -345,20 +346,15 @@ AbstractAsynchronousActivity<RshellActivityConfigurationBean> {
 						callback.receiveResult(outputData, new int[0]);
 
 					} catch (ActivityConfigurationException ace) {
+						logger.error(ace);
 						callback.fail("RShell failed", ace);
-					} catch (RserveException rSrvException) {
-						callback.fail("RShell failed: " + rSrvException.getMessage(),
-								rSrvException);
+					} catch (REXPMismatchException | REngineException e) {
+						logger.error(e);
+						final String message = e.getMessage();
+						callback.fail(message);
 					} catch (ReferenceServiceException e) {
-						callback.fail("Error accessing input/output data", e);
-					} catch (REXPMismatchException e) {
-						callback.fail("RShell failed: "
-								+ e.getMessage(),
-								e);
-					} catch (REngineException e) {
-						callback.fail("RShell failed: "
-								+ e.getMessage(),
-								e);
+						logger.error(e);
+						callback.fail("Error accessing input/output data");
 					} finally {
 						closeConnection(connection);
 					}
