@@ -60,6 +60,11 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
+			<artifactId>workbench-plugin</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
 			<artifactId>externaltool-plugin</artifactId>
 			<version>${project.version}</version>
 		</dependency>

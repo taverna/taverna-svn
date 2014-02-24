@@ -58,6 +58,11 @@
 			</build>
 			<dependencies>
 				<dependency>
+					<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
+					<artifactId>workbench-plugin</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+				<dependency>
 					<groupId>net.sf.taverna.t2.taverna-workbench</groupId>
 					<artifactId>workbench-common</artifactId>
 					<version>${project.version}</version>
