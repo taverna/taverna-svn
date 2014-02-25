@@ -19,8 +19,8 @@
 					<plugin>
 						<artifactId>maven-compiler-plugin</artifactId>
 						<configuration>
-							<source>1.6</source>
-							<target>1.6</target>
+							<source>1.7</source>
+							<target>1.7</target>
 						</configuration>
 					</plugin>
 					<!--
@@ -37,12 +37,14 @@
 									<goal>jar</goal>
 								</goals>
 								<configuration>
-									<source>1.6</source>
+									<source>1.7</source>
 									<!-- Max heap and permanent generation space size -->
 									<additionalJOption>-J-Xmx1024m -J-XX:MaxPermSize=1024m</additionalJOption>
 									<includeDependencySources>true</includeDependencySources>
 									<dependencySourceIncludes>
 										<dependencySourceInclude>net.sf.taverna*</dependencySourceInclude>
+										<dependencySourceInclude>uk.org.taverna*</dependencySourceInclude>
+										<dependencySourceInclude>org.purl.wf4ever*</dependencySourceInclude>
 										<dependencySourceInclude>org.fife.ui.hex*</dependencySourceInclude>
 										<dependencySourceInclude>org.jdesktop*</dependencySourceInclude>
 										<!-- 
