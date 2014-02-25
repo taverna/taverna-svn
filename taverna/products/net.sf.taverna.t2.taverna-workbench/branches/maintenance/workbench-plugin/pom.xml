@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>net.sf.taverna.t2.taverna-workbench.plugins</groupId>
 	<artifactId>workbench-plugin</artifactId>
-	<name>Taverna workbench</name>
+	<name>Taverna workbench plugin</name>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2.core</groupId>

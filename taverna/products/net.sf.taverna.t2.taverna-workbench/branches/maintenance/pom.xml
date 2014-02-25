@@ -50,10 +50,10 @@
 		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/products/net.sf.taverna.t2.taverna-workbench/trunk/</url>
 	</scm>
 	<modules>
-		<module>plugins</module>
 		<module>workbench-common</module>
+		<module>workbench-plugin</module>
 		<module>workbench-dev</module>
 		<module>workbench-distro</module>
-    	<module>taverna-javadocs</module>
+		<module>taverna-javadocs</module>
   </modules>
 </project>
