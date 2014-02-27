@@ -8,8 +8,8 @@
 		<version>2.5-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2.taverna-workbench</groupId>
-	<artifactId>workbench-common</artifactId>
-	<name>Taverna workbench common runtime</name>
+	<artifactId>taverna-product-common</artifactId>
+	<name>Taverna products common runtime files</name>
 	<dependencies>
 		<dependency>
 			<groupId>commons-httpclient</groupId>
