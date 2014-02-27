@@ -443,7 +443,7 @@
         <dependencies>
                 <dependency>
                         <groupId>net.sf.taverna.t2.taverna-workbench</groupId>
-                        <artifactId>workbench-common</artifactId>
+                        <artifactId>taverna-product-common</artifactId>
                         <version>${project.version}</version>
                 </dependency>
 
