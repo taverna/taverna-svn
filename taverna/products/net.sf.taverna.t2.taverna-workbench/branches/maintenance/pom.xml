@@ -53,7 +53,6 @@
 		<module>taverna-product-common</module>
 		<module>workbench-plugin</module>
 		<module>workbench-dev</module>
-		<module>workbench-distro</module>
 		<module>taverna-javadocs</module>
   </modules>
 </project>
