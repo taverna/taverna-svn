@@ -31,7 +31,7 @@ public class ComponentWorkflowCreatorAction extends AbstractAction implements
 	private static final long serialVersionUID = -299685223430721587L;
 	private static Logger logger = getLogger(ComponentWorkflowCreatorAction.class);
 	private static FileManager fileManager = FileManager.getInstance();
-	private static final String CREATE_COMPONENT = "Create component...";
+	private static final String CREATE_COMPONENT = "Create component from current workflow...";
 
 	public ComponentWorkflowCreatorAction() {
 		super(CREATE_COMPONENT, getIcon());
