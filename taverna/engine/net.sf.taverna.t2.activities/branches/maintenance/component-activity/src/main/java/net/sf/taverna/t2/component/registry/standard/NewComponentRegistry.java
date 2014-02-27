@@ -299,12 +299,12 @@ class NewComponentRegistry extends ComponentRegistry {
 	protected void populatePermissionCache() {
 		permissionCache.add(Policy.PUBLIC);
 		permissionCache.add(Policy.PRIVATE);
-		try {
+/*		try {
 			for (Description d : listPolicies())
 				permissionCache.add(new Policy.Group(d.getId()));
 		} catch (RegistryException e) {
 			logger.warn("failed to fetch sharing policies", e);
-		}
+		}*/
 	}
 
 	private List<LicenseType> listLicenses() throws RegistryException {

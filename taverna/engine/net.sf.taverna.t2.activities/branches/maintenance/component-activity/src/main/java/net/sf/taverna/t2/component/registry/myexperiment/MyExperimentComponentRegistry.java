@@ -491,7 +491,7 @@ class MyExperimentComponentRegistry extends ComponentRegistry {
 	@Override
 	protected void populatePermissionCache() {
 		permissionCache.add(PUBLIC);
-		Element policiesElement = getResource(getRegistryBaseString()
+/*		Element policiesElement = getResource(getRegistryBaseString()
 				+ "/policies.xml", "type=group");
 		for (Object child : policiesElement.getChildren("policy"))
 			if (child instanceof Element) {
@@ -501,7 +501,7 @@ class MyExperimentComponentRegistry extends ComponentRegistry {
 				String name = policyElement.getTextTrim();
 				permissionCache.add(new MyExperimentGroupPolicy(name, id));
 			}
-
+*/
 		permissionCache.add(PRIVATE);
 	}
 
