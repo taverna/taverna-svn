@@ -58,5 +58,10 @@ public class InteractionServiceHtmlTemplateService extends
 		final InteractionServiceHtmlTemplateService bts = new InteractionServiceHtmlTemplateService();
 		return bts.templateService;
 	}
+	
+	@Override
+	public String getDescription() {
+		return "A service for browser-based interaction with a workflow run";	
+	}
 
 }

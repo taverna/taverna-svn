@@ -73,7 +73,6 @@ public class InteractionServiceDesc extends
 	 */
 	@Override
 	protected List<? extends Object> getIdentifyingData() {
-		// FIXME: Use your fields instead of example fields
 		return Arrays.<Object> asList(this.templateName);
 	}
 
@@ -85,6 +84,10 @@ public class InteractionServiceDesc extends
 
 	public void setTemplateName(final String templateName) {
 		this.templateName = templateName;
+	}
+	
+	public String getHelpId() {
+		return (super.getHelpId() + "-" + getName());
 	}
 
 }
