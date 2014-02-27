@@ -77,10 +77,10 @@ public class ComponentProfileImportAction extends AbstractAction {
 		gbc.gridy = 1;
 		gbc.gridwidth = 1;
 		gbc.weightx = 0;
-		overallPanel.add(new JLabel("Profile Location:"), gbc);
+		overallPanel.add(new JLabel("Profile URL or local file path:"), gbc);
 		gbc.gridx = 1;
 		gbc.weightx = 1;
-		final JTextField profileLocation = new JTextField(40);
+		final JTextField profileLocation = new JTextField(30);
 		overallPanel.add(profileLocation, gbc);
 		gbc.gridx = 0;
 		gbc.weightx = 0;
@@ -127,29 +127,36 @@ public class ComponentProfileImportAction extends AbstractAction {
 
 	private void doImport(Registry chosenRegistry, String profileLocation,
 			SharingPolicy permission, License license) {
-		try {
-			if (chosenRegistry == null) {
-				showMessageDialog(null, "Unable to determine registry",
-						"Component Registry Problem", ERROR_MESSAGE);
-				return;
-			}
-			Profile newProfile = makeProfile(new URL(profileLocation));
-			String newName = newProfile.getName();
-			for (Profile p : chosenRegistry.getComponentProfiles())
-				if (p.getName().equals(newName)) {
-					showMessageDialog(null, newName + " is already used",
-							"Duplicate profile name", ERROR_MESSAGE);
+		if (profileLocation == null || profileLocation.equals("")) {
+			showMessageDialog(null, "Profile location cannot be blank",
+					"Invalid URL", ERROR_MESSAGE);
+		} else {
+			try {
+				if (chosenRegistry == null) {
+					showMessageDialog(null, "Unable to determine registry",
+							"Component Registry Problem", ERROR_MESSAGE);
 					return;
 				}
-			chosenRegistry.addComponentProfile(newProfile, license, permission);
-		} catch (MalformedURLException e) {
-			showMessageDialog(null, profileLocation + " is not a valid URL",
-					"Invalid URL", ERROR_MESSAGE);
-		} catch (RegistryException e) {
-			log.error("import profile failed", e);
-			showMessageDialog(null,
-					"Unable to save profile: " + e.getMessage(),
-					"Registry Exception", ERROR_MESSAGE);
+				Profile newProfile = makeProfile(new URL(profileLocation));
+				String newName = newProfile.getName();
+				for (Profile p : chosenRegistry.getComponentProfiles())
+					if (p.getName().equals(newName)) {
+						showMessageDialog(null, newName + " is already used",
+								"Duplicate profile name", ERROR_MESSAGE);
+						return;
+					}
+				chosenRegistry.addComponentProfile(newProfile, license,
+						permission);
+			} catch (MalformedURLException e) {
+				showMessageDialog(null,
+						profileLocation + " is not a valid URL", "Invalid URL",
+						ERROR_MESSAGE);
+			} catch (RegistryException e) {
+				log.error("import profile failed", e);
+				showMessageDialog(null,
+						"Unable to save profile: " + e.getMessage(),
+						"Registry Exception", ERROR_MESSAGE);
+			}
 		}
 	}
 
