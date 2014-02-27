@@ -12,7 +12,6 @@ net.sf.taverna.t2.component.ui.menu.registry.ComponentRegistryManageMenuAction
 net.sf.taverna.t2.component.ui.menu.profile.ComponentProfileMenuSection
 net.sf.taverna.t2.component.ui.menu.profile.ComponentProfileImportMenuAction
 net.sf.taverna.t2.component.ui.menu.profile.ComponentProfileCopyMenuAction
-net.sf.taverna.t2.component.ui.menu.profile.ComponentProfileDeleteMenuAction
 
 net.sf.taverna.t2.component.ui.menu.family.ComponentFamilyMenuSection
 net.sf.taverna.t2.component.ui.menu.family.ComponentFamilyCreateMenuAction
