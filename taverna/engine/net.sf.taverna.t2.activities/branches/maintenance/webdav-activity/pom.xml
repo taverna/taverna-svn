@@ -1,20 +1,27 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>net.sf.taverna.t2</groupId>
-    <artifactId>activities</artifactId>
-    <version>1.5-SNAPSHOT</version>
-  </parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>activities</artifactId>
+		<version>1.5-SNAPSHOT</version>
+	</parent>
 
-  <name>Taverna WebDAV activity</name>
-  <description>Dependencies for WebDAV local worker</description>
-  <groupId>net.sf.taverna.t2.activities</groupId>
-  <artifactId>webdav-activity</artifactId>
-  <dependencies>
-	<dependency>
-		<groupId>com.github.lookfirst</groupId>
-		<artifactId>sardine</artifactId>
-		<version>5.0_1_6</version>
-	</dependency>
-  </dependencies>
+	<name>Taverna WebDAV activity</name>
+	<description>Dependencies for WebDAV local worker</description>
+	<groupId>net.sf.taverna.t2.activities</groupId>
+	<artifactId>webdav-activity</artifactId>
+	<dependencies>
+		<dependency>
+			<groupId>com.github.lookfirst</groupId>
+			<artifactId>sardine</artifactId>
+			<version>5.1</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.security</groupId>
+			<artifactId>credential-manager</artifactId>
+			<version>${t2.security.version}</version>
+		</dependency>
+
+	</dependencies>
 </project>
