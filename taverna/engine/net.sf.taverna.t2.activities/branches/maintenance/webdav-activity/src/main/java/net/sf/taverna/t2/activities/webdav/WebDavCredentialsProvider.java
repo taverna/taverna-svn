@@ -136,7 +136,7 @@ public class WebDavCredentialsProvider extends BasicCredentialsProvider
       
       
       if (credentials != null) {
-        logger.info("Credentials obtained successfully");`
+        logger.info("Credentials obtained successfully");
         return new RESTActivityCredentials(credentials.getUsername(), credentials.getPasswordAsString());
       }
     }
