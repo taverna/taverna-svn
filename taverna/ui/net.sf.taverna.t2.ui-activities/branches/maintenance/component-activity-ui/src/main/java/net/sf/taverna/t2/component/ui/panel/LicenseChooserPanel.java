@@ -34,9 +34,11 @@ import java.awt.event.ItemListener;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
@@ -137,10 +139,10 @@ public class LicenseChooserPanel extends JPanel implements
 					return null;
 			} catch (RegistryException e) {
 				logger.error("failure when reading licenses from registry", e);
-				return null;
+				throw e;
 			} catch (NullPointerException e) {
 				logger.error("unexpected exception when reading licenses", e);
-				return null;
+				throw e;
 			}
 			for (License license : licenses)
 				try {
@@ -155,6 +157,14 @@ public class LicenseChooserPanel extends JPanel implements
 		@Override
 		protected void done() {
 			licenseBox.removeAllItems();
+			try {
+				get();
+			} catch (InterruptedException | ExecutionException e1) {
+				logger.error(e1);
+				licenseBox.addItem("Unable to read licenses");
+				licenseBox.setEnabled(false);
+				return;
+			}
 			for (String name : licenseMap.keySet())
 				licenseBox.addItem(name);
 			if (licenseMap.isEmpty()) {

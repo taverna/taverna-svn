@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -203,6 +204,7 @@ public abstract class AbstractSemanticAnnotationContextualView extends
 				parseStatements();
 			} catch (Exception e) {
 				logger.error("failed to parse annotation statements", e);
+				throw e;
 			}
 			return null;
 		}
@@ -237,29 +239,36 @@ public abstract class AbstractSemanticAnnotationContextualView extends
 			gbc.weightx = 1;
 			gbc.weighty = 0;
 			gbc.insets = new Insets(5, 5, 5, 5);
+			try {
+				get();
+				for (Entry<SemanticAnnotationProfile, Set<Statement>> entry : profileStatements
+						.entrySet()) {
+					panel.add(
+							new SemanticAnnotationPanel(
+									AbstractSemanticAnnotationContextualView.this,
+									entry.getKey(), entry.getValue(), allowChange),
+							gbc);
+					panel.add(new JSeparator(), gbc);
+				}
+				for (SemanticAnnotationProfile semanticAnnotationProfile : unresolvablePredicates) {
+					panel.add(new UnresolveablePredicatePanel(
+							semanticAnnotationProfile), gbc);
+					panel.add(new JSeparator(), gbc);
+				}
 
-			for (Entry<SemanticAnnotationProfile, Set<Statement>> entry : profileStatements
-					.entrySet()) {
-				panel.add(
-						new SemanticAnnotationPanel(
-								AbstractSemanticAnnotationContextualView.this,
-								entry.getKey(), entry.getValue(), allowChange),
-						gbc);
-				panel.add(new JSeparator(), gbc);
+				if (semanticAnnotationProfiles.isEmpty())
+					panel.add(new JLabel("No annotations possible"), gbc);
+				for (Statement s : statements)
+					panel.add(new UnrecognizedStatementPanel(s), gbc);
+
+				gbc.weighty = 1;
+				panel.add(new JPanel(), gbc);
+			} catch (ExecutionException | InterruptedException e) {
+				logger.error(e);
+				panel.add(new JLabel("Unable to read semantic annotations"), gbc);
 			}
-			for (SemanticAnnotationProfile semanticAnnotationProfile : unresolvablePredicates) {
-				panel.add(new UnresolveablePredicatePanel(
-						semanticAnnotationProfile), gbc);
-				panel.add(new JSeparator(), gbc);
-			}
 
-			if (semanticAnnotationProfiles.isEmpty())
-				panel.add(new JLabel("No annotations possible"), gbc);
-			for (Statement s : statements)
-				panel.add(new UnrecognizedStatementPanel(s), gbc);
 
-			gbc.weighty = 1;
-			panel.add(new JPanel(), gbc);
 			revalidate();
 			initView();
 		}

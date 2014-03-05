@@ -17,9 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
@@ -181,14 +183,19 @@ public class ComponentChooserPanel extends JPanel implements
 		@Override
 		protected void done() {
 			componentChoice.removeAllItems();
-			for (String componentName : componentMap.keySet())
-				componentChoice.addItem(componentName);
-			if (!componentMap.isEmpty()) {
-				componentChoice.setSelectedItem(componentMap.firstKey());
-				updateToolTipText();
-			} else
-				componentChoice.addItem("No components available");
-
+			try {
+				get();
+				for (String componentName : componentMap.keySet())
+					componentChoice.addItem(componentName);
+				if (!componentMap.isEmpty()) {
+					componentChoice.setSelectedItem(componentMap.firstKey());
+					updateToolTipText();
+				} else
+					componentChoice.addItem("No components available");
+			} catch (InterruptedException | ExecutionException e) {
+				logger.error(e);
+				componentChoice.addItem("Unable to read components");
+			}
 			notifyObservers();
 			componentChoice.setEnabled(!componentMap.isEmpty());
 		}

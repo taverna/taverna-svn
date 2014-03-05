@@ -18,9 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
@@ -129,10 +131,10 @@ public class ProfileChooserPanel extends JPanel implements
 				componentProfiles = registry.getComponentProfiles();
 			} catch (RegistryException e) {
 				logger.error("failed to get profiles", e);
-				return null;
+				throw e;
 			} catch (NullPointerException e) {
 				logger.error("failed to get profiles", e);
-				return null;
+				throw e;
 			}
 			for (Profile profile : componentProfiles)
 				try {
@@ -147,17 +149,22 @@ public class ProfileChooserPanel extends JPanel implements
 		@Override
 		protected void done() {
 			profileBox.removeAllItems();
-			for (String name : profileMap.keySet())
-				profileBox.addItem(name);
-			if (!profileMap.isEmpty()) {
-				String firstKey = profileMap.firstKey();
-				profileBox.setSelectedItem(firstKey);
-				setProfile(profileMap.get(firstKey));
-				profileBox.setEnabled(true);
-			} else {
-				profileBox.addItem("No profiles available");
-				profileBox.setEnabled(false);
+			try {
+				get();
+				for (String name : profileMap.keySet())
+					profileBox.addItem(name);
+				if (!profileMap.isEmpty()) {
+					String firstKey = profileMap.firstKey();
+					profileBox.setSelectedItem(firstKey);
+					setProfile(profileMap.get(firstKey));
+				} else {
+					profileBox.addItem("No profiles available");
+				}
+			} catch (InterruptedException | ExecutionException e) {
+				logger.error(e);
+				profileBox.addItem("Unable to read profiles");
 			}
+			profileBox.setEnabled(!profileMap.isEmpty());
 		}
 	}
 

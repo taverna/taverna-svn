@@ -31,9 +31,11 @@ import java.awt.GridBagLayout;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
@@ -120,10 +122,10 @@ public class SharingPolicyChooserPanel extends JPanel implements
 					return null;
 			} catch (RegistryException e) {
 				logger.error("problem getting permissions", e);
-				return null;
+				throw e;
 			} catch (NullPointerException e) {
 				logger.error("null pointer getting permissions", e);
-				return null;
+				throw e;
 			}
 
 			for (SharingPolicy policy : sharingPolicies)
@@ -138,16 +140,21 @@ public class SharingPolicyChooserPanel extends JPanel implements
 		@Override
 		protected void done() {
 			permissionBox.removeAllItems();
-			for (String name : permissionMap.keySet())
-				permissionBox.addItem(name);
-			if (!permissionMap.isEmpty()) {
-				String firstKey = permissionMap.firstKey();
-				permissionBox.setSelectedItem(firstKey);
-				permissionBox.setEnabled(true);
-			} else {
-				permissionBox.addItem(NO_PERMISSIONS_MSG);
-				permissionBox.setEnabled(false);
+			try {
+				get();
+				for (String name : permissionMap.keySet())
+					permissionBox.addItem(name);
+				if (!permissionMap.isEmpty()) {
+					String firstKey = permissionMap.firstKey();
+					permissionBox.setSelectedItem(firstKey);
+				} else {
+					permissionBox.addItem(NO_PERMISSIONS_MSG);
+				}
+			} catch (InterruptedException | ExecutionException e) {
+				logger.error(e);
+				permissionBox.addItem("Unable to read permissions");
 			}
+			permissionBox.setEnabled(!permissionMap.isEmpty());
 		}
 	}
 }

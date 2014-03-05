@@ -12,6 +12,7 @@ import static org.apache.log4j.Logger.getLogger;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
 
 import net.sf.taverna.t2.component.api.Version;
 import net.sf.taverna.t2.lang.observer.Observable;
@@ -48,6 +49,7 @@ public class ComponentWorkflowCreatorAction extends AbstractAction implements
 
 			saveWorkflowAsComponent(d, ident);
 		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Component creation failure", e.getMessage(), JOptionPane.ERROR_MESSAGE);
 			logger.error("failed to save workflow as component", e);
 		}
 	}

@@ -18,9 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
@@ -190,14 +192,21 @@ public class FamilyChooserPanel extends JPanel implements Observer,
 		@Override
 		protected void done() {
 			familyBox.removeAllItems();
-			for (String name : familyMap.keySet())
-				familyBox.addItem(name);
-			if (!familyMap.isEmpty()) {
-				String firstKey = familyMap.firstKey();
-				familyBox.setSelectedItem(firstKey);
-				updateDescription();
-			} else
-				familyBox.addItem("No families available");
+			try {
+				get();
+				for (String name : familyMap.keySet())
+					familyBox.addItem(name);
+				if (!familyMap.isEmpty()) {
+					String firstKey = familyMap.firstKey();
+					familyBox.setSelectedItem(firstKey);
+					updateDescription();
+				} else
+					familyBox.addItem("No families available");
+			} catch (InterruptedException | ExecutionException e) {
+				familyBox.addItem("Unable to read families");
+				logger.error(e);
+			}
+
 			notifyObservers();
 			familyBox.setEnabled(!familyMap.isEmpty());
 		}

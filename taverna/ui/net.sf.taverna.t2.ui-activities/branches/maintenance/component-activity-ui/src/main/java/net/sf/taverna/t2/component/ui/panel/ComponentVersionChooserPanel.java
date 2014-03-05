@@ -16,9 +16,11 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
@@ -145,15 +147,22 @@ public class ComponentVersionChooserPanel extends JPanel implements
 		@Override
 		protected void done() {
 			componentVersionChoice.removeAllItems();
-			for (Integer versionNumber : componentVersionMap.keySet())
-				componentVersionChoice.addItem(versionNumber);
+			try {
+				get();
+				for (Integer versionNumber : componentVersionMap.keySet())
+					componentVersionChoice.addItem(versionNumber);
 
-			if (!componentVersionMap.isEmpty()) {
-				componentVersionChoice.setSelectedItem(componentVersionMap
-						.lastKey());
-				updateToolTipText();
-			} else
-				componentVersionChoice.addItem("No versions available");
+				if (!componentVersionMap.isEmpty()) {
+					componentVersionChoice.setSelectedItem(componentVersionMap
+							.lastKey());
+					updateToolTipText();
+				} else
+					componentVersionChoice.addItem("No versions available");
+			} catch (InterruptedException | ExecutionException e) {
+				componentVersionChoice.addItem("Unable to read versions");
+				logger.error(e);
+			}
+
 			componentVersionChoice.setEnabled(!componentVersionMap.isEmpty());
 		}
 	}
