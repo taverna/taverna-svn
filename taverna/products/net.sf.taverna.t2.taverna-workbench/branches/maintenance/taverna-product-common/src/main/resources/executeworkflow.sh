@@ -32,6 +32,7 @@ exec "$javabin" -Xmx700m -XX:MaxPermSize=200m \
   "-Dcom.sun.net.ssl.enableECC=false" \
   "-Djsse.enableSNIExtension=false" \
   "-Draven.profile=file://$taverna_home/conf/current-profile.xml" \
+  "-Djava.util.logging.config.file=$taverna_home/lib/logging.properties" \
   "-Dtaverna.startup=$taverna_home" \
   -Djava.system.class.loader=net.sf.taverna.raven.prelauncher.BootstrapClassLoader \
   -Draven.launcher.app.main=net.sf.taverna.t2.commandline.CommandLineLauncher \
