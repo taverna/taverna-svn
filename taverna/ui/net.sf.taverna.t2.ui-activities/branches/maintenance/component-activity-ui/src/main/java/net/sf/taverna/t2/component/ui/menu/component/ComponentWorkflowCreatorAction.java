@@ -49,7 +49,7 @@ public class ComponentWorkflowCreatorAction extends AbstractAction implements
 
 			saveWorkflowAsComponent(d, ident);
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Component creation failure", e.getMessage(), JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, e.getCause().getMessage(), "Component creation failure", JOptionPane.ERROR_MESSAGE);
 			logger.error("failed to save workflow as component", e);
 		}
 	}
