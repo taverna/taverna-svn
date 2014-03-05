@@ -188,7 +188,7 @@ public class ArtifactImpl extends BasicArtifact {
 				}
 				if (version == null) {
 					logger.warn("Unable to find a version for the dependency "
-							+ groupId + ":" + artifactId + " - skipping");
+							+ groupId + ":" + artifactId + " from " + pomFile + " - skipping");
 					continue;
 				}
 
@@ -259,13 +259,13 @@ public class ArtifactImpl extends BasicArtifact {
 			}
 			// FIXME: catching exceptions where they are thrown
 		} catch (MalformedURLException e) {
-			logger.error("Malformed URL", e);
+			logger.error("Malformed URL " + pomFile, e);
 		} catch (IOException e) {
-			logger.warn("IO error", e);
+			logger.warn("IO error " + pomFile, e);
 		} catch (ParserConfigurationException e) {
-			logger.error("XML parser configuration error", e);
+			logger.error("XML parser configuration error " + pomFile, e);
 		} catch (SAXException e) {
-			logger.warn("XML SAX error", e);
+			logger.warn("XML SAX error " + pomFile, e);
 		}
 		dependencies = result;
 		return result;
@@ -339,8 +339,8 @@ public class ArtifactImpl extends BasicArtifact {
 				// Force a fetch of the pom file
 				repository.forcePom(parentArtifact);
 			} catch (ArtifactNotFoundException e) {
-				logger.warn("Could not fetch pom for artifact "
-						+ parentArtifact, e);
+				logger.warn("Could not fetch pom for parent artifact "
+						+ parentArtifact + "(referenced from " + pomFile + ")", e);
 				return;
 			}
 		}
