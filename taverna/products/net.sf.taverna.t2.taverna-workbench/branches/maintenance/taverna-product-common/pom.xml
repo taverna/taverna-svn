@@ -139,9 +139,9 @@
 			<version>${activation.version}</version>
 		</dependency>
 		<dependency>
-    		<groupId>net.java.dev.jai-imageio</groupId>
-    		<artifactId>jai-imageio-core-standalone</artifactId>
-    		<version>${jai.imageio.core.standalone.version}</version>
+			<groupId>net.java.dev.jai-imageio</groupId>
+			<artifactId>jai-imageio-core-standalone</artifactId>
+			<version>${jai.imageio.core.standalone.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ibm.icu</groupId>
