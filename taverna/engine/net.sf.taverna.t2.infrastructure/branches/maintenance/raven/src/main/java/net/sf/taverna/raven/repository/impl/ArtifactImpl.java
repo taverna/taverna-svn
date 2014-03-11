@@ -437,21 +437,6 @@ public class ArtifactImpl extends BasicArtifact {
 	}
 
 	/**
-	 * Return the list of ancestor, oldest parent first.
-	 * 
-	 * @return
-	 */
-	private List<ArtifactImpl> getAncestors() {
-		List<ArtifactImpl> parents = new ArrayList<ArtifactImpl>();
-		ArtifactImpl parent = parentArtifact;
-		while (parent != null) {
-			parents.add(0, parent);
-			parent = parent.parentArtifact;
-		}
-		return parents;
-	}
-
-	/**
 	 * Get maven properties calculated from the current POM, such as
 	 * ${project.version}.
 	 * 
@@ -600,57 +585,68 @@ public class ArtifactImpl extends BasicArtifact {
 	}
 
 	private String versionFor(String group, String artifact) {
-		String version = null;
-		if (dependencyManagement == null) {
-			// Need to take all parent poms and traverse them to find
-			// the dependency versions
-			dependencyManagement = new HashMap<String, String>();
-			for (ArtifactImpl ancestor : getAncestors()) {
-				File pomFile = repository.pomFile(ancestor);
-				try {
-					Document document = readXML(pomFile);
-					Properties ancestorProperties = ancestor.getProperties();
-					List<Node> managerElementList = findElements(document,
-							"dependencyManagement");
-					for (Node depManagerNode : managerElementList) {
-						List<Node> elementList = findElements(depManagerNode,
-								"dependency");
-						for (Node depNode : elementList) {
-							Node groupNode = findElements(depNode, "groupId")
-									.iterator().next();
-							String groupId = groupNode.getFirstChild()
-									.getNodeValue().trim();
-							groupId = expandProperties(ancestorProperties,
-									groupId);
-
-							Node artifactNode = findElements(depNode,
-									"artifactId").iterator().next();
-							String artifactId = artifactNode.getFirstChild()
-									.getNodeValue().trim();
-							artifactId = expandProperties(ancestorProperties,
-									artifactId);
-
-							Node versionNode = findElements(depNode, "version")
-									.iterator().next();
-							version = versionNode.getFirstChild()
-									.getNodeValue().trim();
-							version = expandProperties(ancestorProperties,
-									version);
-							dependencyManagement.put(
-									groupId + ":" + artifactId, version);
-						}
-					}
-
-				} catch (IOException e) {
-					logger.warn("IO error reading " + ancestor, e);
-				} catch (ParserConfigurationException e) {
-					logger.error("XML parser configuration error", e);
-				} catch (SAXException e) {
-					logger.warn("XML SAX error reading " + ancestor, e);
-				}
-			}
-		}
-		return dependencyManagement.get(group + ":" + artifact);
+		return getDependencyManagement().get(group + ":" + artifact);
 	}
 
+	protected Map<String, String> getDependencyManagement() {
+		String version = null;
+		if (dependencyManagement != null) {
+			return dependencyManagement;
+		}
+		
+		HashMap<String, String> depMap = new HashMap<String, String>();
+		if (parentArtifact != null) {
+			// Copy of ancestor's dependencyManagement
+			depMap.putAll(parentArtifact.getDependencyManagement());
+		}
+
+		// Then we'll top up (potentially override) with the
+		// dependencyManagement from our own pomFile
+		File pomFile = repository.pomFile(this);
+		Document document;
+		Properties props;
+		try {
+			document = readXML(pomFile);
+			props = getProperties();
+		} catch (ParserConfigurationException
+				| SAXException | IOException e) {
+			logger.warn("Can't parse dependencyManagement from" + pomFile, e);
+			// Set the (potentially empty) map as we're likely to 
+			// fail every time we try to parse the same file
+			dependencyManagement = depMap;
+			return dependencyManagement;
+		}
+		List<Node> managerElementList = findElements(document,
+					"dependencyManagement");
+		for (Node depManagerNode : managerElementList) {
+			List<Node> elementList = findElements(depManagerNode,
+					"dependency");
+			for (Node depNode : elementList) {
+				Node groupNode = findElements(depNode, "groupId")
+						.iterator().next();
+				String groupId = groupNode.getFirstChild()
+						.getNodeValue().trim();
+				groupId = expandProperties(props,
+						groupId);
+
+				Node artifactNode = findElements(depNode,
+						"artifactId").iterator().next();
+				String artifactId = artifactNode.getFirstChild()
+						.getNodeValue().trim();
+				artifactId = expandProperties(props,
+						artifactId);
+
+				Node versionNode = findElements(depNode, "version")
+						.iterator().next();
+				version = versionNode.getFirstChild()
+						.getNodeValue().trim();
+				version = expandProperties(props,
+						version);
+				depMap.put(
+						groupId + ":" + artifactId, version);
+			}
+		}
+		dependencyManagement = depMap;
+		return dependencyManagement;		
+	}
 }
