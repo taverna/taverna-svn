@@ -314,7 +314,7 @@ public class Profile extends AbstractArtifactFilter {
 					// Search it's children 
 					ArtifactImpl artifactImpl = repArtifacts.get(artifact);
 					if (artifactImpl == null) {
-						logger.warn("Unknown artifact " + artifact, new Exception());
+						logger.info("Unknown artifact " + artifact);
 						continue;
 					}
 					Set<Artifact> newDependencies;
