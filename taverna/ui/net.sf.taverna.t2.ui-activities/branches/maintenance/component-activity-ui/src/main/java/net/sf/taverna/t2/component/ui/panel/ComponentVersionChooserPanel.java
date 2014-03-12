@@ -166,4 +166,9 @@ public class ComponentVersionChooserPanel extends JPanel implements
 			componentVersionChoice.setEnabled(!componentVersionMap.isEmpty());
 		}
 	}
+	
+	public ComponentChooserPanel getComponentChooserPanel(){
+		return componentChooserPanel;
+		
+	}
 }
