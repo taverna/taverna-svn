@@ -36,14 +36,7 @@ public class ComponentContextualView extends ContextualView {
 		String html = getHtmlHead(getBackgroundColour());
 		html += buildTableOpeningTag();
 
-		html += "<tr><td>Registry base</td><td title=\"Hello Alan\">"
-				+ component.getRegistryBase().toString() + "</td></tr>";
-		html += "<tr><td>Family</td><td>" + component.getFamilyName()
-				+ "</td></tr>";
-		html += "<tr><td>Name</td><td>" + component.getComponentName()
-				+ "</td></tr>";
-		html += "<tr><td>Version</td><td>" + component.getComponentVersion()
-				+ "</td></tr>";
+		html += ViewUtil.getRawTablesHtml(component);
 
 		html += "</table>";
 		html += "</body></html>";

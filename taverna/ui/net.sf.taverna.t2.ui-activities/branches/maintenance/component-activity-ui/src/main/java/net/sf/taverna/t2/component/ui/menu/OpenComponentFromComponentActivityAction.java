@@ -52,9 +52,14 @@ public class OpenComponentFromComponentActivityAction extends AbstractAction {
 			invokeLater(new Runnable() {
 				@Override
 				public void run() {
+					try {
 					SVGGraph g = (SVGGraph) gc.getGraph();
 					g.setFillColor(RED);
 					gc.redraw();
+					}
+					catch (NullPointerException e) {
+						OpenComponentFromComponentActivityAction.logger.error(e);
+					}
 				}
 			});
 		} catch (OpenException e) {
