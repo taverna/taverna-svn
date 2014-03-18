@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.fife.ui.hex</groupId>
 	<artifactId>hexeditor</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>hexeditor</name>
 	<description>
 		A slightly modified utility from http://www.fifesoft.com/hexeditor/ for showing ad editing binary data in a hexadecimal viewer.  
