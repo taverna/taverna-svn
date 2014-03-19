@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>net.sf.taverna.t2.results</groupId>
 	<artifactId>results</artifactId>
-	<version>1.5-SNAPSHOT</version>
+	<version>1.5</version>
 
 	<name>Common Results handling utilities</name>
 	<description>Common utilities for handling results, in particular Baclava document handling and de-referencing T2References</description>
@@ -78,8 +78,8 @@
                 </repository>
         </repositories>
         <scm>
-                <connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.results/branches/maintenance/</connection>
-                <developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.results/branches/maintenance/</developerConnection>
-                <url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.results/branches/maintenance</url>
+                <connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.results/tags/results-1.5</connection>
+                <developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.results/tags/results-1.5</developerConnection>
+                <url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.results/tags/results-1.5</url>
         </scm>
 </project>
