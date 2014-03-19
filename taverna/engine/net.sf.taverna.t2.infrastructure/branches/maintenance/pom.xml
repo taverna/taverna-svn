@@ -15,9 +15,9 @@
 	<name>Taverna 2 infrastructure</name>
 	<description>Infrastructure for launching Taverna 2, including plugin management, Raven and SPI discovery</description>
 	<scm>
-		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.infrastructure/trunk/</connection>
-		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.infrastructure/trunk/</developerConnection>
-		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.infrastructure/trunk</url>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.infrastructure/branches/maintenance/</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.infrastructure/branches/maintenance/</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.infrastructure/branches/maintenance</url>
 	</scm>
 	
 	<modules>
