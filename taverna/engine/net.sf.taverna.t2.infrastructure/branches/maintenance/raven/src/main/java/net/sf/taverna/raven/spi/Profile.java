@@ -322,7 +322,7 @@ public class Profile extends AbstractArtifactFilter {
 						newDependencies = new HashSet<Artifact>(artifactImpl
 								.getDependencies());
 					} catch (ArtifactStateException e) {
-						logger.warn("Invalid state for artifact: " + artifact);
+						logger.info("Invalid state for artifact: " + artifact);
 						continue;
 					}
 					newDependencies.removeAll(visitted);
