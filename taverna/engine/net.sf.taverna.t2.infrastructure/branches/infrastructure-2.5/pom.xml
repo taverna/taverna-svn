@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>taverna-parent</artifactId>
 		<groupId>net.sf.taverna</groupId>
-		<version>2.5-SNAPSHOT</version>
+		<version>2.5.0</version>
         <relativePath>../../taverna-parent/pom.xml</relativePath>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>infrastructure</artifactId>
-	<version>2.5-SNAPSHOT</version>
+	<version>2.5</version>
 	<packaging>pom</packaging>
 	<name>Taverna 2 infrastructure</name>
 	<description>Infrastructure for launching Taverna 2, including plugin management, Raven and SPI discovery</description>
 	<scm>
-		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.infrastructure/branches/maintenance/</connection>
-		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.infrastructure/branches/maintenance/</developerConnection>
-		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.infrastructure/branches/maintenance</url>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.infrastructure/tags/infrastructure-2.5</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/engine/net.sf.taverna.t2.infrastructure/tags/infrastructure-2.5</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/engine/net.sf.taverna.t2.infrastructure/tags/infrastructure-2.5</url>
 	</scm>
 	
 	<modules>
