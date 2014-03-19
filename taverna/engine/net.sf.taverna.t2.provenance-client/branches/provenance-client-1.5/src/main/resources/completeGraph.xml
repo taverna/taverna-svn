@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!-- example of a fully specified provenance query -->
+<pquery xmlns="http://taverna.org.uk/2009/provenance/pquery/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://taverna.org.uk/2009/provenance/pquery/ pquery.xsd">
+  
+<!--  scope is implicit -->	
+
+
+<!--  implicit focus?? -->
+
+<!--  <focus/> -->
+	<!-- all processors within the top level workflow -->
+</pquery>

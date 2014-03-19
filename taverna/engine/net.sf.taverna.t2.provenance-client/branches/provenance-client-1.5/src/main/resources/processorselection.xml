@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!-- example of a fully specified provenance query -->
+<pquery xmlns="http://taverna.org.uk/2009/provenance/pquery/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://taverna.org.uk/2009/provenance/pquery/ pquery.xsd">
+	<scope workflowId="ac41d494-f77c-4dd5-919c-47272aa6a848" />
+	
+	<focus>
+	<!-- all processors within asda workflow -->
+		<workflow name="asda" />  
+
+<!-- processor bar within the scope of workflow foo -->
+		<workflow name="foo">
+			<processor name="bar"></processor>
+		</workflow>
+
+<!-- processor fffaafa within scope of workflow bestWorkflow -->
+		<processor name="fffaafa" />
+
+		<workflow name="adsasd">
+		
+		<!--  NO PORTS! -->
+		 	<port name="asdasd"/>
+		 	<processor name="asd">
+		 		<port name="asdasd"/>
+		 		<port name="asdasd"/>
+		 	</processor>
+		</workflow>
+
+	</focus>
+</pquery>
