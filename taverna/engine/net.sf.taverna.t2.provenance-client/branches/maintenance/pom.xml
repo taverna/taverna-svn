@@ -10,7 +10,7 @@
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>provenance-client</artifactId>
-	<version>1.5-SNAPSHOT</version>
+	<version>1.6-SNAPSHOT</version>
 	<repositories>
 		<repository>
 			<releases />
