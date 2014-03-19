@@ -4,12 +4,12 @@
         <parent>
 		<groupId>net.sf.taverna</groupId>
 		<artifactId>taverna-parent</artifactId>
-		<version>2.5.0</version>
+		<version>2.5-SNAPSHOT</version>
 		<relativePath>../../taverna-parent/pom.xml</relativePath>
 	</parent>
 	<groupId>net.sf.taverna.t2.results</groupId>
 	<artifactId>results</artifactId>
-	<version></version>
+	<version>1.5-SNAPSHOT</version>
 
 	<name>Common Results handling utilities</name>
 	<description>Common utilities for handling results, in particular Baclava document handling and de-referencing T2References</description>
