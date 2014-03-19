@@ -1,0 +1,19 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>activities</artifactId>
+    <groupId>net.sf.taverna.t2</groupId>
+    <version>1.5-SNAPSHOT</version>
+  </parent>
+  <name>Taverna 2 Usecase activity (legacy)</name>
+  <groupId>net.sf.taverna.t2.activities</groupId>
+  <artifactId>usecase-activity</artifactId>
+  <dependencies>
+  		<dependency>
+			<groupId>net.sf.taverna.t2.activities</groupId>
+			<artifactId>external-tool-activity</artifactId>
+			<version>${t2.activities.version}</version>
+		</dependency>
+  </dependencies>
+  
+</project>

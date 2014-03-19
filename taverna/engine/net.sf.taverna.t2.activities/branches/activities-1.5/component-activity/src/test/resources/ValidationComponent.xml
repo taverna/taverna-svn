@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<profile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://ns.taverna.org.uk/2012/component/profile"
+	xsi:schemaLocation="http://ns.taverna.org.uk/2012/component/profile http://ns.taverna.org.uk/2012/component/profile/ComponentProfile.xsd">
+
+	<id>eu.scape-project.taverna.component.profile.validation</id>
+	<name>Validation Component</name>
+	<description>A SCAPE component for validation</description>
+	<ontology id="scape">http://www.myexperiment.org/files/864/versions/1/download/SCAPEcomponents.owl</ontology>
+	<component>
+		<inputPort maxDepth='1'>
+			<annotation>Example</annotation>
+			<semanticAnnotation ontology="scape"
+				predicate="http://scape-project.eu/pc/vocab/profiles#hasPortType"
+				class="http://scape-project.eu/pc/vocab/profiles#PortType">
+				http://scape-project.eu/pc/vocab/profiles#ObjectURIPort
+			</semanticAnnotation>
+		</inputPort>
+		<inputPort maxDepth='0' minOccurs="2" maxOccurs="unbounded">
+			<annotation>Example</annotation>
+			<semanticAnnotation ontology="scape"
+				predicate="http://scape-project.eu/pc/vocab/profiles#hasPortType"
+				class="http://scape-project.eu/pc/vocab/profiles#MeasurePortType" />
+			<semanticAnnotation ontology="scape"
+				predicate="http://scape-project.eu/pc/vocab/profiles#hasMeasure"
+				class="http://scape-project.eu/pc/vocab/profiles#Measure" />
+		</inputPort>
+		<inputPort maxDepth='0' minOccurs="0" maxOccurs="unbounded">
+			<annotation>Example</annotation>
+			<semanticAnnotation ontology="scape"
+				predicate="http://scape-project.eu/pc/vocab/profiles#hasPortType"
+				class="http://scape-project.eu/pc/vocab/profiles#PortType">
+				http://scape-project.eu/pc/vocab/profiles#ParameterPort
+			</semanticAnnotation>
+			<semanticAnnotation ontology="scape"
+				predicate="http://scape-project.eu/pc/vocab/profiles#hasParameter"
+				class="http://scape-project.eu/pc/vocab/profiles#DefaultParameter"
+				maxOccurs="unbounded" />
+		</inputPort>
+		<outputPort maxDepth='0' minOccurs="1" maxOccurs="unbounded">
+			<annotation>Example</annotation>
+			<semanticAnnotation ontology="scape"
+				predicate="http://scape-project.eu/pc/vocab/profiles#acceptsMeasure"
+				class="http://scape-project.eu/pc/vocab/profiles#Measure" />
+		</outputPort>
+		<activity type="Tool" minOccurs="0" maxOccurs="unbounded">
+			<semanticAnnotation ontology="scape"
+				predicate="http://scape-project.eu/pc/vocab/profiles#hasDependency"
+				class="http://scape-project.eu/pc/vocab/profiles#Dependency"
+				maxOccurs="unbounded" />
+		</activity>
+		<activity minOccurs="0" maxOccurs="unbounded" />
+		<annotation>Title</annotation>
+		<annotation minOccurs="0">Description</annotation>
+		<annotation minOccurs="0">Author</annotation>
+		<semanticAnnotation ontology="scape"
+			predicate="http://scape-project.eu/pc/vocab/profiles#acceptsMimetype"
+			class="http://scape-project.eu/pc/vocab/profiles#AcceptedMimetype"
+			maxOccurs="unbounded" />
+	</component>
+</profile>

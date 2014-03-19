@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<profile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://ns.taverna.org.uk/2012/component/profile"
+	xsi:schemaLocation="http://ns.taverna.org.uk/2012/component/profile ComponentProfile.xsd">
+
+	<id>net.sf.taverna.t2.component.profile.empty</id>
+	<name>Empty profile</name>
+	<description>A basic empty profile that does not allow additional semantic annotation</description>
+	<component>
+	</component>
+</profile>

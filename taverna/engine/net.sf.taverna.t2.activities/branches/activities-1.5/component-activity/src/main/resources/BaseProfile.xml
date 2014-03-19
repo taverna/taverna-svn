@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+
+<profile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://ns.taverna.org.uk/2012/component/profile"
+	xsi:schemaLocation="http://ns.taverna.org.uk/2012/component/profile http://ns.taverna.org.uk/2012/component/profile/ComponentProfile.xsd">
+
+	<id>http://purl.org/wfever/workflow-base-profile</id>
+	<name>Workflow base annotation profile</name>
+	<description>A base profile for annotating (Taverna) workflows, processes and ports. 
+	   This profile is meant to be used as a common base for more specific profiles.
+	   The common annotations here are mostly optional (minOccurs=0),
+	   covering general annotations like title, contact person, example value.</description>
+
+	<!-- <ontology id="dcterms">http://purl.org/dc/terms/</ontology> The above 
+		is flaky.. Instead we use the OWL2 DL object/datatype version from http://bloody-byte.net/rdf/dc_owl2dl/ -->
+	<ontology id="dcterms">http://bloody-byte.net/rdf/dc_owl2dl/dcterms_od.owl</ontology>
+	<ontology id="foaf">http://xmlns.com/foaf/spec/index.rdf</ontology>
+	<ontology id="prov">http://www.w3.org/ns/prov.rdf</ontology>
+	<ontology id="pav">http://pav-ontology.googlecode.com/svn/trunk/pav.owl</ontology>
+	<ontology id="ro">http://wf4ever.github.com/ro/ro.owl</ontology>
+	<ontology id="wfdesc">http://wf4ever.github.com/ro/wfdesc.owl</ontology>
+	<ontology id="cito">http://speronitomcat.web.cs.unibo.it:8080/LODE/source?url=http://purl.org/spar/cito</ontology>
+	<ontology id="dcat">http://www.w3.org/ns/dcat.rdf</ontology>
+	<ontology id="roterms">https://raw.github.com/wf4ever/ro/wfannotations/roterms.owl</ontology>
+	<ontology id="skos">http://www.w3.org/TR/skos-reference/skos.rdf</ontology>
+	<component>
+		<inputPort>
+			<semanticAnnotation predicate="http://purl.org/wf4ever/roterms#exampleValue"
+				ontology="roterms" minOccurs="0" maxOccurs="unbounded"
+				class="http://purl.org/wf4ever/roterms#WorkflowValue" />
+			
+			<!--  TODO: property chains (?) to say hasArchetype for the typing -->
+			<semanticAnnotation predicate="http://purl.org/wf4ever/roterms#ofSemanticType"
+				ontology="roterms" minOccurs="0" maxOccurs="unbounded"
+				class="http://www.w3.org/2004/02/skos/core#Concept" />
+			<semanticAnnotation
+				predicate="http://purl.org/wf4ever/roterms#ofStructuralType"
+				ontology="roterms" minOccurs="0" maxOccurs="unbounded" />
+			<semanticAnnotation predicate="http://purl.org/dc/terms/format"
+				ontology="dcterms" minOccurs="0" class="http://purl.org/dc/terms/IMT" />
+            <!--  -->
+            
+            
+			<semanticAnnotation predicate="http://purl.org/wf4ever/roterms#defaultValue"
+				ontology="roterms" minOccurs="0"
+				class="http://purl.org/wf4ever/roterms#WorkflowValue" />
+		</inputPort>
+
+        <outputPort>
+            <semanticAnnotation predicate="http://purl.org/wf4ever/roterms#exampleValue"
+                ontology="roterms" minOccurs="0" maxOccurs="unbounded"
+                class="http://purl.org/wf4ever/roterms#WorkflowValue" />
+            <semanticAnnotation predicate="http://purl.org/wf4ever/roterms#ofSemanticType"
+                ontology="roterms" minOccurs="0" maxOccurs="unbounded"
+                class="http://www.w3.org/2004/02/skos/core#Concept" />
+            <semanticAnnotation
+                predicate="http://purl.org/wf4ever/roterms#ofStructuralType"
+                ontology="roterms" minOccurs="0" maxOccurs="unbounded" />
+
+            <semanticAnnotation predicate="http://purl.org/dc/terms/format"
+                ontology="dcterms" minOccurs="0" class="http://purl.org/dc/terms/IMT" />            
+        </outputPort>
+        
+		<activity minOccurs="1" maxOccurs="unbounded">
+			<semanticAnnotation predicate="http://purl.org/wf4ever/roterms#performsTask"
+				ontology="roterms" minOccurs="0" maxOccurs="unbounded"
+				class="http://www.w3.org/2004/02/skos/core#Concept" />
+			<semanticAnnotation
+				predicate="http://purl.org/wf4ever/roterms#requiresSoftware"
+				ontology="roterms" minOccurs="0" maxOccurs="unbounded" />
+			<semanticAnnotation
+				predicate="http://purl.org/wf4ever/roterms#requiresHardware"
+				ontology="roterms" minOccurs="0" maxOccurs="unbounded" />
+			<semanticAnnotation predicate="http://purl.org/wf4ever/roterms#requireDataset"
+				ontology="roterms" minOccurs="0" maxOccurs="unbounded"
+				class="http://www.w3.org/ns/dcat#Dataset" />
+		</activity>
+
+
+
+
+		<semanticAnnotation predicate="http://purl.org/dc/terms/title"
+			ontology="dcterms" minOccurs="0" />
+		<semanticAnnotation predicate="http://purl.org/dc/terms/description"
+			ontology="dcterms" minOccurs="0" />
+		<semanticAnnotation predicate="http://purl.org/dc/terms/created"
+			ontology="dcterms" minOccurs="0"
+			class="http://www.w3.org/2001/XMLSchema#dateTime" />
+		<semanticAnnotation predicate="http://purl.org/dc/terms/modified"
+			ontology="dcterms" minOccurs="0"
+			class="http://www.w3.org/2001/XMLSchema#dateTime" />
+		<semanticAnnotation predicate="http://purl.org/dc/terms/license"
+			ontology="dcterms" minOccurs="0"
+			class="http://purl.org/dc/terms/LicenseDocument" />
+		<semanticAnnotation predicate="http://purl.org/pav/authoredBy"
+			ontology="pav" minOccurs="0" maxOccurs="unbounded"
+			class="http://xmlns.com/foaf/0.1/Person" />
+		<semanticAnnotation predicate="http://purl.org/pav/contributedBy"
+			ontology="pav" minOccurs="0" maxOccurs="unbounded"
+			class="http://xmlns.com/foaf/0.1/Person" />
+		<semanticAnnotation predicate="http://purl.org/wf4ever/roterms#technicalContact"
+			ontology="roterms" minOccurs="0" class="http://xmlns.com/foaf/0.1/Agent" />
+		<semanticAnnotation predicate="http://purl.org/pav/previousVersion"
+			ontology="pav" minOccurs="0" class="http://purl.org/wf4ever/wfdesc#Workflow" />
+		<semanticAnnotation predicate="http://purl.org/spar/cito/isDocumentedBy"
+			ontology="cito" minOccurs="0" maxOccurs="unbounded" />
+		<semanticAnnotation predicate="http://purl.org/dc/terms/audience"
+			ontology="dcterms" minOccurs="0" maxOccurs="unbounded"
+			class="http://xmlns.com/foaf/0.1/Project" />
+		<semanticAnnotation predicate="http://purl.org/dc/terms/identifier"
+			ontology="dcterms" minOccurs="1" />
+		<semanticAnnotation predicate="http://purl.org/wf4ever/roterms#requiresSoftware"
+			ontology="roterms" minOccurs="0" maxOccurs="unbounded" />
+		<semanticAnnotation predicate="http://purl.org/wf4ever/roterms#requiresHardware"
+			ontology="roterms" minOccurs="0" maxOccurs="unbounded" />
+		<semanticAnnotation predicate="http://xmlns.com/foaf/0.1/depiction"
+			ontology="foaf" minOccurs="0" class="http://xmlns.com/foaf/0.1/Image" />
+
+
+	</component>
+
+
+</profile>
