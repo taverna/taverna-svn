@@ -1,0 +1,25 @@
+<plugins>
+	<plugin>
+		<name>helloworld</name>
+		<description>Hello world</description>
+		<identifier>net.sf.taverna.raven.helloworld</identifier>
+		<version>1.7-SNAPSHOT</version>
+		<provider>taverna.sf.net</provider>
+		<enabled>true</enabled>
+		<repositories>
+			<repository>
+				http://www.mygrid.org.uk/maven/repository/
+			</repository>
+			<repository>
+				http://www.mygrid.org.uk/maven/snapshot-repository/
+			</repository>
+		</repositories>
+		<profile>
+			<artifact groupId="uk.org.mygrid.taverna.raven"
+				artifactId="helloworld" version="1.7-SNAPSHOT" />
+		</profile>
+		<application>
+			<version>1.7-SNAPSHOT</version>
+		</application>
+	</plugin>
+</plugins>
