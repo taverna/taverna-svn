@@ -1,0 +1,60 @@
+<activity  xmlns="http://taverna.sf.net/2008/xml/t2flow"><class>net.sf.taverna.t2.activities.localworker.LocalworkerActivity</class><inputMap/><outputMap/><configBean encoding="xstream"><net.sf.taverna.t2.activities.localworker.LocalworkerActivityConfigurationBean xmlns="">
+  <inputs>
+    <net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean>
+      <name>baseUrl</name>
+      <depth>0</depth>
+      <mimeTypes>
+        <string>text/plain</string>
+      </mimeTypes>
+      <handledReferenceSchemes />
+      <translatedElementType>java.lang.String</translatedElementType>
+      <allowsLiteralValues>true</allowsLiteralValues>
+    </net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean>
+    <net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean>
+      <name>path</name>
+      <depth>0</depth>
+      <mimeTypes>
+        <string>text/plain</string>
+      </mimeTypes>
+      <handledReferenceSchemes />
+      <translatedElementType>java.lang.String</translatedElementType>
+      <allowsLiteralValues>true</allowsLiteralValues>
+    </net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean>
+  </inputs>
+  <outputs>
+    <net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean>
+      <name>status</name>
+      <depth>0</depth>
+      <mimeTypes />
+      <granularDepth>0</granularDepth>
+    </net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean>
+  </outputs>
+  <script>import com.github.sardine.*;
+
+String url = baseUrl;
+if (!url.endsWith("/")) {
+	url += "/";
+}
+
+if ((path != void) &amp;&amp; (path != null) &amp;&amp; !path.isEmpty()) {
+	url += path;
+}
+
+Sardine sardine = SardineFactory.begin();
+
+String status = "OK";
+try {
+	sardine.createDirectory(url);
+} catch (IOException e) {
+	status = e.toString();
+}
+
+
+</script>
+  <dependencies>
+    <string>org.apache.httpcomponents:httpcore:4.2.3</string>
+    <string>org.apache.httpcomponents:httpclient:4.2.3</string>
+    <string>com.github.lookfirst:sardine:5.0_1_6</string>
+  </dependencies>
+
+</net.sf.taverna.t2.activities.localworker.LocalworkerActivityConfigurationBean></configBean><annotations /></activity>
