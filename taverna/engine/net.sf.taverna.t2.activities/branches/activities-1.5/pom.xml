@@ -11,7 +11,7 @@
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>activities</artifactId>
-	<version>1.5-SNAPSHOT</version>
+	<version>1.5</version>
 	<packaging>pom</packaging>
 
 	<name>Taverna 2 Activities</name>

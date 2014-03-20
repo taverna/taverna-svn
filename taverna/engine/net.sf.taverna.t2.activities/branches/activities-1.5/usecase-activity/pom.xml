@@ -3,7 +3,7 @@
   <parent>
     <artifactId>activities</artifactId>
     <groupId>net.sf.taverna.t2</groupId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5</version>
   </parent>
   <name>Taverna 2 Usecase activity (legacy)</name>
   <groupId>net.sf.taverna.t2.activities</groupId>
