@@ -1,0 +1,7 @@
+import javax.swing.JOptionPane;
+
+if ((valueList == void) || (valueList == null) || (valueList.isEmpty())) {
+    throw new RuntimeException("valueList must be specified and non-empty");
+}
+
+answer = (String) JOptionPane.showInputDialog(null, (message == void ? null : message), (title == void ? null : title), JOptionPane.QUESTION_MESSAGE, null, valueList.toArray(), valueList.get(0));

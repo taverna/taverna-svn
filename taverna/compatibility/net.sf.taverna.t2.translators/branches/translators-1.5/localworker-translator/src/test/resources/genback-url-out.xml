@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<!DOCTYPE sciobj SYSTEM "agave.dtd">
+<sciobj version="2">
+    <bio_sequence seq_length="5028" molecule_type="DNA" element_id="SCU49845">
+      <sequence>gatcctccatatacaacggtatctccacctcaggtttagatctcaacaacggaaccattgccgacatgagacagttaggt
+atcgtcgagagttacaagctaaaacgagcagtagtcagctctgcatctgaagccgctgaagttctactaagggtggataa
+catcatccgtgcaagaccaagaaccgccaatagacaacatatgtaacatatttaggatatacctcgaaaataataaaccg
+ccacactgtcattattataattagaaacagaacgcaaaaattatccactatataattcaaagacgcgaaaaaaaaagaac
+aacgcgtcatagaacttttggcaattcgcgtcacaaataaattttggcaacttatgtttcctcttcgagcagtactcgag
+ccctgtctcaagaatgtaataatacccatcgtaggtatggttaaagatagcatctccacaacctcaaagctccttgccga
+gagtcgccctcctttgtcgagtaattttcacttttcatatgagaacttattttcttattctttactctcacatcctgtag
+tgattgacactgcaacagccaccatcactagaagaacagaacaattacttaatagaaaaattatatcttcctcgaaacga
+tttcctgcttccaacatctacgtatatcaagaagcattcacttaccatgacacagcttcagatttcattattgctgacag
+ctactatatcactactccatctagtagtggccacgccctatgaggcatatcctatcggaaaacaataccccccagtggca
+agagtcaatgaatcgtttacatttcaaatttccaatgatacctataaatcgtctgtagacaagacagctcaaataacata
+caattgcttcgacttaccgagctggctttcgtttgactctagttctagaacgttctcaggtgaaccttcttctgacttac
+tatctgatgcgaacaccacgttgtatttcaatgtaatactcgagggtacggactctgccgacagcacgtctttgaacaat
+acataccaatttgttgttacaaaccgtccatccatctcgctatcgtcagatttcaatctattggcgttgttaaaaaacta
+tggttatactaacggcaaaaacgctctgaaactagatcctaatgaagtcttcaacgtgacttttgaccgttcaatgttca
+ctaacgaagaatccattgtgtcgtattacggacgttctcagttgtataatgcgccgttacccaattggctgttcttcgat
+tctggcgagttgaagtttactgggacggcaccggtgataaactcggcgattgctccagaaacaagctacagttttgtcat
+catcgctacagacattgaaggattttctgccgttgaggtagaattcgaattagtcatcggggctcaccagttaactacct
+ctattcaaaatagtttgataatcaacgttactgacacaggtaacgtttcatatgacttacctctaaactatgtttatctc
+gatgacgatcctatttcttctgataaattgggttctataaacttattggatgctccagactgggtggcattagataatgc
+taccatttccgggtctgtcccagatgaattactcggtaagaactccaatcctgccaatttttctgtgtccatttatgata
+cttatggtgatgtgatttatttcaacttcgaagttgtctccacaacggatttgtttgccattagttctcttcccaatatt
+aacgctacaaggggtgaatggttctcctactattttttgccttctcagtttacagactacgtgaatacaaacgtttcatt
+agagtttactaattcaagccaagaccatgactgggtgaaattccaatcatctaatttaacattagctggagaagtgccca
+agaatttcgacaagctttcattaggtttgaaagcgaaccaaggttcacaatctcaagagctatattttaacatcattggc
+atggattcaaagataactcactcaaaccacagtgcgaatgcaacgtccacaagaagttctcaccactccacctcaacaag
+ttcttacacatcttctacttacactgcaaaaatttcttctacctccgctgctgctacttcttctgctccagcagcgctgc
+cagcagccaataaaacttcatctcacaataaaaaagcagtagcaattgcgtgcggtgttgctatcccattaggcgttatc
+ctagtagctctcatttgcttcctaatattctggagacgcagaagggaaaatccagacgatgaaaacttaccgcatgctat
+tagtggacctgatttgaataatcctgcaaataaaccaaatcaagaaaacgctacacctttgaacaacccctttgatgatg
+atgcttcctcgtacgatgatacttcaatagcaagaagattggctgctttgaacactttgaaattggataaccactctgcc
+actgaatctgatatttccagcgtggatgaaaagagagattctctatcaggtatgaatacatacaatgatcagttccaatc
+ccaaagtaaagaagaattattagcaaaacccccagtacagcctccagagagcccgttctttgacccacagaataggtctt
+cttctgtgtatatggatagtgaaccagcagtaaataaatcctggcgatatactggcaacctgtcaccagtctctgatatt
+gtcagagacagttacggatcacaaaaaactgttgatacagaaaaacttttcgatttagaagcaccagagaaggaaaaacg
+tacgtcaagggatgtcactatgtcttcactggacccttggaacagcaatattagcccttctcccgtaagaaaatcagtaa
+caccatcaccatataacgtaacgaagcatcgtaaccgccacttacaaaatattcaagactctcaaagcggtaaaaacgga
+atcactcccacaacaatgtcaacttcatcttctgacgattttgttccggttaaagatggtgaaaatttttgctgggtcca
+tagcatggaaccagacagaagaccaagtaagaaaaggttagtagatttttcaaataagagtaatgtcaatgttggtcaag
+ttaaggacattcacggacgcatcccagaaatgctgtgattatacgcaacgatattttgcttaattttattttcctgtttt
+attttttattagtggtttacagataccctatattttatttagtttttatacttagagacatttaattttaattccattct
+tcaaatttcatttttgcacttaaaacaaagatccaaaaatgctctcgccctcttcatattgagaatacactccattcaaa
+attttgtcgtcaccgctgattaatttttcactaaactgatgaataatcaaaggccccacgtcagaaccgactaaagaagt
+gagttttattttaggaggttgaaaaccattattgtctggtaaattttcatcttcttgacatttaacccagtttgaatccc
+tttcaatttctgctttttcctccaaactatcgaccctcctgtttctgtccaacttatgtcctagttccaattcgatcgca
+ttaataactgcttcaaatgttattgtgtcatcgttgactttaggtaatttctccaaatgcataatcaaactatttaagga
+agatcggaattcgtcgaacacttcagtttccgtaatgatctgatcgtctttatccacatgttgtaattcactaaaatcta
+aaacgtatttttcaatgcataaatcgttctttttattaataatgcagatggaaaatctgtaaacgtgcgttaatttagaa
+agaacatccagtataagttcttctatatagtcaattaaagcaggatgcctattaatgggaacgaactgcggcaagttgaa
+tgactggtaagtagtgtagtcgaatgactgaggtgggtatacatttctataaaataaaatcaaattaatgtagcatttta
+agtataccctcagccacttctctacccatctattcataaagctgacgcaacgattactattttttttttcttcttggatc
+tcagtcgtcgcaaaaacgtataccttctttttccgaccttttttttagctttctggaaaagtttatattagttaaacagg
+gtctagtcttagtgtgaaagctagtggtttcgattgactgatattaagaaagtggaaattaaattagtagtgtagacgta
+tatgcatatgtatttctcgcctgtttatgtttctacgtacttttgatttatagcaaggggaaaagaaatacatactattt
+tttggtaaaggtgaaagcataatgtaaaagctagaataaaatggacgaaataaagagaggcttagttcatcttttttcca
+aaaagcacccaatgataataactaaaatgaaaaggatttgccatctgtcagcaacatcagttgtgtgagcaataataaaa
+tcatcacctccgttgcctttagcgcgtttgtcgtttgtatcttccgtaattttagtcttatcaatgggaatcataaattt
+tccaatgaattagcaatttcgtccaattctttttgagcttcttcatatttgctttggaattcttcgcacttcttttccca
+ttcatctctttcttcttccaaagcaacgatccttctacccatttgctcagagttcaaatcggcctctttcagtttatcca
+ttgcttccttcagtttggcttcactgtcttctagctgttgttctagatcctggtttttcttggtgtagttctcattatta
+gatctcaagttattggagtcttcagccaattgctttgtatcagacaattgactctctaacttctccacttcactgtcgag
+ttgctcgtttttagcggacaaagatttaatctcgttttctttttcagtgttagattgctctaattctttgagctgttctc
+tcagctcctcatatttttcttgccatgactcagattctaattttaagctattcaatttctctttgatc</sequence>
+      <sequence_map>
+        <annotations>
+          <seq_feature feature_type="CDS">
+            <seq_location least_start="687" greatest_end="3158" on_complement_strand="false">687..3158</seq_location>
+            <qualifier qualifier_type="product" data_type="varchar">Axl2p</qualifier>
+            <qualifier qualifier_type="translation" data_type="varchar">MTQLQISLLLTATISLLHLVVATPYEAYPIGKQYPPVARVNESFTFQISNDTYKSSVDKTAQITYNCFDLPSWLSFDSSSRTFSGEPSSDLLSDANTTLYFNVILEGTDSADSTSLNNTYQFVVTNRPSISLSSDFNLLALLKNYGYTNGKNALKLDPNEVFNVTFDRSMFTNEESIVSYYGRSQLYNAPLPNWLFFDSGELKFTGTAPVINSAIAPETSYSFVIIATDIEGFSAVEVEFELVIGAHQLTTSIQNSLIINVTDTGNVSYDLPLNYVYLDDDPISSDKLGSINLLDAPDWVALDNATISGSVPDELLGKNSNPANFSVSIYDTYGDVIYFNFEVVSTTDLFAISSLPNINATRGEWFSYYFLPSQFTDYVNTNVSLEFTNSSQDHDWVKFQSSNLTLAGEVPKNFDKLSLGLKANQGSQSQELYFNIIGMDSKITHSNHSANATSTRSSHHSTSTSSYTSSTYTAKISSTSAAATSSAPAALPAANKTSSHNKKAVAIACGVAIPLGVILVALICFLIFWRRRRENPDDENLPHAISGPDLNNPANKPNQENATPLNNPFDDDASSYDDTSIARRLAALNTLKLDNHSATESDISSVDEKRDSLSGMNTYNDQFQSQSKEELLAKPPVQPPESPFFDPQNRSSSVYMDSEPAVNKSWRYTGNLSPVSDIVRDSYGSQKTVDTEKLFDLEAPEKEKRTSRDVTMSSLDPWNSNISPSPVRKSVTPSPYNVTKHRNRHLQNIQDSQSGKNGITPTTMSTSSSDDFVPVKDGENFCWVHSMEPDRRPSKKRLVDFSNKSNVNVGQVKDIHGRIPEML</qualifier>
+            <qualifier qualifier_type="gene" data_type="varchar">AXL2</qualifier>
+            <qualifier qualifier_type="protein_id" data_type="varchar">AAA98666.1</qualifier>
+            <qualifier qualifier_type="db_xref" data_type="varchar">GI:1293615</qualifier>
+            <qualifier qualifier_type="note" data_type="varchar">plasma membrane glycoprotein</qualifier>
+            <qualifier qualifier_type="codon_start" data_type="varchar">1</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CDS">
+            <seq_location least_start="1" greatest_end="206" on_complement_strand="false">1..206</seq_location>
+            <qualifier qualifier_type="product" data_type="varchar">TCP1-beta</qualifier>
+            <qualifier qualifier_type="translation" data_type="varchar">SSIYNGISTSGLDLNNGTIADMRQLGIVESYKLKRAVVSSASEAAEVLLRVDNIIRARPRTANRQHM</qualifier>
+            <qualifier qualifier_type="protein_id" data_type="varchar">AAA98665.1</qualifier>
+            <qualifier qualifier_type="db_xref" data_type="varchar">GI:1293614</qualifier>
+            <qualifier qualifier_type="codon_start" data_type="varchar">3</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="gene">
+            <seq_location least_start="687" greatest_end="3158" on_complement_strand="false">687..3158</seq_location>
+            <qualifier qualifier_type="gene" data_type="varchar">AXL2</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="source">
+            <seq_location least_start="1" greatest_end="5028" on_complement_strand="false">1..5028</seq_location>
+            <qualifier qualifier_type="organism" data_type="varchar">Saccharomyces cerevisiae</qualifier>
+            <qualifier qualifier_type="db_xref" data_type="varchar">taxon:4932</qualifier>
+            <qualifier qualifier_type="mol_type" data_type="varchar">genomic DNA</qualifier>
+            <qualifier qualifier_type="map" data_type="varchar">9</qualifier>
+            <qualifier qualifier_type="chromosome" data_type="varchar">IX</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="gene">
+            <seq_location least_start="3300" greatest_end="4037" on_complement_strand="true">3300..4037</seq_location>
+            <qualifier qualifier_type="gene" data_type="varchar">REV7</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CDS">
+            <seq_location least_start="3300" greatest_end="4037" on_complement_strand="true">3300..4037</seq_location>
+            <qualifier qualifier_type="product" data_type="varchar">Rev7p</qualifier>
+            <qualifier qualifier_type="translation" data_type="varchar">MNRWVEKWLRVYLKCYINLILFYRNVYPPQSFDYTTYQSFNLPQFVPINRHPALIDYIEELILDVLSKLTHVYRFSICIINKKNDLCIEKYVLDFSELQHVDKDDQIITETEVFDEFRSSLNSLIMHLEKLPKVNDDTITFEAVINAIELELGHKLDRNRRVDSLEEKAEIERDSNWVKCQEDENLPDNNGFQPPKIKLTSLVGSDVGPLIIHQFSEKLISGDDKILNGVYSQYEEGESIFGSLF</qualifier>
+            <qualifier qualifier_type="gene" data_type="varchar">REV7</qualifier>
+            <qualifier qualifier_type="protein_id" data_type="varchar">AAA98667.1</qualifier>
+            <qualifier qualifier_type="db_xref" data_type="varchar">GI:1293616</qualifier>
+            <qualifier qualifier_type="codon_start" data_type="varchar">1</qualifier>
+          </seq_feature>
+        </annotations>
+      </sequence_map>
+  </bio_sequence>
+</sciobj>

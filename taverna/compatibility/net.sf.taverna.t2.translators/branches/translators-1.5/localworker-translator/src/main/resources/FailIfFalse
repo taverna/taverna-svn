@@ -1,0 +1,3 @@
+if ("false".equals(test)) {
+  throw new Exception("Test matches, aborting downstream processors");
+}

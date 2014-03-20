@@ -1,0 +1,28 @@
+if ((url == void) || (url == null)) {
+	throw new RuntimeException("The url must be specified");
+}
+
+URL inputURL = null;
+if (base != void) {
+	inputURL = new URL(new URL(base), url);
+} else {
+	inputURL = new URL(url);
+}
+
+int bytesRead = 0;
+int totalBytesRead = 0;
+InputStream is = inputURL.openStream();
+ByteArrayOutputStream os = new ByteArrayOutputStream();
+byte[] buffer = new byte[2048];
+while (true) {
+	bytesRead = is.read(buffer);
+	if (bytesRead == -1) {
+		break;	
+	}
+
+	os.write(buffer, 0, bytesRead);
+}
+
+image = os.toByteArray();
+is.close();
+os.close();

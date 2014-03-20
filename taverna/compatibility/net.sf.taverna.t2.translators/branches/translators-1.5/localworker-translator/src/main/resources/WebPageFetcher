@@ -1,0 +1,32 @@
+if ((url == void) || (url == null)) {
+	throw new RuntimeException("The url must be specified");
+}
+
+URL inputURL = null;
+if (base != void) {
+  inputURL = new URL(new URL(base), url);
+}
+else {
+  inputURL = new URL(url);
+}
+URLConnection con = inputURL.openConnection();
+InputStream in = con.getInputStream();
+
+StringBuffer result = new StringBuffer();
+BufferedReader reader;
+
+String encoding = con.getContentEncoding();
+if (encoding == null) {
+  reader = new BufferedReader(new InputStreamReader(in));
+} else {
+  reader = new BufferedReader(new InputStreamReader(in, encoding));
+}
+String line = null;
+String NEWLINE = System.getProperty("line.separator");
+while ((line = reader.readLine()) != null) {
+	result.append(line);
+	result.append(NEWLINE);
+}
+
+reader.close();
+contents = result.toString();

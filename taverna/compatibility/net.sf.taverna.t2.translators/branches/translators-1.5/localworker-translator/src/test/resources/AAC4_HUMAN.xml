@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<!DOCTYPE sciobj SYSTEM "agave.dtd">
+<sciobj version="2">
+    <bio_sequence seq_length="911" molecule_type="PROTEIN-TERM" element_id="O43707">
+      <sequence>MVDYHAANQSYQYGPSSAGNGAGGGGSMGDYMAQEDDWDRDLLLDPAWEKQQRKTFTAWCNSHLRKAGTQIENIDEDFRD
+GLKLMLLLEVISGERLPKPERGKMRVHKINNVNKALDFIASKGVKLVSIGAEEIVDGNAKMTLGMIWTIILRFAIQDISV
+EETSAKEGLLLWCQRKTAPYKNVNVQNFHISWKDGLAFNALIHRHRPELIEYDKLRKDDPVTNLNNAFEVAEKYLDIPKM
+LDAEDIVNTARPDEKAIMTYVSSFYHAFSGAQKAETAANRICKVLAVNQENEHLMEDYEKLASDLLEWIRRTIPWLEDRV
+PQKTIQEMQQKLEDFRDYRRVHKPPKVQEKCQLEINFNTLQTKLRLSNRPAFMPSEGKMVSDINNGWQHLEQAEKGYEEW
+LLNEIRRLERLDHLAEKFRQKASIHEAWTDGKEAMLKHRDYETATLSDIKALIRKHEAFESDLAAHQDRVEQIAAIAQEL
+NELDYYDSHNVNTRCQKICDQWDALGSLTHSRREALEKTEKQLEAIDQLHLEYAKRAAPFNNWMESAMEDLQDMFIVHTI
+EEIEGLISAHDQFKSTLPDADREREAILAIHKEAQRIAESNHIKLSGSNPYTTVTPQIINSKWEKVQQLVPKRDHALLEE
+QSKQQSNEHLRRQFASQANVVGPWIQTKMEEIGRISIEMNGTLEDQLSHLKQYERSIVDYKPNLDLLEQQHQLIQEALIF
+DNKHTNYTMEHIRVGWEQLLTTIARTINEVENQILTRDAKGISQEQMQEFRASFNHFDKDHGGALGPEEFKACLISLGYD
+VENDRQGEAEFNRIMSLVDPNHSGLVTFQAFIDFMSRETTDTDTADQVIASFKVLAGDKNFITAEELRRELPPDQAEYCI
+ARMAPYQGPDAVPGALDYKSFSTALYGESDL</sequence>
+      <sequence_map>
+        <annotations>
+          <seq_feature feature_type="CONFLICT">
+            <seq_location least_start="526" greatest_end="526">526..526</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> I -> II (IN REF. 3).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="REPEAT">
+            <seq_location least_start="293" greatest_end="403">293..403</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> SPECTRIN 1.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="DOMAIN">
+            <seq_location least_start="50" greatest_end="154">50..154</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> CH 1.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CONFLICT">
+            <seq_location least_start="60" greatest_end="60">60..60</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> C -> S (IN REF. 3).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="DOMAIN">
+            <seq_location least_start="163" greatest_end="269">163..269</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> CH 2.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CONFLICT">
+            <seq_location least_start="164" greatest_end="164">164..164</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> S -> L (IN REF. 4).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="DOMAIN">
+            <seq_location least_start="19" greatest_end="26">19..26</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> POLY-GLY.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CONFLICT">
+            <seq_location least_start="645" greatest_end="645">645..645</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> Q -> QQ (IN REF. 3).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="VARIANT">
+            <seq_location least_start="255" greatest_end="255">255..255</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> K -> E (in FSGS1). /FTId=VAR_010378.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CONFLICT">
+            <seq_location least_start="124" greatest_end="124">124..124</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> V -> I (IN REF. 3).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CONFLICT">
+            <seq_location least_start="673" greatest_end="674">673..674</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> GR -> A (IN REF. 3).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="DOMAIN">
+            <seq_location least_start="177" greatest_end="192">177..192</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> POLYPHOSPHOINOSITIDE (PIP2)-BINDING (POTENTIAL).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="REPEAT">
+            <seq_location least_start="649" greatest_end="752">649..752</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> SPECTRIN 4.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="VARIANT">
+            <seq_location least_start="262" greatest_end="262">262..262</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> S -> P (in FSGS1). /FTId=VAR_010380.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CONFLICT">
+            <seq_location least_start="276" greatest_end="276">276..276</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> T -> TET (IN REF. 3).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CONFLICT">
+            <seq_location least_start="891" greatest_end="893">891..893</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> AVP -> GVR (IN REF. 3).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CONFLICT">
+            <seq_location least_start="859" greatest_end="859">859..859</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> MISSING (IN REF. 3).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CONFLICT">
+            <seq_location least_start="476" greatest_end="476">476..476</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> I -> S (IN REF. 3).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="DOMAIN">
+            <seq_location least_start="1" greatest_end="269">1..269</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> ACTIN-BINDING (BY SIMILARITY).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CONFLICT">
+            <seq_location least_start="359" greatest_end="360">359..360</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> TL -> SV (IN REF. 3).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CONFLICT">
+            <seq_location least_start="536" greatest_end="536">536..536</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> R -> P (IN REF. 3).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CA_BIND">
+            <seq_location least_start="778" greatest_end="789">778..789</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> EF-HAND 1 (POTENTIAL).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="REPEAT">
+            <seq_location least_start="528" greatest_end="639">528..639</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> SPECTRIN 3.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CONFLICT">
+            <seq_location least_start="850" greatest_end="850">850..850</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> A -> T (IN REF. 3).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CA_BIND">
+            <seq_location least_start="819" greatest_end="830">819..830</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> EF-HAND 2 (POTENTIAL).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="REPEAT">
+            <seq_location least_start="413" greatest_end="518">413..518</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> SPECTRIN 2.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CONFLICT">
+            <seq_location least_start="292" greatest_end="294">292..294</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> EHL -> CSTS (IN REF. 3).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="VARIANT">
+            <seq_location least_start="259" greatest_end="259">259..259</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> T -> I (in FSGS1). /FTId=VAR_010379.</qualifier>
+          </seq_feature>
+        </annotations>
+      </sequence_map>
+  </bio_sequence>
+</sciobj>

@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<!DOCTYPE sciobj SYSTEM "agave.dtd">
+<sciobj version="2">
+    <bio_sequence seq_length="365" molecule_type="PROTEIN-TERM" element_id="P30512">
+      <sequence>MAVMAPRTLLLLLLGALALTQTWAGSHSMRYFTTSVSRPGRGEPRFIAVGYVDDTQFVRFDSDAASQRMEPRAPWIEQEG
+PEYWDLQTRNVKAQSQTDRANLGTLRGYYNQSEAGSHTIQMMYGCHVGSDGRFLRGYRQDAYDGKDYIALNEDLRSWTAA
+DMAAQITQRKWEAARVAEQLRAYLEGTCVEWLRRYLENGKETLQRTDAPKTHMTHHAVSDHEATLRCWALSFYPAEITLT
+WQRDGEDQTQDTELVETRPAGDGTFQKWASVVVPSGQEQRYTCHVQHEGLPKPLTLRWEPSSQPTIPIVGIIAGLVLFGA
+VFAGAVVAAVRWRRKSSDRKGGSYSQAASSDSAQGSDMSLTACKV</sequence>
+      <sequence_map>
+        <annotations>
+          <seq_feature feature_type="TOPO_DOM">
+            <seq_location least_start="25" greatest_end="308">25..308</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> Extracellular (Potential).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="VARIANT">
+            <seq_location least_start="190" greatest_end="191">190..191</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> EW -> DG (in allele A*2903). /FTId=VAR_010372.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="VARIANT">
+            <seq_location least_start="126" greatest_end="126">126..126</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> H -> D (in allele A*2902, allele A*2903 and allele A*2904). /FTId=VAR_004365.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="VARIANT">
+            <seq_location least_start="90" greatest_end="90">90..90</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> N -> H (in allele A*2904). /FTId=VAR_016347.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CARBOHYD">
+            <seq_location least_start="110" greatest_end="110">110..110</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> N-linked (GlcNAc...) (By similarity).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="DISULFID">
+            <seq_location least_start="125" greatest_end="188">125..188</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> By similarity.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="DISULFID">
+            <seq_location least_start="227" greatest_end="283">227..283</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> By similarity.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="DOMAIN">
+            <seq_location least_start="209" greatest_end="295">209..295</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> Ig-like C1-type.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="SIGNAL">
+            <seq_location least_start="1" greatest_end="24">1..24</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> </qualifier>
+          </seq_feature>
+          <seq_feature feature_type="REGION">
+            <seq_location least_start="25" greatest_end="114">25..114</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> Alpha-1.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="REGION">
+            <seq_location least_start="115" greatest_end="206">115..206</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> Alpha-2.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="REGION">
+            <seq_location least_start="299" greatest_end="308">299..308</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> Connecting peptide.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CHAIN">
+            <seq_location least_start="25" greatest_end="365">25..365</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> HLA class I histocompatibility antigen, A-29 alpha chain. /FTId=PRO_0000018821.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="TOPO_DOM">
+            <seq_location least_start="333" greatest_end="365">333..365</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> Cytoplasmic (Potential).</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="REGION">
+            <seq_location least_start="207" greatest_end="298">207..298</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> Alpha-3.</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="TRANSMEM">
+            <seq_location least_start="309" greatest_end="332">309..332</seq_location>
+            <qualifier qualifier_type="swissprot.featureattribute" data_type="varchar"> Potential.</qualifier>
+          </seq_feature>
+        </annotations>
+      </sequence_map>
+  </bio_sequence>
+</sciobj>

@@ -1,0 +1,18 @@
+import java.net.URLEncoder;
+
+Properties sysProps = System.getProperties();
+Set keys = sysProps.keySet();
+Iterator it = keys.iterator();
+String currKey = null;
+StringBuffer sb = new StringBuffer();
+sb.append("<?xml version=\"1.0\"?>\n");
+sb.append("<property-list>\n");
+while (it.hasNext()) {
+	currKey = (String) it.next();
+	sb.append("<property ");
+	sb.append(" name=\"" + URLEncoder.encode(currKey) + "\"");
+	sb.append(" value=\"" + URLEncoder.encode(sysProps.getProperty(currKey)) + "\"/>\n");
+}
+sb.append("</property-list>");
+
+properties = sb.toString();
