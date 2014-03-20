@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:ec9998ba-8cea-4b1c-88df-1ec4e93439e6" author="" title="iteration_strategy" />
+  <s:processor name="Iterator">
+    <s:beanshell>
+      <s:scriptvalue>out = in1+in2;</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">in1</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">in2</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">out</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="List_Emitter">
+    <s:beanshell>
+      <s:scriptvalue>List out = new ArrayList();
+out.add("one");
+out.add("two");
+out.add("three");</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">out</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="String_Constant" boring="true">
+    <s:stringconstant>XXX</s:stringconstant>
+  </s:processor>
+  <s:link source="List_Emitter:out" sink="Iterator:in1" />
+  <s:link source="String_Constant:value" sink="Iterator:in2" />
+  <s:link source="Iterator:out" sink="out" />
+  <s:sink name="out" />
+</s:scufl>
+

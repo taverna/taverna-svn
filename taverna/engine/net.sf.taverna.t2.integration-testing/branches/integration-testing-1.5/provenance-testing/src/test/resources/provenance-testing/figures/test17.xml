@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:3e08dc00-ae0f-4f07-abe9-03a268687487" author="Paolo Missier" title="test17">multiple cross-products with complex DNL/ANL combinations
+still one output for each processor
+
+simplified wrt test16</s:workflowdescription>
+  <s:processor name="P4">
+    <s:defaults>
+      <s:default name="P4Vi">foo</s:default>
+    </s:defaults>
+    <s:beanshell>
+      <s:scriptvalue>P4Vo = new ArrayList();
+
+P4Vo.add(P4Vi +  "-p4");
+P4Vo.add("y");</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">P4Vi</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">P4Vo</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="P5">
+    <s:beanshell>
+      <s:scriptvalue>P5Vo = new ArrayList();
+
+P5Vo.add("P5Vo-1");
+P5Vo.add("P5Vo-2");</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">P5Vo</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="P6">
+    <s:beanshell>
+      <s:scriptvalue>P6Vo = P6Vi1 + "-" + P6Vi2;</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">P6Vi1</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">P6Vi2</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">P6Vo</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="P7">
+    <s:beanshell>
+      <s:scriptvalue>P7Vo  = new ArrayList();
+
+P7Vo.add("paolo");
+P7Vo.add("pietro");</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">P7Vo</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="P8">
+    <s:beanshell>
+      <s:scriptvalue>P8Vo = P8Vi1 + "-" + P8Vi2;</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">P8Vi1</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="l('text/plain')">P8Vi2</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">P8Vo</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:link source="P4:P4Vo" sink="P6:P6Vi1" />
+  <s:link source="P5:P5Vo" sink="P6:P6Vi2" />
+  <s:link source="P6:P6Vo" sink="P8:P8Vi2" />
+  <s:link source="P7:P7Vo" sink="P8:P8Vi1" />
+  <s:link source="P8:P8Vo" sink="O" />
+  <s:sink name="O">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>'text/plain'</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+

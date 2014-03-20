@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:24729c40-b25e-466e-aef0-6b2c0eda2c6b" author="" title="T1" />
+  <s:processor name="P1">
+    <s:beanshell>
+      <s:scriptvalue>Y=X;</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">X</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">Y</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+</s:scufl>
+

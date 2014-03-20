@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="provenance-testing">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../../../Applications/eclipse"/>
+    <property name="junit.output.dir" value="junit"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.5"/>
+    <property name="source" value="1.5"/>
+    <path id="Maven Dependencies.libraryclasspath">
+        <pathelement location="../../../.m2/repository/junit/junit/4.4/junit-4.4.jar"/>
+        <pathelement location="../../../.m2/repository/jdom/jdom/1.0/jdom-1.0.jar"/>
+        <pathelement location="../../../.m2/repository/commons-io/commons-io/1.4/commons-io-1.4.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/provenanceconnector-api/0.4/provenanceconnector-api-0.4.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/t2reference-api/0.2/t2reference-api-0.2.jar"/>
+        <pathelement location="../../../.m2/repository/org/springframework/spring-tx/2.5.4/spring-tx-2.5.4.jar"/>
+        <pathelement location="../../../.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar"/>
+        <pathelement location="../../../.m2/repository/org/springframework/spring-beans/2.5.4/spring-beans-2.5.4.jar"/>
+        <pathelement location="../../../.m2/repository/org/springframework/spring-core/2.5.4/spring-core-2.5.4.jar"/>
+        <pathelement location="../../../.m2/repository/org/springframework/spring-context/2.5.4/spring-context-2.5.4.jar"/>
+        <pathelement location="../../../.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/spi-discovery-api/0.4/spi-discovery-api-0.4.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/observer/0.4/observer-0.4.jar"/>
+        <pathelement location="../../../.m2/repository/log4j/log4j/1.2.12/log4j-1.2.12.jar"/>
+        <pathelement location="../../../.m2/repository/uk/org/mygrid/taverna/raven/raven/1.8/raven-1.8.jar"/>
+        <pathelement location="../../../.m2/repository/uk/org/mygrid/taverna/raven/raven-log4j/1.9/raven-log4j-1.9.jar"/>
+        <pathelement location="../../../.m2/repository/uk/org/mygrid/taverna/raven/appconfig/1.9/appconfig-1.9.jar"/>
+        <pathelement location="../../../.m2/repository/uk/org/mygrid/taverna/raven/launcher-api/1.9/launcher-api-1.9.jar"/>
+        <pathelement location="../../../.m2/repository/uk/org/mygrid/taverna/raven/prelauncher/1.9/prelauncher-1.9.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/t2reference-impl/0.2/t2reference-impl-0.2.jar"/>
+        <pathelement location="../../../.m2/repository/org/springframework/spring-orm/2.5.4/spring-orm-2.5.4.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/platform/0.2/platform-0.2.jar"/>
+        <pathelement location="../../../.m2/repository/org/springframework/spring-jdbc/2.5.4/spring-jdbc-2.5.4.jar"/>
+        <pathelement location="../../../.m2/repository/geronimo-spec/geronimo-spec-jta/1.0-M1/geronimo-spec-jta-1.0-M1.jar"/>
+        <pathelement location="../../../.m2/repository/org/hibernate/hibernate/3.2.5.ga.raven/hibernate-3.2.5.ga.raven.jar"/>
+        <pathelement location="../../../.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar"/>
+        <pathelement location="../../../.m2/repository/cglib/cglib/2.1_3/cglib-2.1_3.jar"/>
+        <pathelement location="../../../.m2/repository/asm/asm/1.5.3/asm-1.5.3.jar"/>
+        <pathelement location="../../../.m2/repository/commons-collections/commons-collections/2.1.1/commons-collections-2.1.1.jar"/>
+        <pathelement location="../../../.m2/repository/org/aspectj/aspectjrt/1.6.0/aspectjrt-1.6.0.jar"/>
+        <pathelement location="../../../.m2/repository/org/aspectj/aspectjweaver/1.6.0/aspectjweaver-1.6.0.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/workflowmodel-impl/0.4/workflowmodel-impl-0.4.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/workflowmodel-api/0.4/workflowmodel-api-0.4.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/security-api/0.4/security-api-0.4.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/provenanceconnector-impl/0.4/provenanceconnector-impl-0.4.jar"/>
+        <pathelement location="../../../.m2/repository/com/thoughtworks/xstream/xstream/1.2.1/xstream-1.2.1.jar"/>
+        <pathelement location="../../../.m2/repository/xpp3/xpp3_min/1.1.3.4.O/xpp3_min-1.1.3.4.O.jar"/>
+        <pathelement location="../../../.m2/repository/uk/org/mygrid/taverna/raven/plugins-impl/1.8/plugins-impl-1.8.jar"/>
+        <pathelement location="../../../.m2/repository/uk/org/mygrid/taverna/raven/plugins-api/1.8/plugins-api-1.8.jar"/>
+        <pathelement location="../../../.m2/repository/org/apache/xmlbeans/xmlbeans/2.4.0/xmlbeans-2.4.0.jar"/>
+        <pathelement location="../../../.m2/repository/stax/stax-api/1.0.1/stax-api-1.0.1.jar"/>
+        <pathelement location="../../../.m2/repository/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar"/>
+        <pathelement location="../../../.m2/repository/commons-codec/commons-codec/1.2/commons-codec-1.2.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/mysql-provenance/0.0.1-SNAPSHOT/mysql-provenance-0.0.1-SNAPSHOT.jar"/>
+        <pathelement location="../../../.m2/repository/mysql/mysql-connector-java/5.1.5/mysql-connector-java-5.1.5.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/workbench/contextual-views-api/0.2/contextual-views-api-0.2.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/workbench/configuration-impl/0.2/configuration-impl-0.2.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/workbench/configuration-api/0.2/configuration-api-0.2.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/opencsv/opencsv/1.8/opencsv-1.8.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/workbench/menu-api/0.2/menu-api-0.2.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/workbench/commons-icons/0.2/commons-icons-0.2.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/workbench/helper/0.2/helper-0.2.jar"/>
+        <pathelement location="../../../.m2/repository/javax/help/javahelp/2.0.02/javahelp-2.0.02.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/workbench/ui-api/0.2/ui-api-0.2.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/lang/ui/0.4/ui-0.4.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/workbench/ui-impl/0.2/ui-impl-0.2.jar"/>
+        <pathelement location="../../../.m2/repository/uk/org/mygrid/taverna/osxapplication/1.5.1/osxapplication-1.5.1.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/workbench/perspective-core/1.9/perspective-core-1.9.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/workbench/file-api/0.2/file-api-0.2.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/workbench/edits-api/0.2/edits-api-0.2.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/workbench/file-impl/0.2/file-impl-0.2.jar"/>
+        <pathelement location="../../../.m2/repository/commons-lang/commons-lang/2.4/commons-lang-2.4.jar"/>
+        <pathelement location="../../../.m2/repository/uk/org/mygrid/taverna/zaria/1.9/zaria-1.9.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/workbench/edits-impl/0.2/edits-impl-0.2.jar"/>
+        <pathelement location="../../../.m2/repository/net/sf/taverna/t2/workbench/provenance-config/0.2/provenance-config-0.2.jar"/>
+    </path>
+    <path id="provenance-testing.classpath">
+        <pathelement location="target-eclipse/classes"/>
+        <pathelement location="target-eclipse/test-classes"/>
+        <pathelement location="src/main/resources"/>
+        <pathelement location="src/test/resources"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.DataDependenciesBuilderTest.classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.DataflowGeneratorTest.generateLargeCollectionsWorkflow.classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.DataflowGeneratorTest.generateLinearChainTest.classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.DataflowGeneratorTest.classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.NaiveProvenanceQueryTest.classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.ProvenanceAnalysisTest (1).classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.ProvenanceAnalysisTest.testComputeLineagePaths (1).classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.ProvenanceAnalysisTest.testGenerateNaiveQuery.classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.ProvenanceAnalysisTest.testRecursiveNaiveQuery.classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.ProvenanceCaptureSimpleListTest.classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.ProvenanceCaptureTest.classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.ProvenanceCaptureTest5b_list.classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.ProvenanceCaptureTest_baseLineage.classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.ProvenanceCaptureTest_pathways_and_gene_annotations_for_qtl_phenotype (1).classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.ProvenanceCaptureTest_SNPsFromGenesSimplified (1).classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.ProvenanceCaptureTest_test166.classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.ProvenanceCaptureTest_test6 (1).classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.ProvenanceCaptureTest_test7 (1).classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.ProvenanceCaptureTest_test8 (1).classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.ProvenanceCaptureTest_test9 (1).classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.ProvenanceCaptureTest_Tom1.classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.ProvenanceCaptureTestMismatchingInputsNL.classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.ProvenanceCaptureTestNoInput (1).classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.TestPathMaterializer.classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <path id="run.testSimpleLineageQuery.classpath">
+        <path refid="provenance-testing.classpath"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="target-eclipse/classes"/>
+        <mkdir dir="target-eclipse/test-classes"/>
+        <mkdir dir="src/main/resources"/>
+        <mkdir dir="src/test/resources"/>
+        <copy includeemptydirs="false" todir="target-eclipse/classes">
+            <fileset dir="src/main/java" excludes="**/*.launch, **/*.java"/>
+        </copy>
+        <copy includeemptydirs="false" todir="target-eclipse/test-classes">
+            <fileset dir="src/test/java" excludes="**/*.launch, **/*.java"/>
+        </copy>
+        <copy includeemptydirs="false" todir="src/main/resources">
+            <fileset dir="src/main/resources" excludes="**/*.launch, **/*.java"/>
+        </copy>
+        <copy includeemptydirs="false" todir="src/test/resources">
+            <fileset dir="src/test/resources" excludes="**/*.launch, **/*.java"/>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="target-eclipse/classes"/>
+        <delete dir="target-eclipse/test-classes"/>
+        <delete dir="src/main/resources"/>
+        <delete dir="src/test/resources"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="target-eclipse/classes" source="${source}" target="${target}">
+            <src path="src/main/java"/>
+            <classpath refid="provenance-testing.classpath"/>
+        </javac>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="target-eclipse/test-classes" source="${source}" target="${target}">
+            <src path="src/test/java"/>
+            <classpath refid="provenance-testing.classpath"/>
+        </javac>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="src/main/resources" source="${source}" target="${target}">
+            <src path="src/main/resources"/>
+            <exclude name="**"/>
+            <classpath refid="provenance-testing.classpath"/>
+        </javac>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="src/test/resources" source="${source}" target="${target}">
+            <src path="src/test/resources"/>
+            <exclude name="**"/>
+            <classpath refid="provenance-testing.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+    <target name="DataDependenciesBuilderTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.capture.test.DataDependenciesBuilderTest" todir="${junit.output.dir}"/>
+            <classpath refid="run.DataDependenciesBuilderTest.classpath"/>
+        </junit>
+    </target>
+    <target name="DataflowGeneratorTest.generateLargeCollectionsWorkflow">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.generation.test.DataflowGeneratorTest" todir="${junit.output.dir}"/>
+            <classpath refid="run.DataflowGeneratorTest.generateLargeCollectionsWorkflow.classpath"/>
+        </junit>
+    </target>
+    <target name="DataflowGeneratorTest.generateLinearChainTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.generation.test.DataflowGeneratorTest" todir="${junit.output.dir}"/>
+            <classpath refid="run.DataflowGeneratorTest.generateLinearChainTest.classpath"/>
+        </junit>
+    </target>
+    <target name="DataflowGeneratorTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.generation.test.DataflowGeneratorTest" todir="${junit.output.dir}"/>
+            <classpath refid="run.DataflowGeneratorTest.classpath"/>
+        </junit>
+    </target>
+    <target name="NaiveProvenanceQueryTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.analysis.test.NaiveProvenanceQueryTest" todir="${junit.output.dir}"/>
+            <classpath refid="run.NaiveProvenanceQueryTest.classpath"/>
+        </junit>
+    </target>
+    <target name="ProvenanceAnalysisTest (1)">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.analysis.test.ProvenanceAnalysisTest" todir="${junit.output.dir}"/>
+            <classpath refid="run.ProvenanceAnalysisTest (1).classpath"/>
+        </junit>
+    </target>
+    <target name="ProvenanceAnalysisTest.testComputeLineagePaths (1)">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.analysis.test.ProvenanceAnalysisTest" todir="${junit.output.dir}"/>
+            <classpath refid="run.ProvenanceAnalysisTest.testComputeLineagePaths (1).classpath"/>
+        </junit>
+    </target>
+    <target name="ProvenanceAnalysisTest.testGenerateNaiveQuery">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.analysis.test.ProvenanceAnalysisTest" todir="${junit.output.dir}"/>
+            <classpath refid="run.ProvenanceAnalysisTest.testGenerateNaiveQuery.classpath"/>
+        </junit>
+    </target>
+    <target name="ProvenanceAnalysisTest.testRecursiveNaiveQuery">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.analysis.test.ProvenanceAnalysisTest" todir="${junit.output.dir}"/>
+            <classpath refid="run.ProvenanceAnalysisTest.testRecursiveNaiveQuery.classpath"/>
+        </junit>
+    </target>
+    <target name="ProvenanceCaptureSimpleListTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.capture.test.ProvenanceCaptureSimpleListTest" todir="${junit.output.dir}"/>
+            <classpath refid="run.ProvenanceCaptureSimpleListTest.classpath"/>
+        </junit>
+    </target>
+    <target name="ProvenanceCaptureTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.capture.test.ProvenanceCaptureTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-Xmx512m"/>
+            <classpath refid="run.ProvenanceCaptureTest.classpath"/>
+        </junit>
+    </target>
+    <target name="ProvenanceCaptureTest5b_list">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.capture.test.ProvenanceCaptureTest5b_list" todir="${junit.output.dir}"/>
+            <classpath refid="run.ProvenanceCaptureTest5b_list.classpath"/>
+        </junit>
+    </target>
+    <target name="ProvenanceCaptureTest_baseLineage">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.capture.test.ProvenanceCaptureTest_baseLineage" todir="${junit.output.dir}"/>
+            <classpath refid="run.ProvenanceCaptureTest_baseLineage.classpath"/>
+        </junit>
+    </target>
+    <target name="ProvenanceCaptureTest_pathways_and_gene_annotations_for_qtl_phenotype (1)">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.capture.test.ProvenanceCaptureTest_pathways_and_gene_annotations_for_qtl_phenotype" todir="${junit.output.dir}"/>
+            <classpath refid="run.ProvenanceCaptureTest_pathways_and_gene_annotations_for_qtl_phenotype (1).classpath"/>
+        </junit>
+    </target>
+    <target name="ProvenanceCaptureTest_SNPsFromGenesSimplified (1)">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.capture.test.ProvenanceCaptureTest_SNPsFromGenesSimplified" todir="${junit.output.dir}"/>
+            <classpath refid="run.ProvenanceCaptureTest_SNPsFromGenesSimplified (1).classpath"/>
+        </junit>
+    </target>
+    <target name="ProvenanceCaptureTest_test166">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.capture.test.ProvenanceCaptureTest_test166" todir="${junit.output.dir}"/>
+            <classpath refid="run.ProvenanceCaptureTest_test166.classpath"/>
+        </junit>
+    </target>
+    <target name="ProvenanceCaptureTest_test6 (1)">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.capture.test.ProvenanceCaptureTest_test6" todir="${junit.output.dir}"/>
+            <classpath refid="run.ProvenanceCaptureTest_test6 (1).classpath"/>
+        </junit>
+    </target>
+    <target name="ProvenanceCaptureTest_test7 (1)">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.capture.test.ProvenanceCaptureTest_test7" todir="${junit.output.dir}"/>
+            <classpath refid="run.ProvenanceCaptureTest_test7 (1).classpath"/>
+        </junit>
+    </target>
+    <target name="ProvenanceCaptureTest_test8 (1)">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.capture.test.ProvenanceCaptureTest_test8" todir="${junit.output.dir}"/>
+            <classpath refid="run.ProvenanceCaptureTest_test8 (1).classpath"/>
+        </junit>
+    </target>
+    <target name="ProvenanceCaptureTest_test9 (1)">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.capture.test.ProvenanceCaptureTest_test9" todir="${junit.output.dir}"/>
+            <classpath refid="run.ProvenanceCaptureTest_test9 (1).classpath"/>
+        </junit>
+    </target>
+    <target name="ProvenanceCaptureTest_Tom1">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.capture.test.ProvenanceCaptureTest_Tom1" todir="${junit.output.dir}"/>
+            <classpath refid="run.ProvenanceCaptureTest_Tom1.classpath"/>
+        </junit>
+    </target>
+    <target name="ProvenanceCaptureTestMismatchingInputsNL">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.capture.test.ProvenanceCaptureTestMismatchingInputsNL" todir="${junit.output.dir}"/>
+            <classpath refid="run.ProvenanceCaptureTestMismatchingInputsNL.classpath"/>
+        </junit>
+    </target>
+    <target name="ProvenanceCaptureTestNoInput (1)">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.capture.test.ProvenanceCaptureTestNoInput" todir="${junit.output.dir}"/>
+            <classpath refid="run.ProvenanceCaptureTestNoInput (1).classpath"/>
+        </junit>
+    </target>
+    <target name="TestPathMaterializer">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.analysis.test.TestPathMaterializer" todir="${junit.output.dir}"/>
+            <classpath refid="run.TestPathMaterializer.classpath"/>
+        </junit>
+    </target>
+    <target name="testSimpleLineageQuery">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="net.sf.taverna.t2.lineageService.analysis.test.testSimpleLineageQuery" todir="${junit.output.dir}"/>
+            <classpath refid="run.testSimpleLineageQuery.classpath"/>
+        </junit>
+    </target>
+    <target name="junitreport">
+        <junitreport todir="${junit.output.dir}">
+            <fileset dir="${junit.output.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${junit.output.dir}"/>
+        </junitreport>
+    </target>
+</project>

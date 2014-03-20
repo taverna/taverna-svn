@@ -1,0 +1,16 @@
+#
+#  collect all  <process> <used> <artifact> relationships
+#
+
+PREFIX    a:  <http://www.ipaw.info/2007/opm#>
+PREFIX    b:  <http://taverna.opm.org/>
+PREFIX rdfs:  <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?artifact ?value
+		
+WHERE
+{ 
+      ?artifact  rdf:type a:Artifact .
+      OPTIONAL {  ?artifact b:value ?value }
+ }  

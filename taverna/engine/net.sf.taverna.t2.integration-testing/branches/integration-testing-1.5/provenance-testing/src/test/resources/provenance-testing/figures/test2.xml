@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:d148ec79-e8a3-42a1-86dd-8608f6c58d0c" author="Paolo Missier" title="test1">base case for lineage test
+no iterations
+no type mismatches
+no collections
+but two paths</s:workflowdescription>
+  <s:processor name="P1">
+    <s:defaults>
+      <s:default name="P1Vi">a</s:default>
+    </s:defaults>
+    <s:beanshell>
+      <s:scriptvalue>P1Vo = P1Vi+"_P1";</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">P1Vi</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">P1Vo</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="P2">
+    <s:defaults>
+      <s:default name="P2Vi">b</s:default>
+    </s:defaults>
+    <s:beanshell>
+      <s:scriptvalue>P2Vo = P2Vi + "_P2";</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">P2Vi</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">P2Vo</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="P3">
+    <s:beanshell>
+      <s:scriptvalue>P3Vo = P3Vi1 + "/" + P3Vi2;</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">P3Vi1</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">P3Vi2</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">P3Vo</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:link source="P1:P1Vo" sink="P3:P3Vi1" />
+  <s:link source="P2:P2Vo" sink="P3:P3Vi2" />
+  <s:link source="P3:P3Vo" sink="O1" />
+  <s:sink name="O1" />
+</s:scufl>
+

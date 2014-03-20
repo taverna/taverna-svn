@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:9ade6830-ade3-4457-b40a-ce246bf971de" author="" title="lineage example">used to illustrate all features of 
+- iteration
+- 1:1 1:M, M:1 processors
+- only some inputs involved in iteration
+- multiple outputs</s:workflowdescription>
+  <s:processor name="P3">
+    <s:beanshell>
+      <s:scriptvalue>Y = "f";</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">X</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">Y</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="P1">
+    <s:beanshell>
+      <s:scriptvalue>Y = X + "b";</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">X</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">Y</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="P4">
+    <s:beanshell>
+      <s:scriptvalue>Y1 = new ArrayList();
+
+Y1.add(X1);
+Y1.add(X2);
+Y1.add(X3);
+
+Y2 = X1+"_"+X2+"_"+X3;</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">X1</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">X2</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">X3</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">Y1</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="'text/plain'">Y2</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="P2">
+    <s:beanshell>
+      <s:scriptvalue>Y = new ArrayList();
+
+Y.add("d1");
+Y.add("d2");</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">X</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">Y</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="P0">
+    <s:beanshell>
+      <s:scriptvalue>Y= new ArrayList();
+
+Y.add("a1");
+Y.add("a2");</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">Y</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:link source="P0:Y" sink="P1:X" />
+  <s:link source="P1:Y" sink="P4:X1" />
+  <s:link source="P2:Y" sink="P4:X2" />
+  <s:link source="P3:Y" sink="P4:X3" />
+  <s:link source="P4:Y1" sink="O1" />
+  <s:link source="P4:Y2" sink="O2" />
+  <s:sink name="O1" />
+  <s:sink name="O2" />
+</s:scufl>
+
