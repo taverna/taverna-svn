@@ -13,12 +13,9 @@
 	<version>1.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>Taverna 2 Activities</name>
+	<name>Taverna 1 compatibility</name>
 	<description>
-		A collection of Taverna 2 Activities. These are the core
-		activities required to cover the functionality of Taverna 1, and
-		includes translators to translate processors from SCUFL
-		workflows.
+		API for loading Taverna 1 SCUFL workflows.
 	</description>
 
 	<properties>
