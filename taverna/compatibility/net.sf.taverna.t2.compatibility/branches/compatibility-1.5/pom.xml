@@ -10,7 +10,7 @@
 
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>compatibility</artifactId>
-	<version>1.5-SNAPSHOT</version>
+	<version>1.5</version>
 	<packaging>pom</packaging>
 
 	<name>Taverna 1 compatibility</name>
@@ -50,9 +50,9 @@
 	</repositories>
 
 	<scm>
-		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/compatibility/net.sf.taverna.t2.compatibility/branches/maintenance/</connection>
-		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/compatibility/net.sf.taverna.t2.compatibility/branches/maintenance/</developerConnection>
-		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/compatibility/net.sf.taverna.t2.compatibility/branches/maintenance</url>
+		<connection>scm:svn:http://taverna.googlecode.com/svn/taverna/compatibility/net.sf.taverna.t2.compatibility/tags/compatibility-1.5</connection>
+		<developerConnection>scm:svn:https://taverna.googlecode.com/svn/taverna/compatibility/net.sf.taverna.t2.compatibility/tags/compatibility-1.5</developerConnection>
+		<url>http://code.google.com/p/taverna/source/browse/#svn/taverna/compatibility/net.sf.taverna.t2.compatibility/tags/compatibility-1.5</url>
 	</scm>
 	<dependencyManagement>
 		<dependencies>
