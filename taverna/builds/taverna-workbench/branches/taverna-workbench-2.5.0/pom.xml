@@ -33,9 +33,7 @@
 		<module>taverna-parent</module>
 		<module>utils</module>
 		<module>engine</module>
-		<!--
 		<module>compatibility</module>
-		-->
 		<module>ui</module>
 		<module>products</module>
 	</modules>
