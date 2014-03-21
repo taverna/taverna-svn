@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>net.sf.taverna.t2.core</groupId>
 	<artifactId>provenance-derby</artifactId>
-	<version>1.5-SNAPSHOT</version>
+	<version>1.5</version>
 	<packaging>jar</packaging>
 	<name>Derby Provenance</name>
 	<dependencies>
