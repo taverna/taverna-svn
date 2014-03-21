@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>net.sf.taverna</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.2.2014-01-06</version>
+		<version>0.2.2014-03-19</version>
 		<relativePath>parent/pom.xml</relativePath>
 	</parent>
 
@@ -14,7 +14,7 @@
 	<packaging>pom</packaging>
 
 	<name>Taverna 2 workbench virtual build tree</name>
-	<version>2.5-SNAPSHOT</version>
+	<version>2.5.0</version>
 	<description>
 		Build tree for all of Taverna 2 using svn:externals. It is normally 
 		recommended to check out only the needed individual projects separately
@@ -33,7 +33,9 @@
 		<module>taverna-parent</module>
 		<module>utils</module>
 		<module>engine</module>
+		<!--
 		<module>compatibility</module>
+		-->
 		<module>ui</module>
 		<module>products</module>
 	</modules>
