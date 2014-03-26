@@ -30,6 +30,7 @@ import static net.sf.taverna.t2.workflowmodel.health.RemoteHealthChecker.contact
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.log4j.Logger.getLogger;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -180,6 +181,9 @@ public class ComponentProfile implements
 			} finally {
 				is.close();
 			}
+		} catch (FileNotFoundException e) {
+			profile.loaderException = e;
+			logger.warn("URL not readable: " + source);
 		} catch (Exception e) {
 			profile.loaderException = e;
 			logger.warn("failed to load profile", e);
@@ -230,11 +234,17 @@ public class ComponentProfile implements
 			synchronized (lock) {
 				while (!loaded)
 					lock.wait();
-				if (loaderException != null)
+				if (loaderException != null) {
+					if (loaderException instanceof FileNotFoundException)
+						throw new RegistryException(
+								"profile not found/readable: "
+										+ loaderException.getMessage(),
+								loaderException);
 					throw new RegistryException(
 							"problem loading profile definition: "
 									+ loaderException.getMessage(),
 							loaderException);
+				}
 				return profileDoc;
 			}
 		} catch (InterruptedException e) {
