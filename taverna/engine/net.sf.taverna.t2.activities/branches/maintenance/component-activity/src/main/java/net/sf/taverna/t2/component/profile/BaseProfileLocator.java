@@ -104,6 +104,17 @@ public class BaseProfileLocator {
 		}
 	}
 
+	private long parseTime(String timestamp) throws ParseException {
+		timestamp = timestamp.trim();
+		if (timestamp.endsWith(" GMT"))
+			timestamp = timestamp.substring(0, timestamp.length() - 3)
+					+ " +0000";
+		else if (timestamp.endsWith(" BST"))
+			timestamp = timestamp.substring(0, timestamp.length() - 3)
+					+ " +0100";
+		return format.parse(timestamp).getTime();
+	}
+
 	private long getRemoteBaseProfileTimestamp(HttpClient client)
 			throws URISyntaxException, IOException, HttpException,
 			ParseException {
@@ -116,9 +127,9 @@ public class BaseProfileLocator {
 			return -1;
 		}
 		Header h = method.getResponseHeader("Last-Modified");
-		if (h != null)
-			return format.parse(h.getValue()).getTime();
-		return -1;
+		if (h == null)
+			return -1;
+		return parseTime(h.getValue());
 	}
 
 	private File getBaseProfileFile() {
