@@ -87,7 +87,7 @@ public class ComponentProfile implements
 		} catch (JAXBException e) {
 			// Should never happen! Represents a critical error
 			throw new Error(
-					"failed to initialize profile deserialization engine", e);
+					"Failed to initialize profile deserialization engine", e);
 		}
 	}
 	private static final net.sf.taverna.t2.component.api.Profile baseProfile = getBaseProfile();
@@ -115,7 +115,7 @@ public class ComponentProfile implements
 
 	public ComponentProfile(Registry registry, URL profileURL)
 			throws RegistryException {
-		logger.info("loading profile in " + identityHashCode(this) + " from "
+		logger.info("Loading profile in " + identityHashCode(this) + " from "
 				+ profileURL);
 		try {
 			URL url = profileURL;
@@ -124,16 +124,16 @@ public class ComponentProfile implements
 						url.getPath(), url.getQuery(), url.getRef()).toURL();
 			loadProfile(this, url);
 		} catch (MalformedURLException e) {
-			logger.warn("malformed URL? " + profileURL);
+			logger.warn("Malformed URL? " + profileURL);
 		} catch (URISyntaxException e) {
-			logger.warn("malformed URL? " + profileURL);
+			logger.warn("Malformed URL? " + profileURL);
 		}
 		parentRegistry = registry;
 	}
 
 	public ComponentProfile(Registry registry, String profileString)
 			throws RegistryException {
-		logger.info("loading profile in " + identityHashCode(this)
+		logger.info("Loading profile in " + identityHashCode(this)
 				+ " from string");
 		loadProfile(this, profileString);
 		this.parentRegistry = registry;
@@ -151,9 +151,9 @@ public class ComponentProfile implements
 					loadProfileFromString(profile, (String) source);
 				else
 					throw new IllegalArgumentException(
-							"bad type of profile source: " + source.getClass());
+							"Bad type of profile source: " + source.getClass());
 				Date end = new Date();
-				logger.info("loaded profile in " + identityHashCode(profile)
+				logger.info("Loaded profile in " + identityHashCode(profile)
 						+ " (in " + (end.getTime() - start.getTime())
 						+ " msec)");
 			}
@@ -186,7 +186,7 @@ public class ComponentProfile implements
 			logger.warn("URL not readable: " + source);
 		} catch (Exception e) {
 			profile.loaderException = e;
-			logger.warn("failed to load profile", e);
+			logger.warn("Failed to load profile.", e);
 		}
 		synchronized (profile.lock) {
 			profile.loaded = true;
@@ -203,7 +203,7 @@ public class ComponentProfile implements
 							Profile.class).getValue();
 		} catch (Exception e) {
 			profile.loaderException = e;
-			logger.warn("failed to load profile", e);
+			logger.warn("Failed to load profile.", e);
 		}
 		synchronized (profile.lock) {
 			profile.loaded = true;
@@ -224,7 +224,7 @@ public class ComponentProfile implements
 					stringWriter);
 			return stringWriter.toString();
 		} catch (JAXBException e) {
-			throw new RegistryException("Unable to serialize profile", e);
+			throw new RegistryException("Unable to serialize profile.", e);
 		}
 	}
 
@@ -237,18 +237,18 @@ public class ComponentProfile implements
 				if (loaderException != null) {
 					if (loaderException instanceof FileNotFoundException)
 						throw new RegistryException(
-								"profile not found/readable: "
+								"Profile not found/readable: "
 										+ loaderException.getMessage(),
 								loaderException);
 					throw new RegistryException(
-							"problem loading profile definition: "
+							"Problem loading profile definition: "
 									+ loaderException.getMessage(),
 							loaderException);
 				}
 				return profileDoc;
 			}
 		} catch (InterruptedException e) {
-			logger.info("interrupted during wait for lock", e);
+			logger.info("Interrupted during wait for lock.", e);
 			return null;
 		}
 	}
@@ -340,7 +340,7 @@ public class ComponentProfile implements
 	}
 
 	private OntModel readOntologyFromURI(String ontologyId, String ontologyURI) {
-		logger.info("reading ontology for " + ontologyId + " from "
+		logger.info("Reading ontology for " + ontologyId + " from "
 				+ ontologyURI);
 		OntModel model = createOntologyModel();
 		InputStream in = null;
@@ -385,7 +385,7 @@ public class ComponentProfile implements
 
 		// Drop out of critical section while we do I/O
 		if (!isAccessible(ontologyURI)) {
-			logger.warn("catastrophic problem contacting ontology source");
+			logger.warn("Catastrophic problem contacting ontology source.");
 			// Catastrophic problem?!
 			synchronized (ontologyModels) {
 				ontologyModels.put(ontologyURI, null);
@@ -580,7 +580,7 @@ public class ComponentProfile implements
 
 	@Override
 	public void delete() throws RegistryException {
-		throw new RegistryException("deletion not supported");
+		throw new RegistryException("Deletion not supported.");
 	}
 }
 
@@ -608,7 +608,7 @@ final class EmptyProfile implements net.sf.taverna.t2.component.api.Profile {
 
 	@Override
 	public String getXML() throws RegistryException {
-		throw new RegistryException("no document");
+		throw new RegistryException("No document.");
 	}
 
 	@Override
@@ -678,6 +678,6 @@ final class EmptyProfile implements net.sf.taverna.t2.component.api.Profile {
 
 	@Override
 	public void delete() throws RegistryException {
-		throw new RegistryException("deletion forbidden");
+		throw new RegistryException("Deletion forbidden.");
 	}
 }
