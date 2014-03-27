@@ -140,7 +140,9 @@ public class ComponentUtil {
 	public static Profile makeProfile(URL url) throws RegistryException {
 		logger.info("Into makeProfile");
 		try {
-			return new ComponentProfile(url);
+			Profile p = new ComponentProfile(url);
+			p.getProfileDocument(); // force immediate loading
+			return p;
 		} finally {
 			logger.info("Finished makeProfile");
 		}

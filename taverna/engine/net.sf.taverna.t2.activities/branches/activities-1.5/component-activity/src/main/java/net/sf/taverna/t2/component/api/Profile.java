@@ -16,7 +16,8 @@ public interface Profile extends NamedItem {
 
 	String getXML() throws RegistryException;
 
-	uk.org.taverna.ns._2012.component.profile.Profile getProfileDocument();
+	uk.org.taverna.ns._2012.component.profile.Profile getProfileDocument()
+			throws RegistryException;
 
 	String getId();
 
