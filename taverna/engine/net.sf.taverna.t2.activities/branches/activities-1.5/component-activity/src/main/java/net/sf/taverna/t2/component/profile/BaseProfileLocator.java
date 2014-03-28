@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.t2.component.api.RegistryException;
@@ -36,8 +37,8 @@ public class BaseProfileLocator {
 	private static final String BASE_PROFILE_PATH = "BaseProfile.xml";
 	private static final String BASE_PROFILE_URI = "http://build.mygrid.org.uk/taverna/BaseProfile.xml";
 	private static final int TIMEOUT = 5000;
-	private static final String pattern = "EEE, dd MMM yyyy HH:mm:ss Z";
-	private static final SimpleDateFormat format = new SimpleDateFormat(pattern);
+	private static final String pattern = "EEE, dd MMM yyyy HH:mm:ss z";
+	private static final SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.UK);
 
 	private static BaseProfileLocator instance = null;
 
@@ -54,11 +55,11 @@ public class BaseProfileLocator {
 	}
 
 	private BaseProfileLocator() {
-		File configFile = getBaseProfileFile();
+		File baseProfileFile = getBaseProfileFile();
 		@SuppressWarnings("unused")
 		boolean load = false;
-		long noticeTime = -1;
-		long lastCheckedTime = -1;
+		long remoteBaseProfileTime = -1;
+		long localBaseProfileTime = -1;
 
 		HttpClientParams params = new HttpClientParams();
 		params.setConnectionManagerTimeout(TIMEOUT);
@@ -66,22 +67,22 @@ public class BaseProfileLocator {
 		HttpClient client = new HttpClient(params);
 
 		try {
-			noticeTime = getNoticeTimestamp(noticeTime, client);
-			logger.info("NoticeTime is " + noticeTime);
+			remoteBaseProfileTime = getRemoteBaseProfileTimestamp(client);
+			logger.info("NoticeTime is " + remoteBaseProfileTime);
 		} catch (URISyntaxException e) {
 			logger.error("URI problem", e);
 		} catch (IOException e) {
-			logger.info("Could not read notice", e);
+			logger.info("Could not read base profile", e);
 		} catch (ParseException e) {
 			logger.error("Could not parse last-modified time", e);
 		}
-		if (configFile.exists())
-			lastCheckedTime = configFile.lastModified();
+		if (baseProfileFile.exists())
+			localBaseProfileTime = baseProfileFile.lastModified();
 
 		try {
-			if ((noticeTime != -1) && (noticeTime > lastCheckedTime)) {
+			if ((remoteBaseProfileTime != -1) && (remoteBaseProfileTime > localBaseProfileTime)) {
 				profile = new ComponentProfile(null, new URL(BASE_PROFILE_URI));
-				writeStringToFile(configFile, profile.getXML());
+				writeStringToFile(baseProfileFile, profile.getXML());
 			}
 		} catch (MalformedURLException e) {
 			logger.error("URI problem", e);
@@ -95,29 +96,40 @@ public class BaseProfileLocator {
 		}
 
 		try {
-			if ((profile == null) && configFile.exists())
-				profile = new ComponentProfile(null, configFile.toURI().toURL());
+			if ((profile == null) && baseProfileFile.exists())
+				profile = new ComponentProfile(null, baseProfileFile.toURI().toURL());
 		} catch (Exception e) {
 			logger.error("URI problem", e);
 			profile = null;
 		}
 	}
 
-	private long getNoticeTimestamp(long noticeTime, HttpClient client)
+	private long parseTime(String timestamp) throws ParseException {
+		timestamp = timestamp.trim();
+		if (timestamp.endsWith(" GMT"))
+			timestamp = timestamp.substring(0, timestamp.length() - 3)
+					+ " +0000";
+		else if (timestamp.endsWith(" BST"))
+			timestamp = timestamp.substring(0, timestamp.length() - 3)
+					+ " +0100";
+		return format.parse(timestamp).getTime();
+	}
+
+	private long getRemoteBaseProfileTimestamp(HttpClient client)
 			throws URISyntaxException, IOException, HttpException,
 			ParseException {
-		URI noticeURI = new URI(BASE_PROFILE_URI);
-		HttpMethod method = new GetMethod(noticeURI.toString());
+		URI baseProfileURI = new URI(BASE_PROFILE_URI);
+		HttpMethod method = new GetMethod(baseProfileURI.toString());
 		int statusCode = client.executeMethod(method);
 		if (statusCode != SC_OK) {
 			logger.warn("HTTP status " + statusCode + " while getting "
-					+ noticeURI);
+					+ baseProfileURI);
 			return -1;
 		}
 		Header h = method.getResponseHeader("Last-Modified");
-		if (h != null)
-			return format.parse(h.getValue()).getTime();
-		return -1;
+		if (h == null)
+			return -1;
+		return parseTime(h.getValue());
 	}
 
 	private File getBaseProfileFile() {
