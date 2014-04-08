@@ -1,0 +1,7 @@
+==========================
+Taverna 2.5.0 known issues
+==========================
+
+See:
+http://dev.mygrid.org.uk/issues/issues/?filter=10412
+
