@@ -25,24 +25,20 @@ http://xquartz.macosforge.org/landing/
 Available services
 ------------------
 
-To improve start-up time and simplify Taverna for
-users in a wide range of scientific fields, 
-Available Services no longer list bioinformatics services
-such as BioMoby, Soaplab and BioMart by default. These
-can be added by clicking Add Services.
-
-TODO: is this how they can be re-enabled?
+To improve start-up time and simplify Taverna for users in a wide
+range of scientific fields, Available Services are tailored for the
+scientific domain. For example, the Astronomy distribution includes
+VAMDC services.
 
 
 Interaction service
 -------------------
 
-The Interaction Service has been added to the Workbench. This
-provides the ability to ask questions and inform users during
-the running of the workflow. Unlike the previous interactive
-local workers, this service uses an embedded web server, and 
-therefore also works if using the Command Line tool or the 
-Taverna Server.  
+The Interaction Service has been added to the Workbench. This provides
+the ability to ask questions and inform users during the running of
+the workflow. Unlike the previous interactive local workers, this
+service uses web pages, and therefore also works if using the Command
+Line tool or the Taverna Server.
 
 For details, see 
 http://www.taverna.org.uk/developers/work-in-progress/interaction/
@@ -66,14 +62,14 @@ For details, see https://github.com/myGrid/taverna-prov
 
 Component service
 -----------------
-The Component capability has been added. This allows the
-usage of component services, which encapsulate a 
-nested Taverna workflow that has been constructed and
-described for compatiblity with other components within
-a chosen Component Family.
 
-This allows for publication of reusable workflow fragments,
-which appear as single services within the master workflow.
+The Component capability has been added. This allows the usage of
+component services, which encapsulate a nested Taverna workflow that
+has been constructed and described for compatiblity with other
+components within a chosen Component Family.
+
+This allows for publication of reusable workflow fragments, which
+appear as single services within the master workflow.
 
 For details, see 
 http://www.taverna.org.uk/developers/work-in-progress/components/
@@ -85,6 +81,16 @@ Help
 Added Help->About, which includes debug information that 
 can be posted with support requests. (T3-1015)
 
+Help has been added to several dialogs (T3-1074, T3-1075, T3-1076,
+T3-1077, T3-1078)
+
+Help and example workflows are now available for services (T3-1069, T3-1072)
+
+
+Service panel
+-------------
+
+The Service panel no longer flickers as new services are added (T3-611)
 
 Credential Manager 
 -------------------
@@ -96,6 +102,45 @@ The bundled OpenJDK includes support for strong cryptography, and thus
 the JCE dialogue should no longer appear at startup. (T3-980)
 
 
+Nested workflow
+---------------
+
+Nested workflows will now terminate if there are no output ports (T3-986)
+
+The ports of a nested workflow will be correctly synchronized with
+those shown in the outer workflow (T3-691)
+
+REST service
+------------
+
+Support optional input query parameters (T2-2112)
+
+
+RShell service
+--------------
+
+R services running on a local R server no longer ask for the
+credential manager password (T3-911)
+
+Ports of R services can now have underscores in their names (T3-1012)
+
+The configuration panel for an R service will retain its size (T3-910)
+
+Spreadsheet service
+-------------------
+
+All changes to the spreadsheet service will be seen as edits (T3-1059)
+
+Text constant
+-------------
+
+Reading from a file no longer inserts a newline (T3-783)
+
+WSDL service
+------------
+
+The WSDL service uses faster iteration (T3-953)
+
 XPath service
 -------------
 
@@ -104,12 +149,6 @@ Additional output ports added. (T3-1019)
 
 Added ability to receive result of XPath functions, e.g.
 "count(/foo/bar)" (T3-996)
-
-
-REST service
-------------
-
-Support optional input query parameters (T2-2112)
 
 
 Plugin manager
@@ -122,6 +161,20 @@ Avoid deadlock in initialization of the logging mechanism
 if experiencing network issues while loading
 Available Services. (T3-1018)
 
+Plugin versions are now compared numerically (T3-1004)
+
+There is now an "Update all" button (T3-983)
+
+List handling dialog
+--------------------
+
+A simplified list handling dialog has been created (T3-486, T3-1079. T3-480)
+
+
+Looping
+-------
+
+Looping is now indicated in the diagram (T3-494)
 
 Run dialog
 ----------
@@ -129,6 +182,13 @@ Run dialog
 On Linux, the Run dialogue should no longer appear
 behind the workbench window if it was iconified (T2-2105, T3-994)
 
+Display of error documents has been improved (T3-396)
+
+Saving results
+--------------
+
+The Workbench Save All values dialog is put into a Scroll pane if
+large (T3-1110)
 
 Workflow engine
 ---------------
@@ -136,6 +196,23 @@ Workflow engine
 Resolved a deadlock when validating cross product, which could occur
 during command line execution of large workflows. (T2-2102)
 
+Several database locking issues have been resolved (T3-1051, T3-318, T3-1123)
+
+The default memory allocation has been increased (T3-842)
+
+
+myExperiment perspective
+------------------------
+
+There is now a link for registration on the myExperiment perspective login page (T3-1064)
+
+Uploading of a t2flow workflow now works (T3-804)
+
+
+Service catalogue perspective
+-----------------------------
+
+The list of services no longer include archived services (T3-1116)
 
 T2flow format
 -------------
