@@ -57,6 +57,7 @@ public class SADIServiceProviderIT {
 
 		@SuppressWarnings("rawtypes")
 		public void partialResults(Collection<? extends ServiceDescription> serviceDescriptions) {
+			partialResultsCalled = true;
 			for (ServiceDescription service: serviceDescriptions)
 				logger.debug(String.format("found service %s", service.getName()));
 		}

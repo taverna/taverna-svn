@@ -28,6 +28,8 @@ import java.util.List;
 
 import javax.swing.Icon;
 
+import org.apache.log4j.Logger;
+
 import net.sf.taverna.t2.activities.sadi.SADIActivityConfigurationBean;
 import net.sf.taverna.t2.activities.sadi.SADIRegistries;
 import net.sf.taverna.t2.servicedescriptions.AbstractConfigurableServiceProvider;
@@ -46,6 +48,8 @@ public class SADIServiceProvider extends AbstractConfigurableServiceProvider<SAD
 	private static final String SERVICE_NAME = "SADI";
 	
 	private static final int partialResultSize = 50;
+	
+	private static Logger logger = Logger.getLogger(SADIServiceProvider.class);
 
 	public SADIServiceProvider() {
 		super(new SADIServiceProviderConfig("http://somehost/sparql", "http://somehost/registry"));
@@ -66,8 +70,13 @@ public class SADIServiceProvider extends AbstractConfigurableServiceProvider<SAD
 				servicesReturned = services.size();
 				offset += servicesReturned;
 				for (Service service : services) {
-					ServiceDescription<SADIActivityConfigurationBean> serviceDescription = getServiceDescription(service);
-					descriptions.add(serviceDescription);
+					try {
+						ServiceDescription<SADIActivityConfigurationBean> serviceDescription = getServiceDescription(service);
+						descriptions.add(serviceDescription);
+					}
+					catch (Exception e) {
+						logger.error("Service description creation failed for " + service.getURI(), e);
+					}
 				}
 				callBack.partialResults(descriptions);
 				descriptions.clear();

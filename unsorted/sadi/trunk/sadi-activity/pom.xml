@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>activities</artifactId>
-		<version>1.3</version>
+		<version>1.5</version>
 	</parent>
 
 	<groupId>net.sf.taverna.t2.activities</groupId>
 	<artifactId>sadi-activity</artifactId>
-	<version>0.5.1-SNAPSHOT</version>
+	<version>0.6.0-SNAPSHOT</version>
 	<name>Taverna 2 SADI Activity</name>
 
 	<build>

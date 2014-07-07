@@ -29,6 +29,7 @@ import java.io.UnsupportedEncodingException;
 
 import net.sf.taverna.t2.reference.AbstractExternalReference;
 import net.sf.taverna.t2.reference.DereferenceException;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.ReferenceContext;
 import net.sf.taverna.t2.reference.ReferencedDataNature;
 import net.sf.taverna.t2.reference.ValueCarryingExternalReference;
@@ -175,6 +176,13 @@ public class RDFReference extends AbstractExternalReference implements
 
 	public Long getApproximateSizeInBytes() {
 		return -1L;
+	}
+
+	@Override
+	public ExternalReferenceSPI clone() throws CloneNotSupportedException {
+		RDFReference result = new RDFReference();
+		result.setContents(this.getContents());
+		return result;
 	}
 
 }
