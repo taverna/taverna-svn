@@ -1,0 +1,61 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sf.taverna.t2.sadi</groupId>
+	<artifactId>sadi</artifactId>
+	<packaging>pom</packaging>
+	<name>SADI activity plugin</name>
+	<version>0.6.0-SNAPSHOT</version>
+	<description>SADI activity plugin for Taverna 2.5</description>
+
+	<repositories>
+		<repository>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>net.sf.taverna.t2.maven.plugins</groupId>
+				<artifactId>maven-taverna-plugin</artifactId>
+				<version>0.1.1</version>
+				<extensions>true</extensions>
+				<configuration>
+					<provider>biordf.net</provider>
+					<tavernaVersion>2.5.0</tavernaVersion>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>taverna-update-site</id>
+			<name>Taverna Update Site</name>
+			<url>scpexe://rosalind/local/www/mygrid/taverna/updates/2.5.0/plugins/prototype/</url>
+		</repository>
+		<snapshotRepository>
+			<id>dev.biordf.net-t2plugins</id>
+			<name>Taverna plugin repository at dev.biordf.net</name>
+      		<url>scpexe://dev.biordf.net/var/www/taverna/plugins/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+  <modules>
+    <module>sadi-activity</module>
+    <module>sadi-activity-ui</module>
+    <module>sadi-plugin</module>
+  </modules>
+
+</project>
