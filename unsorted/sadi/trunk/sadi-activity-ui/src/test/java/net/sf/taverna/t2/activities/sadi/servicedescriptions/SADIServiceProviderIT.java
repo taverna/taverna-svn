@@ -31,6 +31,7 @@ import net.sf.taverna.t2.workflowmodel.ConfigurationException;
 
 import org.apache.log4j.Logger;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -89,7 +90,7 @@ public class SADIServiceProviderIT {
 	 * Test method for {@link net.sf.taverna.t2.activities.sadi.servicedescriptions.SADIServiceProvider#findServiceDescriptionsAsync(net.sf.taverna.t2.servicedescriptions.ServiceDescriptionProvider.FindServiceDescriptionsCallBack)}.
 	 * @throws ConfigurationException 
 	 */
-	@Test
+	@Ignore @Test
 	public void testFindServiceDescriptionsAsync() throws ConfigurationException {
 		sadiServiceProvider.findServiceDescriptionsAsync(callback);
 		assertTrue(callback.statusCalled);
